@@ -1,4 +1,4 @@
-package com.boomaa.opends.networking;
+package com.boomaa.opends.util;
 
 public class Clock extends Thread {
     private final int msToCycle;

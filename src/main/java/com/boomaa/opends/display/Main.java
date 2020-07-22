@@ -43,6 +43,9 @@ public class Main {
 
         OverlayField gameData = new OverlayField("Game Data", 10);
 
+        JButton fmsBtn = new JButton("Simulate FMS");
+        fmsBtn.addActionListener((e) -> new FMS());
+
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setPreferredSize(new Dimension(800, 600));
         frame.setResizable(false);
