@@ -1,19 +1,25 @@
 package com.boomaa.opends.data.holders;
 
 public enum Control {
-    ESTOP(0x80),
-    ENABLED(0x04),
-    TELEOP_MODE(0x00),
-    TEST_MODE(0x01),
-    AUTO_MODE(0x02);
+    ESTOP(0x80, 0),
+    ENABLED(0x04, 5),
+    TELEOP_MODE(0x00, 6, 7),
+    TEST_MODE(0x01, 6, 7),
+    AUTO_MODE(0x02, 6, 7);
 
-    private final byte value;
+    private final byte flag;
+    private final int[] bitmaskPos;
 
-    Control(int value) {
-        this.value = (byte) value;
+    Control(int flag, int... bitmaskPos) {
+        this.flag = (byte) flag;
+        this.bitmaskPos = bitmaskPos;
     }
 
-    public byte getValue() {
-        return value;
+    public byte getFlag() {
+        return flag;
+    }
+
+    public int[] getBitmaskPos() {
+        return bitmaskPos;
     }
 }

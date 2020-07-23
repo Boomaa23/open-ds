@@ -31,7 +31,7 @@ public enum Tag {
     PDP_LOG(0x08, Protocol.UDP, Source.ROBO_RIO, (TagBase<Integer>) (packet, size) -> {
         int[] rawValues = new int[packet.length * 8];
         for (int i = 0; i < packet.length; i++) {
-            char[] bin = Integer.toBinaryString(packet[i]).toCharArray();
+            char[] bin = NumberUtils.padByteString(Integer.toBinaryString(packet[i])).toCharArray();
             for (int j = 0; j < 8; j++) {
                 rawValues[(i * 8) + j] = Character.getNumericValue(bin[j]);
             }
@@ -81,16 +81,23 @@ public enum Tag {
         // ver (str, 1+n)
         return map;
     }),
-    ERROR_MESSAGE(0x0B, Protocol.TCP, Source.ROBO_RIO, (TagBase<String>) (packet, size) -> new TagValueMap<String>()
-            .addTo("Timestamp", String.valueOf(NumberUtils.getFloat(ArrayUtils.sliceArr(packet, 0 ,4))))
-            .addTo("Sequence Num", String.valueOf(NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 4, 6))))
-            .addTo("Error Code", String.valueOf(NumberUtils.getInt32(ArrayUtils.sliceArr(packet, 6, 10))))
-            .addTo("Flag", packet[10] == 0x02 ? "isLVcode" : packet[10] == 0x01 ? "Error" : "None")
-            //TODO implement details, location, callstack to err msg
-            // details (str, 2+n)
-            // location (str, 2+n)
-            // callstack (str, 2+n)
-    ),
+    ERROR_MESSAGE(0x0B, Protocol.TCP, Source.ROBO_RIO, (TagBase<String>) (packet, size) -> {
+        TagValueMap<String> map = new TagValueMap<String>()
+                .addTo("Timestamp", String.valueOf(NumberUtils.getFloat(ArrayUtils.sliceArr(packet, 0 ,4))))
+                .addTo("Sequence Num", String.valueOf(NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 4, 6))))
+                .addTo("Error Code", String.valueOf(NumberUtils.getInt32(ArrayUtils.sliceArr(packet, 8, 12))))
+                .addTo("Message", new String(ArrayUtils.sliceArr(packet, 15)));
+        if (NumberUtils.hasPlacedBit(packet[12], 7)) {
+            map.addTo("Flag", "Error");
+        } else if (NumberUtils.hasPlacedBit(packet[12], 6)) {
+            map.addTo("Flag", "isLVcode");
+        }
+        return map;
+        //TODO implement details, location, callstack to err msg
+        // details (str, 2+n)
+        // location (str, 2+n)
+        // callstack (str, 2+n)
+    }),
     STANDARD_OUT(0x0C, Protocol.TCP, Source.ROBO_RIO, (TagBase<String>) (packet, size) -> new TagValueMap<String>()
             .addTo("Timestamp", String.valueOf(NumberUtils.getFloat(ArrayUtils.sliceArr(packet, 0 ,4))))
             .addTo("Sequence Num", String.valueOf(NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 4, 6))))

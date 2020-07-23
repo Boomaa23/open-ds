@@ -1,13 +1,13 @@
 package com.boomaa.opends.util;
 
-public class Clock extends Thread {
+public abstract class Clock extends Thread {
     private final int msToCycle;
-    private final Runnable onCycle;
 
-    public Clock(int msToCycle, Runnable onCycle) {
+    public Clock(int msToCycle) {
         this.msToCycle = msToCycle;
-        this.onCycle = onCycle;
     }
+
+    public abstract void onCycle();
 
     @Override
     public void run() {
@@ -16,7 +16,7 @@ public class Clock extends Thread {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        onCycle.run();
+        onCycle();
         super.run();
     }
 }

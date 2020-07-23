@@ -10,6 +10,9 @@ import com.boomaa.opends.data.tags.TagValueMap;
 import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.NumberUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class PacketParser {
     public static class RioToDsUdp extends Common {
         public RioToDsUdp(byte[] packet) {
@@ -24,26 +27,28 @@ public class PacketParser {
             return packet[2]; //always 0x01
         }
 
-        public Status getStatus() {
+        public List<Status> getStatus() {
+            List<Status> statusList = new ArrayList<>();
             for (Status status : Status.values()) {
-                if (status.getValue() == packet[3]) {
-                    return status;
+                if (NumberUtils.hasMaskMatch(packet[3], status.getFlag(), status.getBitmaskPos())) {
+                    statusList.add(status);
                 }
             }
-            return null;
+            return statusList;
         }
 
-        public Trace getTrace() {
+        public List<Trace> getTrace() {
+            List<Trace> traceList = new ArrayList<>();
             for (Trace trace : Trace.values()) {
-                if (trace.getValue() == packet[4]) {
-                    return trace;
+                if (NumberUtils.hasMaskMatch(packet[4], trace.getFlag(), trace.getBitmaskPos())) {
+                    traceList.add(trace);
                 }
             }
-            return null;
+            return traceList;
         }
 
         public double getBatteryVoltage() {
-            return (int) packet[5] + ((int) packet[6]) / 256.0;
+            return (double) packet[5] + ((double) packet[6]) / 0xFF;
         }
 
         public boolean isRequestingDate() {
@@ -52,13 +57,13 @@ public class PacketParser {
 
         @Override
         public int getTagSize() {
-            return packet[8];
+            return 8 < packet.length ? packet[8] : -1;
         }
     }
 
     public static class RioToDsTcp extends Common {
         public RioToDsTcp(byte[] packet) {
-            super(packet, Protocol.TCP, Source.ROBO_RIO, 2);
+            super(packet, Protocol.TCP, Source.ROBO_RIO, 1);
         }
 
         @Override
@@ -82,7 +87,7 @@ public class PacketParser {
 
         public Control getControl() {
             for (Control control : Control.values()) {
-                if (control.getValue() == packet[3]) {
+                if (NumberUtils.hasMaskMatch(packet[3], control.getFlag(), control.getBitmaskPos())) {
                     return control;
                 }
             }
