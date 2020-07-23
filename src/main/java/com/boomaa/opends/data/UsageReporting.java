@@ -12,6 +12,7 @@ public class UsageReporting {
         char[] asChars = new String(ArrayUtils.sliceArr(bytes, 3)).toCharArray();
         String numAssoc = null;
         Mapping mapping = null;
+        int namingCounter = 0;
         for (int i = 0; i < asChars.length; i++) {
             if (asChars[i] == '>' && i + 1 < asChars.length) {
                 mapping = KeyMap.getInstance().get(String.valueOf(asChars[i]) + asChars[++i]);
@@ -65,7 +66,7 @@ public class UsageReporting {
                 }
                 String prefix = mapping.idPrefix.getPrefix();
                 System.out.println(mapping.getName() + " (" + prefix + (prefix.length() != 0 ? " " : "") + concatStr + ")");
-                map.addTo("usage_report_" + i, mapping.getName() + " (" + prefix + (prefix.length() != 0 ? " " : "") + concatStr + ")");
+                map.addTo("Usage Report " + namingCounter++, mapping.getName() + " (" + prefix + (prefix.length() != 0 ? " " : "") + concatStr + ")");
                 mapping = null;
                 numAssoc = null;
             }
@@ -144,18 +145,18 @@ public class UsageReporting {
     public enum IdPrefix {
         NONE(""),
         ZERO(""),
-        LANG_TYPE("Language Type"),
+        LANG_TYPE(""),
         CHANNEL("Channel"),
-        ADXL345("SPI/I2C"),
+        ADXL345(""),
         TRIGGER_INDEX("Trigger Index"),
         PCM_ID("PCM ID"),
         INDEX("Index"),
         FPGA_INDEX("FPGA Index"),
         DEVICE_ADDRESS("Device Address"),
-        FRAMEWORK_TYPE("Framework Type"),
+        FRAMEWORK_TYPE(""),
         PORT("Port"),
-        INSTANCE_NUM("Instance Num"),
-        NUM_MOTORS("Num Motors"),
+        INSTANCE_NUM("Instance"),
+        NUM_MOTORS("Number of Motors"),
         HANDLE("Handle"),
         DEVICE_ID("Device ID"),
         TALON_DEVICE_ID("Talon Device ID"),

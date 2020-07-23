@@ -1,6 +1,9 @@
 package com.boomaa.opends.data.tags;
 
+import com.boomaa.opends.data.Protocol;
+import com.boomaa.opends.data.Source;
 import com.boomaa.opends.data.UsageReporting;
+import com.boomaa.opends.data.holders.AllianceStation;
 import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.NumberUtils;
 
@@ -62,22 +65,66 @@ public enum Tag {
             .addTo("5V", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 2, 4)))
             .addTo("3.3V", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 4, 6)))
     ),
-    //TODO implement ver info parsing
-    VERSION_INFO(0x0A, Protocol.TCP, Source.ROBO_RIO, null),
+    VERSION_INFO(0x0A, Protocol.TCP, Source.ROBO_RIO, (TagBase<String>) (packet, size) -> {
+        TagValueMap<String> map = new TagValueMap<>();
+        String devType = null;
+        switch (NumberUtils.getUInt8(packet[0])) {
+            case 0: devType = "Software"; break;
+            case 2: devType = "CAN Talon"; break;
+            case 8: devType = "PDP"; break;
+            case 9: devType = "PCM"; break;
+        }
+        map.put("Device Type", devType);
+        map.put("ID", String.valueOf(NumberUtils.getUInt8(packet[3])));
+        //TODO implement name and ver to ver info
+        // name (str, 1+n)
+        // ver (str, 1+n)
+        return map;
+    }),
     ERROR_MESSAGE(0x0B, Protocol.TCP, Source.ROBO_RIO, (TagBase<String>) (packet, size) -> new TagValueMap<String>()
             .addTo("Timestamp", String.valueOf(NumberUtils.getFloat(ArrayUtils.sliceArr(packet, 0 ,4))))
             .addTo("Sequence Num", String.valueOf(NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 4, 6))))
             .addTo("Error Code", String.valueOf(NumberUtils.getInt32(ArrayUtils.sliceArr(packet, 6, 10))))
             .addTo("Flag", packet[10] == 0x02 ? "isLVcode" : packet[10] == 0x01 ? "Error" : "None")
-            //TODO implement error message, std output parsing (+ n-length)
+            //TODO implement details, location, callstack to err msg
+            // details (str, 2+n)
+            // location (str, 2+n)
+            // callstack (str, 2+n)
     ),
     STANDARD_OUT(0x0C, Protocol.TCP, Source.ROBO_RIO, (TagBase<String>) (packet, size) -> new TagValueMap<String>()
             .addTo("Timestamp", String.valueOf(NumberUtils.getFloat(ArrayUtils.sliceArr(packet, 0 ,4))))
             .addTo("Sequence Num", String.valueOf(NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 4, 6))))
             .addTo("Message", new String(ArrayUtils.sliceArr(packet, 6)))
     ),
-    TCP_R2D_UNKNOWN(0x0D, Protocol.TCP, Source.ROBO_RIO, (TagBase<Byte>) TagValueMap::passPackets)
-    ;
+    TCP_R2D_UNKNOWN(0x0D, Protocol.TCP, Source.ROBO_RIO, (TagBase<Byte>) TagValueMap::passPackets),
+
+    WPILIB_VER(0x00, Protocol.TCP, Source.FMS, null),
+    RIO_VER(0x01, Protocol.TCP, Source.FMS, null),
+    DS_VER(0x02, Protocol.TCP, Source.FMS, null),
+    PDP_VER(0x03, Protocol.TCP, Source.FMS, null),
+    PCM_VER(0x04, Protocol.TCP, Source.FMS, null),
+    CANJAG_VER(0x05, Protocol.TCP, Source.FMS, null),
+    CANTALON_VER(0x06, Protocol.TCP, Source.FMS, null),
+    THIRD_PARTY_DEVICE_VER(0x07, Protocol.TCP, Source.FMS, null),
+    EVENT_CODE(0x14, Protocol.TCP, Source.FMS, (TagBase<String>) (packet, size) ->
+            TagValueMap.singleton("Event Name", new String(packet))
+    ),
+    STATION_INFO(0x19, Protocol.TCP, Source.FMS, (TagBase<AllianceStation>) (packet, size) -> {
+        String status = "";
+        switch (NumberUtils.getUInt8(packet[1])) {
+            case 0: status = "Good"; break;
+            case 1: status = "Bad"; break;
+            case 2: status = "Waiting"; break;
+        }
+        return TagValueMap.singleton("Alliance Station", AllianceStation.getFromByte(packet[0]).setStatus(status));
+    }),
+    CHALLENGE_QUESTION(0x1A, Protocol.TCP, Source.FMS, (TagBase<Integer>) (packet, size) ->
+            TagValueMap.singleton("Challenge Value", NumberUtils.getUInt16(
+                    ArrayUtils.sliceArr(packet, packet.length - 2, packet.length)))
+    ),
+    GAME_DATA(0x1C, Protocol.TCP, Source.FMS, (TagBase<String>) (packet, size) ->
+            TagValueMap.singleton("Game Data", new String(packet))
+    );
 
     private final int flag;
     private final Protocol protocol;
@@ -107,11 +154,4 @@ public enum Tag {
         return action;
     }
 
-    public enum Source {
-        ROBO_RIO, FMS
-    }
-
-    public enum Protocol {
-        UDP, TCP
-    }
 }
