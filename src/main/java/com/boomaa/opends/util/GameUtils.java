@@ -1,13 +1,10 @@
 package com.boomaa.opends.util;
 
-import com.boomaa.opends.data.PacketParser;
+import com.boomaa.opends.data.receive.parser.Parser2020;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -34,14 +31,14 @@ public class GameUtils {
     }
 
     public static void printtcp(String str) {
-        PacketParser.RioToDsTcp tcp = new PacketParser.RioToDsTcp(decodeHexString(str));
+        Parser2020.RioToDsTcp tcp = new Parser2020.RioToDsTcp(decodeHexString(str));
         if (tcp.getTag().containsKey("Error Code")) {
             System.out.println(tcp.getTag());
         }
     }
 
     public static void printudp(String str) {
-        PacketParser.RioToDsUdp udp = new PacketParser.RioToDsUdp(decodeHexString(str));
+        Parser2020.RioToDsUdp udp = new Parser2020.RioToDsUdp(decodeHexString(str));
 
 //        if (udp.getTag() != null && udp.getTag().values().iterator().next() instanceof Float && !udp.getTag().containsKey("PDP Port 00")) {
             System.out.println(sepHex(str));

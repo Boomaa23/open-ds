@@ -1,22 +1,21 @@
-package com.boomaa.opends.data;
+package com.boomaa.opends.data.send.creator;
 
 import com.boomaa.opends.data.holders.AllianceStation;
 import com.boomaa.opends.data.holders.Control;
 import com.boomaa.opends.data.holders.Request;
-import com.boomaa.opends.data.tags.SendTag;
-import com.boomaa.opends.display.FMSWindow;
+import com.boomaa.opends.data.send.PacketBuilder;
+import com.boomaa.opends.data.send.SendTag;
 import com.boomaa.opends.display.JDEC;
 import com.boomaa.opends.display.PopupBase;
-import com.boomaa.opends.util.SequenceCounter;
+import com.boomaa.opends.display.frames.FMSFrame;
 
-public class PacketCreator implements JDEC {
-    public static final SequenceCounter SEQUENCE_COUNTER = new SequenceCounter();
-
-    public static byte[] dsToRio(SendTag... tags) {
+public class Creator2020 extends PacketCreator implements JDEC {
+    @Override
+    public byte[] dsToRioUdp(SendTag... tags) {
         PacketBuilder builder = getSequenced();
         builder.addInt(0x01);
         int control = (ESTOP_BTN.wasPressed() ? Control.ESTOP.getFlag() : 0)
-                + (PopupBase.isAlive(FMSWindow.class) ? Control.FMS_CONNECTED.getFlag() : 0)
+                + (PopupBase.isAlive(FMSFrame.class) ? Control.FMS_CONNECTED.getFlag() : 0)
                 + (ENABLE_BTN.isSelected() ? Control.ENABLED.getFlag() : 0);
         if (TELEOP_MODE_BTN.isSelected()) {
             control += Control.TELEOP_MODE.getFlag();
@@ -49,7 +48,18 @@ public class PacketCreator implements JDEC {
         return builder.build();
     }
 
-    public static PacketBuilder getSequenced() {
-        return new PacketBuilder().addBytes(SEQUENCE_COUNTER.increment().getBytes());
+    @Override
+    public byte[] dsToRioTcp(SendTag... tags) {
+        return new byte[0];
+    }
+
+    @Override
+    public byte[] dsToFmsUdp(SendTag... tags) {
+        return new byte[0];
+    }
+
+    @Override
+    public byte[] dsToFmsTcp(SendTag... tags) {
+        return new byte[0];
     }
 }

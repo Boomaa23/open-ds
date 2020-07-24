@@ -1,4 +1,4 @@
-package com.boomaa.opends.data;
+package com.boomaa.opends.data.send;
 
 import java.util.ArrayList;
 import java.util.List;

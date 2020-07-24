@@ -1,4 +1,4 @@
-package com.boomaa.opends.display;
+package com.boomaa.opends.display.elements;
 
 import javax.swing.JLabel;
 

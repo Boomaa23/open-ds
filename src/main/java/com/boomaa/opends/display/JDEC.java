@@ -1,5 +1,10 @@
 package com.boomaa.opends.display;
 
+import com.boomaa.opends.display.elements.HideableLabel;
+import com.boomaa.opends.display.elements.OverlayField;
+import com.boomaa.opends.display.elements.StickyButton;
+import com.boomaa.opends.display.frames.MainFrame;
+
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;

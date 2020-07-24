@@ -1,7 +1,19 @@
-package com.boomaa.opends.display;
+package com.boomaa.opends.display.frames;
 
-import javax.swing.*;
-import java.awt.*;
+import com.boomaa.opends.display.DisplayEndpoint;
+import com.boomaa.opends.display.JDEC;
+import com.boomaa.opends.display.TeamNumListener;
+
+import javax.swing.ButtonGroup;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.GridBagLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -11,8 +23,8 @@ import java.net.URISyntaxException;
 public class MainFrame implements JDEC {
     public static void display() {
         CONTENT.setLayout(new GridBagLayout());
-        FMS_BTN.addActionListener((e) -> new FMSWindow());
-        LOG_BTN.addActionListener((e) -> new LogWindow());
+        FMS_BTN.addActionListener((e) -> new FMSFrame());
+        LOG_BTN.addActionListener((e) -> new LogFrame());
         TEAM_NUMBER.getDocument().addDocumentListener(new TeamNumListener());
 
         FRAME.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

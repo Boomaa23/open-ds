@@ -1,4 +1,4 @@
-package com.boomaa.opends.data.tags;
+package com.boomaa.opends.data.receive;
 
 import java.util.HashMap;
 

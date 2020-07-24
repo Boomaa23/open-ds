@@ -1,6 +1,6 @@
 package com.boomaa.opends.data;
 
-import com.boomaa.opends.data.tags.TagValueMap;
+import com.boomaa.opends.data.receive.TagValueMap;
 import com.boomaa.opends.util.ArrayUtils;
 
 import java.util.HashMap;

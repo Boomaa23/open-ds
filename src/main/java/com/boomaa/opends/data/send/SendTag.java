@@ -1,4 +1,4 @@
-package com.boomaa.opends.data.tags;
+package com.boomaa.opends.data.send;
 
 import com.boomaa.opends.data.holders.Date;
 import com.boomaa.opends.data.holders.Protocol;

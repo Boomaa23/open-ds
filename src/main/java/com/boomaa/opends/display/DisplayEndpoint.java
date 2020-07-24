@@ -1,11 +1,13 @@
 package com.boomaa.opends.display;
 
-import com.boomaa.opends.data.PacketCreator;
-import com.boomaa.opends.data.PacketParser;
 import com.boomaa.opends.data.holders.Protocol;
 import com.boomaa.opends.data.holders.Remote;
 import com.boomaa.opends.data.holders.Status;
 import com.boomaa.opends.data.holders.Trace;
+import com.boomaa.opends.data.receive.parser.PacketParser;
+import com.boomaa.opends.data.receive.parser.Parser2020;
+import com.boomaa.opends.data.send.creator.Creator2020;
+import com.boomaa.opends.display.frames.MainFrame;
 import com.boomaa.opends.networking.UDPInterface;
 import com.boomaa.opends.util.Clock;
 import com.boomaa.opends.util.NumberUtils;
@@ -18,9 +20,8 @@ public class DisplayEndpoint implements JDEC {
         @Override
         public void onCycle() {
             if (hasInitialized) {
-                updateDisplayElements(new PacketParser.RioToDsUdp(udpReceieveServer.doReceieve().getBuffer()));
-
-                udpSendServer.doSend(PacketCreator.dsToRio());
+                updateDisplayElements(new Parser2020.RioToDsUdp(udpReceieveServer.doReceieve().getBuffer()));
+                udpSendServer.doSend(new Creator2020().dsToRioUdp());
             }
         }
     };
@@ -42,10 +43,10 @@ public class DisplayEndpoint implements JDEC {
         }
     }
 
-    public static void updateDisplayElements(PacketParser.Common data) {
+    public static void updateDisplayElements(PacketParser data) {
         if (data.getProtocol() == Protocol.UDP) {
             if (data.getRemote() == Remote.ROBO_RIO) {
-                PacketParser.RioToDsUdp rioUdp = (PacketParser.RioToDsUdp) data;
+                Parser2020.RioToDsUdp rioUdp = (Parser2020.RioToDsUdp) data;
                 JDEC.HAS_BROWNOUT.setDisplay(rioUdp.getStatus().contains(Status.ESTOP));
                 JDEC.CODE_INITIALIZING.setDisplay(rioUdp.getStatus().contains(Status.CODE_INIT));
                 JDEC.ROBOT_CODE.setDisplay(rioUdp.getTrace().contains(Trace.ROBOTCODE));

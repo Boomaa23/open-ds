@@ -1,9 +1,9 @@
-package com.boomaa.opends.data.tags;
+package com.boomaa.opends.data.receive;
 
-import com.boomaa.opends.data.holders.Protocol;
-import com.boomaa.opends.data.holders.Remote;
 import com.boomaa.opends.data.UsageReporting;
 import com.boomaa.opends.data.holders.AllianceStation;
+import com.boomaa.opends.data.holders.Protocol;
+import com.boomaa.opends.data.holders.Remote;
 import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.NumberUtils;
 
