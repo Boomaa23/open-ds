@@ -1,5 +1,5 @@
 package com.boomaa.opends.data.tags;
 
-public interface TagBase<T> {
+public interface ReceiveTagBase<T> {
     TagValueMap<T> getValue(byte[] packet, int size);
 }

@@ -36,13 +36,13 @@ public class NumberUtils {
         return out;
     }
 
-    public static boolean hasMaskMatch(byte b, int flag, int... bitmaskPos) {
-        char[] bin = padByteString(Integer.toBinaryString(b)).toCharArray();
+    public static boolean hasMaskMatch(byte data, byte flag, int... bitmaskPos) {
+        char[] bin = padByte(data).toCharArray();
         StringBuilder maskedStr = new StringBuilder();
         boolean putMask = false;
         for (int i = 0; i < bin.length; i++) {
             for (int mask : bitmaskPos) {
-                if (i == mask) {
+                if (!putMask && i == mask) {
                     maskedStr.append(bin[i]);
                     putMask = true;
                 }
@@ -52,23 +52,20 @@ public class NumberUtils {
             }
             putMask = false;
         }
-        return Integer.parseInt(maskedStr.toString(), 2) == flag;
+        return maskedStr.toString().equals(padByte(flag));
     }
 
     public static boolean hasPlacedBit(byte b, int bitmaskPos) {
-        char[] bin = padByteString(Integer.toBinaryString(b)).toCharArray();
-        return bin[bitmaskPos] == 1;
+        return padByte(b).toCharArray()[bitmaskPos] == 1;
     }
 
-    public static String padByteString(String byteStr) {
-        if (byteStr.length() < 8) {
-            StringBuilder sb = new StringBuilder(byteStr);
-            while(sb.length() < 8) {
-                sb.insert(0, "0");
-            }
-            byteStr = sb.toString();
-        }
-        return byteStr;
+    public static String padByte(byte b) {
+        return String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(' ', '0');
+    }
+
+    public static double roundTo(double value, int decimals) {
+        double pow = Math.pow(10, decimals);
+        return Math.round(value * pow) / pow;
     }
 
     // Reverses all the bits in a byte. Used to convert MSB 0 into LSB 0 for button encoding

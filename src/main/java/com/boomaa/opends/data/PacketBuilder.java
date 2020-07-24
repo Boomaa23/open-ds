@@ -4,19 +4,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PacketBuilder {
-    private final List<Byte> packet = new ArrayList<>();
+    protected final List<Byte> packet = new ArrayList<>();
 
     public PacketBuilder() {
     }
 
     public PacketBuilder(byte... init) {
-        for (byte b : init) {
-            packet.add(b);
-        }
+        addBytes(init);
     }
 
-    public void addValue(byte b) {
+    public PacketBuilder addInt(int i) {
+        packet.add((byte) i);
+        return this;
+    }
+
+    public PacketBuilder addByte(byte b) {
         packet.add(b);
+        return this;
+    }
+
+    public PacketBuilder addBytes(byte... bytes) {
+        for (byte b : bytes) {
+            packet.add(b);
+        }
+        return this;
     }
 
     public byte[] build() {

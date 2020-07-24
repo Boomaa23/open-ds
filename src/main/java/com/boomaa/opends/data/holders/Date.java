@@ -3,6 +3,8 @@ package com.boomaa.opends.data.holders;
 import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.NumberUtils;
 
+import java.util.Calendar;
+
 public class Date {
     private final int year; // actual year, exported as # from 1900
     private final int month; // 0-12
@@ -72,6 +74,19 @@ public class Date {
                 NumberUtils.getUInt8(bytes[5]),
                 NumberUtils.getUInt8(bytes[4]),
                 NumberUtils.getUInt32(ArrayUtils.sliceArr(bytes, 0, 4))
+        );
+    }
+
+    public static Date now() {
+        Calendar cal = Calendar.getInstance();
+        return new Date(
+                cal.get(Calendar.YEAR),
+                cal.get(Calendar.MONTH),
+                cal.get(Calendar.DAY_OF_MONTH),
+                cal.get(Calendar.HOUR_OF_DAY),
+                cal.get(Calendar.MINUTE),
+                cal.get(Calendar.SECOND),
+                cal.get(Calendar.MILLISECOND)
         );
     }
 }

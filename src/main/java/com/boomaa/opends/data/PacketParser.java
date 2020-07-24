@@ -1,11 +1,7 @@
 package com.boomaa.opends.data;
 
-import com.boomaa.opends.data.holders.AllianceStation;
-import com.boomaa.opends.data.holders.Control;
-import com.boomaa.opends.data.holders.Date;
-import com.boomaa.opends.data.holders.Status;
-import com.boomaa.opends.data.holders.Trace;
-import com.boomaa.opends.data.tags.Tag;
+import com.boomaa.opends.data.holders.*;
+import com.boomaa.opends.data.tags.ReceiveTag;
 import com.boomaa.opends.data.tags.TagValueMap;
 import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.NumberUtils;
@@ -15,8 +11,11 @@ import java.util.List;
 
 public class PacketParser {
     public static class RioToDsUdp extends Common {
+        private List<Status> statusListGlobal;
+        private List<Trace> traceListGlobal;
+
         public RioToDsUdp(byte[] packet) {
-            super(packet, Protocol.UDP, Source.ROBO_RIO, 8);
+            super(packet, Protocol.UDP, Remote.ROBO_RIO, 8);
         }
 
         public int getSequenceNum() {
@@ -28,22 +27,30 @@ public class PacketParser {
         }
 
         public List<Status> getStatus() {
+            if (statusListGlobal != null) {
+                return statusListGlobal;
+            }
             List<Status> statusList = new ArrayList<>();
             for (Status status : Status.values()) {
                 if (NumberUtils.hasMaskMatch(packet[3], status.getFlag(), status.getBitmaskPos())) {
                     statusList.add(status);
                 }
             }
+            this.statusListGlobal = statusList;
             return statusList;
         }
 
         public List<Trace> getTrace() {
+            if (traceListGlobal != null) {
+                return traceListGlobal;
+            }
             List<Trace> traceList = new ArrayList<>();
             for (Trace trace : Trace.values()) {
                 if (NumberUtils.hasMaskMatch(packet[4], trace.getFlag(), trace.getBitmaskPos())) {
                     traceList.add(trace);
                 }
             }
+            this.traceListGlobal = traceList;
             return traceList;
         }
 
@@ -63,7 +70,7 @@ public class PacketParser {
 
     public static class RioToDsTcp extends Common {
         public RioToDsTcp(byte[] packet) {
-            super(packet, Protocol.TCP, Source.ROBO_RIO, 1);
+            super(packet, Protocol.TCP, Remote.ROBO_RIO, 1);
         }
 
         @Override
@@ -73,8 +80,10 @@ public class PacketParser {
     }
 
     public static class FmsToDsUdp extends Common {
+        private List<Control> controlListGlobal;
+
         public FmsToDsUdp(byte[] packet) {
-            super(packet, Protocol.UDP, Source.FMS, 23);
+            super(packet, Protocol.UDP, Remote.FMS, 23);
         }
 
         public int getSequenceNum() {
@@ -85,13 +94,18 @@ public class PacketParser {
             return packet[2]; //always 0x01
         }
 
-        public Control getControl() {
+        public List<Control> getControl() {
+            if (controlListGlobal != null) {
+                return controlListGlobal;
+            }
+            List<Control> controlList = new ArrayList<>();
             for (Control control : Control.values()) {
-                if (NumberUtils.hasMaskMatch(packet[3], control.getFlag(), control.getBitmaskPos())) {
-                    return control;
+                if (NumberUtils.hasMaskMatch(packet[4], control.getFlag(), control.getBitmaskPos())) {
+                    controlList.add(control);
                 }
             }
-            return null;
+            this.controlListGlobal = controlList;
+            return controlList;
         }
 
         public int getRequest() {
@@ -137,7 +151,7 @@ public class PacketParser {
 
     public static class FmsToDsTcp extends Common {
         public FmsToDsTcp(byte[] packet) {
-            super(packet, Protocol.TCP, Source.FMS, 3);
+            super(packet, Protocol.TCP, Remote.FMS, 3);
         }
 
         @Override
@@ -149,14 +163,23 @@ public class PacketParser {
     public abstract static class Common {
         protected final byte[] packet;
         private final Protocol protocol;
-        private final Source source;
+        private final Remote remote;
         private final int tagStartIndex;
+        private TagValueMap<?> tagValue;
 
-        public Common(byte[] packet, Protocol protocol, Source source, int tagStartIndex) {
+        public Common(byte[] packet, Protocol protocol, Remote remote, int tagStartIndex) {
             this.packet = packet;
             this.protocol = protocol;
-            this.source = source;
+            this.remote = remote;
             this.tagStartIndex = tagStartIndex + 1;
+        }
+
+        public Protocol getProtocol() {
+            return protocol;
+        }
+
+        public Remote getRemote() {
+            return remote;
         }
 
         public abstract int getTagSize();
@@ -169,11 +192,16 @@ public class PacketParser {
         }
 
         public TagValueMap<?> getTag() {
+            if (tagValue != null) {
+                return tagValue;
+            }
             if (tagStartIndex < packet.length) {
-                for (Tag tag : Tag.values()) {
-                    if (tag.getSource() == source && tag.getProtocol() == protocol
+                for (ReceiveTag tag : ReceiveTag.values()) {
+                    if (tag.getRemote() == remote && tag.getProtocol() == protocol
                             && tag.getFlag() == packet[tagStartIndex]) {
-                        return tag.getAction().getValue(ArrayUtils.sliceArr(packet, tagStartIndex), getTagSize());
+                        TagValueMap<?> value = tag.getAction().getValue(ArrayUtils.sliceArr(packet, tagStartIndex), getTagSize());
+                        this.tagValue = value;
+                        return value;
                     }
                 }
             }
