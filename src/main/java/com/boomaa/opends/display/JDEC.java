@@ -5,11 +5,7 @@ import com.boomaa.opends.display.elements.OverlayField;
 import com.boomaa.opends.display.elements.StickyButton;
 import com.boomaa.opends.display.frames.MainFrame;
 
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JRadioButton;
+import javax.swing.*;
 import java.awt.Container;
 import java.awt.GridBagConstraints;
 
@@ -46,11 +42,15 @@ public interface JDEC {
      OverlayField GAME_DATA = new OverlayField("Game Data", 10);
      OverlayField TEAM_NUMBER = new OverlayField("Team Number", 10);
 
+     JComboBox<Integer> PROTOCOL_YEAR = new JComboBox<>(DisplayEndpoint.getValidProtocolYears());
+
+     JCheckBox CONNECT_REAL_FMS = new JCheckBox("Allow FMS Connection");
      JButton FMS_BTN = new JButton("Simulate FMS");
      JButton LOG_BTN = new JButton("Open Log");
 
      JLabel BAT_VOLTAGE = new JLabel("0.00 V");
-     HideableLabel HAS_CONNECTION = new HideableLabel("Connected", false);
+     HideableLabel HAS_ROBOT_CONNECTION = new HideableLabel("Connected", false);
+     HideableLabel HAS_FMS_CONNECTION = new HideableLabel("Connected", false);
      HideableLabel HAS_BROWNOUT = new HideableLabel("Brownout", false);
      HideableLabel CODE_INITIALIZING = new HideableLabel("Code Initializing", false);
      HideableLabel ROBOT_CODE = new HideableLabel("Robot Code Running", false);

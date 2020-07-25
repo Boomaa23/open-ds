@@ -11,7 +11,7 @@ import com.boomaa.opends.display.frames.FMSFrame;
 
 public class Creator2020 extends PacketCreator implements JDEC {
     @Override
-    public byte[] dsToRioUdp(SendTag... tags) {
+    public byte[] dsToRioUdp(SendTag tag) {
         PacketBuilder builder = getSequenced();
         builder.addInt(0x01);
         int control = (ESTOP_BTN.wasPressed() ? Control.ESTOP.getFlag() : 0)
@@ -42,24 +42,35 @@ public class Creator2020 extends PacketCreator implements JDEC {
             allianceSided = 2;
         }
         builder.addInt(new AllianceStation(allianceSided, BLUE_ALLIANCE_BTN.isSelected()).getGlobalNum());
-        for (SendTag tag : tags) {
+        if (tag != null) {
             builder.addBytes(tag.getBytes());
         }
         return builder.build();
     }
 
     @Override
-    public byte[] dsToRioTcp(SendTag... tags) {
+    public byte[] dsToRioTcp(SendTag tag) {
+        if (tag != null) {
+            byte[] tagData = tag.getValue().getTagData();
+            byte[] out = new byte[2 + tagData.length];
+
+            //TODO figure out 2-len size
+            tagData[0] = (byte) (out.length << 8);
+            tagData[1] = (byte) out.length;
+            tagData[2] = (byte) tag.getFlag();
+            System.arraycopy(tagData, 0, out, 3, tagData.length);
+            return out;
+        }
         return new byte[0];
     }
 
     @Override
-    public byte[] dsToFmsUdp(SendTag... tags) {
+    public byte[] dsToFmsUdp(SendTag tag) {
         return new byte[0];
     }
 
     @Override
-    public byte[] dsToFmsTcp(SendTag... tags) {
+    public byte[] dsToFmsTcp(SendTag tag) {
         return new byte[0];
     }
 }

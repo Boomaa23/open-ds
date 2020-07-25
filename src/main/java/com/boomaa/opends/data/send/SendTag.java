@@ -63,6 +63,10 @@ public enum SendTag {
         return remote;
     }
 
+    public SendTagBase getValue() {
+        return value;
+    }
+
     public byte[] getBytes() {
         byte[] tagData = value.getTagData();
         byte[] out = new byte[2 + tagData.length];

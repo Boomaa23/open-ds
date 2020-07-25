@@ -8,55 +8,43 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 
 public class UDPInterface {
-    public static class Send {
-        private DatagramSocket socket;
-        private InetAddress ip;
-        private int port;
+    private DatagramSocket clientSocket;
+    private InetAddress ip;
+    private int clientPort;
+    private DatagramSocket serverSocket;
+    private int bufSize = 1024;
 
-        public Send(String ip, int port) {
-            try {
-                this.ip = InetAddress.getByName(ip);
-                this.port = port;
-                this.socket = new DatagramSocket();
-            } catch (SocketException | UnknownHostException e) {
-                e.printStackTrace();
-            }
-        }
-
-        public void doSend(byte[] data) {
-            try {
-                socket.send(new DatagramPacket(data, data.length, ip, port));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+    public UDPInterface(String clientIp, int clientPort, int serverPort) {
+        try {
+            this.ip = InetAddress.getByName(clientIp);
+            this.clientPort = clientPort;
+            this.clientSocket = new DatagramSocket();
+            this.serverSocket = new DatagramSocket(serverPort);
+        } catch (SocketException | UnknownHostException e) {
+            e.printStackTrace();
         }
     }
 
-    public static class Receive {
-        private DatagramSocket socket;
-        private int bufSize = 1024;
-
-        public Receive(int port) {
-            try {
-                this.socket = new DatagramSocket(port);
-            } catch (SocketException e) {
-                e.printStackTrace();
-            }
+    public void doSend(byte[] data) {
+        try {
+            clientSocket.send(new DatagramPacket(data, data.length, ip, clientPort));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+    }
 
-        public UDPTransform doReceieve() {
-            byte[] buffer = new byte[bufSize];
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-            try {
-                socket.receive(packet);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return new UDPTransform(buffer, packet);
+    public UDPTransform doReceieve() {
+        byte[] buffer = new byte[bufSize];
+        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+        try {
+            serverSocket.receive(packet);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        return new UDPTransform(buffer, packet);
+    }
 
-        public void setBufSize(int bufSize) {
-            this.bufSize = bufSize;
-        }
+    public void setBufSize(int bufSize) {
+        this.bufSize = bufSize;
     }
 }

@@ -45,4 +45,10 @@ public class OverlayField extends JTextField implements FocusListener {
     public String getText() {
         return showingHint ? "" : super.getText();
     }
+
+    @Override
+    public void setText(String t) {
+        showingHint = false;
+        super.setText(t);
+    }
 }
