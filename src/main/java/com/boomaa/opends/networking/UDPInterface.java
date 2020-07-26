@@ -1,11 +1,7 @@
 package com.boomaa.opends.networking;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.net.*;
 
 public class UDPInterface {
     private DatagramSocket clientSocket;
@@ -20,6 +16,7 @@ public class UDPInterface {
             this.clientPort = clientPort;
             this.clientSocket = new DatagramSocket();
             this.serverSocket = new DatagramSocket(serverPort);
+            this.serverSocket.setSoTimeout(100);
         } catch (SocketException | UnknownHostException e) {
             e.printStackTrace();
         }
@@ -38,6 +35,8 @@ public class UDPInterface {
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
         try {
             serverSocket.receive(packet);
+        } catch (SocketTimeoutException e) {
+            return new UDPTransform(new byte[0], packet);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -46,5 +45,10 @@ public class UDPInterface {
 
     public void setBufSize(int bufSize) {
         this.bufSize = bufSize;
+    }
+
+    public void close() {
+        clientSocket.close();
+        serverSocket.close();
     }
 }

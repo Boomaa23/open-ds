@@ -28,7 +28,7 @@ public class TCPInterface {
         return null;
     }
 
-    public void stop() {
+    public void close() {
         try {
             in.close();
             socket.close();

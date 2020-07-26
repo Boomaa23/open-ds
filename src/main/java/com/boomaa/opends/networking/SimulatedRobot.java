@@ -4,8 +4,6 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 public class SimulatedRobot extends TCPServer {
-    UDPInterface udp = new UDPInterface("localhost", 1110, 1150);
-
     public SimulatedRobot() {
         super(1740);
     }

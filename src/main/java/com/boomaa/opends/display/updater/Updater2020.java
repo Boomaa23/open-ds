@@ -8,7 +8,7 @@ import com.boomaa.opends.util.NumberUtils;
 
 public class Updater2020 extends ElementUpdater {
     @Override
-    public void updateFromRioUdp(PacketParser data) {
+    protected void doUpdateFromRioUdp(PacketParser data) {
         Parser2020.RioToDsUdp rioUdp = (Parser2020.RioToDsUdp) data;
         BROWNOUT_STATUS.setDisplay(rioUdp.getStatus().contains(Status.ESTOP));
         if (rioUdp.getTrace().contains(Trace.ROBOTCODE)) {
@@ -25,17 +25,40 @@ public class Updater2020 extends ElementUpdater {
     }
 
     @Override
-    public void updateFromRioTcp(PacketParser data) {
+    protected void doUpdateFromRioTcp(PacketParser data) {
 
     }
 
     @Override
-    public void updateFromFmsUdp(PacketParser data) {
+    protected void doUpdateFromFmsUdp(PacketParser data) {
 
     }
 
     @Override
-    public void updateFromFmsTcp(PacketParser data) {
+    protected void doUpdateFromFmsTcp(PacketParser data) {
+
+    }
+
+    @Override
+    protected void resetDataRioUdp() {
+        BAT_VOLTAGE.setText("0.00 V");
+        ROBOT_CONNECTION_STATUS.forceHide();
+        ROBOT_CODE_STATUS.forceHide();
+        BROWNOUT_STATUS.forceHide();
+    }
+
+    @Override
+    protected void resetDataRioTcp() {
+
+    }
+
+    @Override
+    protected void resetDataFmsUdp() {
+
+    }
+
+    @Override
+    protected void resetDataFmsTcp() {
 
     }
 }

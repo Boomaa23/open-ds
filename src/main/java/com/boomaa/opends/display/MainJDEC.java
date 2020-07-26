@@ -42,7 +42,7 @@ public interface MainJDEC {
 
      JLabel BAT_VOLTAGE = new JLabel("0.00 V");
      HideableLabel ROBOT_CONNECTION_STATUS = new HideableLabel("Connected", false);
-     HideableLabel FMS_CONNECTION_STATUS = new HideableLabel("Connected", true);
-     HideableLabel BROWNOUT_STATUS = new HideableLabel("Voltage", true);
-     MultiValueLabel ROBOT_CODE_STATUS = new MultiValueLabel(true, "Running", "Initializing");
+     HideableLabel FMS_CONNECTION_STATUS = new HideableLabel("Connected", false);
+     HideableLabel BROWNOUT_STATUS = new HideableLabel("Voltage", false);
+     MultiValueLabel ROBOT_CODE_STATUS = new MultiValueLabel(false, "Running", "Initializing");
 }

@@ -16,6 +16,7 @@ public class TeamNumListener implements DocumentListener {
 
     @Override
     public void changedUpdate(DocumentEvent e) {
-        DisplayEndpoint.initServers();
+        SimRobotListener.reload();
+        FMSTypeListener.reload(DisplayEndpoint.BLANK_ITEMEVENT);
     }
 }

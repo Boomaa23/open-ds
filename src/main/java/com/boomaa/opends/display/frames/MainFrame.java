@@ -1,6 +1,5 @@
 package com.boomaa.opends.display.frames;
 
-import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.display.elements.GBCPanelBuilder;
 import com.boomaa.opends.display.listeners.FMSTypeListener;
@@ -71,7 +70,6 @@ public class MainFrame implements MainJDEC {
         FRAME.pack();
         FRAME.setLocationRelativeTo(null);
         FRAME.setVisible(true);
-        DisplayEndpoint.initServers();
     }
 
     public static ButtonGroup createButtonGroup(JRadioButton... buttons) {
