@@ -1,4 +1,6 @@
-package com.boomaa.opends.display;
+package com.boomaa.opends.display.listeners;
+
+import com.boomaa.opends.display.DisplayEndpoint;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;

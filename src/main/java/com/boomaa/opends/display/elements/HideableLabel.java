@@ -3,21 +3,21 @@ package com.boomaa.opends.display.elements;
 import javax.swing.JLabel;
 
 public class HideableLabel extends JLabel {
-    private boolean isDisplayed;
+    private boolean displayed;
 
     public HideableLabel(String text, boolean displayedByDefault) {
         super(text);
         this.setVisible(displayedByDefault);
-        this.isDisplayed = displayedByDefault;
+        this.displayed = displayedByDefault;
     }
 
     public void setDisplay(boolean visible) {
         this.setVisible(visible);
-        isDisplayed = visible;
+        displayed = visible;
     }
 
     public void toggleDisplay() {
-        setDisplay(!isDisplayed);
+        setDisplay(!displayed);
     }
 
     public void forceDisplay() {
@@ -26,5 +26,9 @@ public class HideableLabel extends JLabel {
 
     public void forceHide() {
         setDisplay(false);
+    }
+
+    public boolean isDisplayed() {
+        return displayed;
     }
 }

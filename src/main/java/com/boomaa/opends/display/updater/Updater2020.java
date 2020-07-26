@@ -10,10 +10,17 @@ public class Updater2020 extends ElementUpdater {
     @Override
     public void updateFromRioUdp(PacketParser data) {
         Parser2020.RioToDsUdp rioUdp = (Parser2020.RioToDsUdp) data;
-        HAS_BROWNOUT.setDisplay(rioUdp.getStatus().contains(Status.ESTOP));
-        CODE_INITIALIZING.setDisplay(rioUdp.getStatus().contains(Status.CODE_INIT));
-        ROBOT_CODE.setDisplay(rioUdp.getTrace().contains(Trace.ROBOTCODE));
-        HAS_ROBOT_CONNECTION.setDisplay(rioUdp.getTrace().contains(Trace.ISROBORIO));
+        BROWNOUT_STATUS.setDisplay(rioUdp.getStatus().contains(Status.ESTOP));
+        if (rioUdp.getTrace().contains(Trace.ROBOTCODE)) {
+            ROBOT_CODE_STATUS.changeToDisplay(0, true);
+        } else if (rioUdp.getStatus().contains(Status.CODE_INIT)) {
+            ROBOT_CODE_STATUS.changeToDisplay(1, true);
+        } else {
+            ROBOT_CODE_STATUS.forceHide();
+        }
+        boolean robotConn = rioUdp.getTrace().contains(Trace.ISROBORIO);
+        ROBOT_CONNECTION_STATUS.setDisplay(robotConn);
+        IS_ENABLED.setEnabled(robotConn);
         BAT_VOLTAGE.setText(NumberUtils.roundTo(rioUdp.getBatteryVoltage(), 2) + " V");
     }
 

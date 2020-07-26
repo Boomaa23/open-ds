@@ -5,7 +5,7 @@ import com.boomaa.opends.data.send.SendTag;
 import com.boomaa.opends.util.SequenceCounter;
 
 public abstract class PacketCreator {
-    protected static final SequenceCounter SEQUENCE_COUNTER = new SequenceCounter();
+    protected static final SequenceCounter SEQUENCE_COUNTER = new SequenceCounter(true);
 
     public abstract byte[] dsToRioUdp(SendTag tag);
     public abstract byte[] dsToRioTcp(SendTag tag);

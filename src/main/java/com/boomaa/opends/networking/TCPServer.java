@@ -1,12 +1,13 @@
 package com.boomaa.opends.networking;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public abstract class TCPServer extends Thread {
-    private ServerSocket socket;
-    private boolean closed = false;
+    protected ServerSocket socket;
+    protected boolean closed = false;
 
     public TCPServer(int port) {
         try {
@@ -28,7 +29,6 @@ public abstract class TCPServer extends Thread {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
     }
 
