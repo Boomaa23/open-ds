@@ -20,21 +20,22 @@ public class SimRobotListener extends DisplayEndpoint implements ActionListener 
     public static void reload() {
         try {
             IS_ENABLED.setEnabled(SIMULATE_ROBOT.isSelected());
-            if (RIO_UDP_INTERFACE != null) {
-                RIO_UDP_INTERFACE.close();
-            }
-            if (RIO_TCP_INTERFACE != null) {
-                RIO_TCP_INTERFACE.close();
-            }
-            RIO_UDP_INTERFACE = null;
-            RIO_TCP_INTERFACE = null;
-            if (SIM_ROBOT != null) {
-                SIM_ROBOT.close();
-            }
             if (SIMULATE_ROBOT.isSelected()) {
+                if (RIO_UDP_INTERFACE != null && !RIO_UDP_INTERFACE.isClosed()) {
+                    RIO_UDP_INTERFACE.close();
+                }
+                if (RIO_TCP_INTERFACE != null && !RIO_TCP_INTERFACE.isClosed()) {
+                    RIO_TCP_INTERFACE.close();
+                }
                 SIM_ROBOT = new SimulatedRobot();
                 ROBOT_FRAME = new RobotFrame();
             } else {
+                if (SIM_ROBOT != null && !SIM_ROBOT.isClosed()) {
+                    SIM_ROBOT.close();
+                }
+                if (ROBOT_FRAME != null) {
+                    ROBOT_FRAME.dispose();
+                }
 //                String rioIp = "roboRIO-" + Integer.parseInt(TEAM_NUMBER.getText()) + "-FRC.local";
                 String rioIp = "localhost"; //TODO remove after testing
                 InetAddress.getByName(rioIp);

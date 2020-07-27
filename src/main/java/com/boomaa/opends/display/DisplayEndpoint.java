@@ -42,18 +42,18 @@ public class DisplayEndpoint implements MainJDEC {
                     updaterClass.update();
                     ElementUpdater updater = (ElementUpdater) Class.forName(updaterClass.toString()).getConstructor().newInstance();
                     PacketCreator creator = (PacketCreator) Class.forName(creatorClass.toString()).getConstructor().newInstance();
-                    if (RIO_UDP_INTERFACE != null) {
+                    if (RIO_UDP_INTERFACE != null && !RIO_UDP_INTERFACE.isClosed()) {
                         updater.updateFromRioUdp(getPacketParser("RioToDsUdp", RIO_UDP_INTERFACE.doReceieve().getBuffer()));
                         RIO_UDP_INTERFACE.doSend(creator.dsToRioUdp());
                     }
-                    if (RIO_TCP_INTERFACE != null) {
+                    if (RIO_TCP_INTERFACE != null && !RIO_TCP_INTERFACE.isClosed()) {
                         updater.updateFromRioTcp(getPacketParser("RioToDsTcp", RIO_TCP_INTERFACE.doInteract(creator.dsToRioTcp())));
                     }
-                    if (FMS_UDP_INTERFACE != null) {
+                    if (FMS_UDP_INTERFACE != null && !FMS_UDP_INTERFACE.isClosed()) {
                         updater.updateFromFmsUdp(getPacketParser("FmsToDsUdp", FMS_UDP_INTERFACE.doReceieve().getBuffer()));
                         FMS_UDP_INTERFACE.doSend(creator.dsToFmsUdp());
                     }
-                    if (FMS_TCP_INTERFACE != null) {
+                    if (FMS_TCP_INTERFACE != null && !FMS_TCP_INTERFACE.isClosed()) {
                         updater.updateFromFmsTcp(getPacketParser("FmsToDsTcp", FMS_TCP_INTERFACE.doInteract(creator.dsToFmsTcp())));
                     }
                 } catch (NoSuchMethodException | ClassNotFoundException | IllegalAccessException | InstantiationException | InvocationTargetException e) {

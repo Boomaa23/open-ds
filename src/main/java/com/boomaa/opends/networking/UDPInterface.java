@@ -9,6 +9,7 @@ public class UDPInterface {
     private int clientPort;
     private DatagramSocket serverSocket;
     private int bufSize = 1024;
+    private boolean closed;
 
     public UDPInterface(String clientIp, int clientPort, int serverPort) {
         try {
@@ -23,6 +24,12 @@ public class UDPInterface {
     }
 
     public void doSend(byte[] data) {
+        if (!closed) {
+            doSendAssumedOpen(data);
+        }
+    }
+
+    protected void doSendAssumedOpen(byte[] data) {
         try {
             clientSocket.send(new DatagramPacket(data, data.length, ip, clientPort));
         } catch (IOException e) {
@@ -35,7 +42,7 @@ public class UDPInterface {
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
         try {
             serverSocket.receive(packet);
-        } catch (SocketTimeoutException e) {
+        } catch (SocketTimeoutException | SocketException e) {
             return new UDPTransform(new byte[0], packet);
         } catch (IOException e) {
             e.printStackTrace();
@@ -48,7 +55,12 @@ public class UDPInterface {
     }
 
     public void close() {
+        closed = true;
         clientSocket.close();
         serverSocket.close();
+    }
+
+    public boolean isClosed() {
+        return closed;
     }
 }

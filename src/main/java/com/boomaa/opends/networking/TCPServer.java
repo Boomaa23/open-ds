@@ -34,6 +34,11 @@ public abstract class TCPServer extends Thread {
 
     public void close() {
         this.closed = true;
+        try {
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean isClosed() {
