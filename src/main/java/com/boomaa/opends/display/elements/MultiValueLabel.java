@@ -4,7 +4,7 @@ public class MultiValueLabel extends HideableLabel {
     private final String[] textPossible;
 
     public MultiValueLabel(boolean displayedByDefault, String... textPossible) {
-        super(textPossible[0], displayedByDefault);
+        super(displayedByDefault, textPossible[0]);
         this.textPossible = textPossible;
     }
 

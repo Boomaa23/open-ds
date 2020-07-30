@@ -5,12 +5,11 @@ import com.boomaa.opends.data.holders.Control;
 import com.boomaa.opends.data.holders.Request;
 import com.boomaa.opends.data.send.PacketBuilder;
 import com.boomaa.opends.data.send.SendTag;
-import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.display.PopupBase;
 import com.boomaa.opends.display.RobotMode;
 import com.boomaa.opends.display.frames.FMSFrame;
 
-public class Creator2020 extends PacketCreator implements MainJDEC {
+public class Creator2020 extends PacketCreator {
     @Override
     public byte[] dsToRioUdp(SendTag tag) {
         PacketBuilder builder = getSequenced();

@@ -2,9 +2,10 @@ package com.boomaa.opends.data.send.creator;
 
 import com.boomaa.opends.data.send.PacketBuilder;
 import com.boomaa.opends.data.send.SendTag;
+import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.util.SequenceCounter;
 
-public abstract class PacketCreator {
+public abstract class PacketCreator implements MainJDEC {
     protected static final SequenceCounter SEQUENCE_COUNTER = new SequenceCounter(true);
 
     public abstract byte[] dsToRioUdp(SendTag tag);

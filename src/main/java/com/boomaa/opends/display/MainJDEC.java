@@ -41,8 +41,8 @@ public interface MainJDEC {
      JButton LOG_BTN = new JButton("Open Log");
 
      JLabel BAT_VOLTAGE = new JLabel("0.00 V");
-     HideableLabel ROBOT_CONNECTION_STATUS = new HideableLabel("Connected", false);
-     HideableLabel FMS_CONNECTION_STATUS = new HideableLabel("Connected", false);
-     HideableLabel BROWNOUT_STATUS = new HideableLabel("Voltage", false);
+     HideableLabel ROBOT_CONNECTION_STATUS = new HideableLabel(false, "Connected");
+     HideableLabel FMS_CONNECTION_STATUS = new HideableLabel(false, "Connected");
+     HideableLabel BROWNOUT_STATUS = new HideableLabel(false, "Voltage");
      MultiValueLabel ROBOT_CODE_STATUS = new MultiValueLabel(false, "Running", "Initializing");
 }

@@ -1,6 +1,6 @@
-package com.boomaa.opends.display.listeners;
+package com.boomaa.opends.display;
 
-import com.boomaa.opends.display.DisplayEndpoint;
+import com.boomaa.opends.networking.NetworkReloader;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -16,7 +16,7 @@ public class TeamNumListener implements DocumentListener {
 
     @Override
     public void changedUpdate(DocumentEvent e) {
-        SimRobotListener.reload();
-        FMSTypeListener.reload(DisplayEndpoint.BLANK_ITEMEVENT);
+        NetworkReloader.reloadRio();
+        NetworkReloader.reloadFms();
     }
 }

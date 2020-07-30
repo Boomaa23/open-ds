@@ -5,7 +5,7 @@ import javax.swing.JLabel;
 public class HideableLabel extends JLabel {
     private boolean displayed;
 
-    public HideableLabel(String text, boolean displayedByDefault) {
+    public HideableLabel(boolean displayedByDefault, String text) {
         super(text);
         this.setVisible(displayedByDefault);
         this.displayed = displayedByDefault;
