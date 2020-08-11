@@ -3,6 +3,7 @@ package com.boomaa.opends.networking;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.net.SocketException;
 
@@ -15,6 +16,9 @@ public class TCPInterface {
         try {
             this.socket = new Socket(ip, port);
             this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            socket.setSoTimeout(100);
+        } catch (ConnectException e) {
+            this.closed = true;
         } catch (IOException e) {
             e.printStackTrace();
         }

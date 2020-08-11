@@ -1,25 +1,24 @@
 package com.boomaa.opends.util;
 
 import com.boomaa.opends.data.receive.parser.Parser2020;
+import com.boomaa.opends.usb.USBUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
 
-public class GameUtils {
+public class GameTesting {
     public static byte getAlliance(boolean isBlue, int num) {
         return (byte) (num + (isBlue ? 3 : 0));
     }
 
     public static void main(String[] args) throws URISyntaxException, IOException {
-        List<String> data = Files.readAllLines(Paths.get("C:/Users/Nikhil/Desktop/text.txt"));
-        for (String d : data) {
-            if (!d.isBlank() && !d.isEmpty()) {
-                printudp(d);
-            }
-        }
+        USBUtils.refreshDevices();
+//        List<String> data = Files.readAllLines(Paths.get("C:/Users/Nikhil/Desktop/text.txt"));
+//        for (String d : data) {
+//            if (!d.isBlank() && !d.isEmpty()) {
+//                printudp(d);
+//            }
+//        }
 //        printudp("28 2c 01 04 32 0c 2d 00 22 05 02 42 83 94 5e 00 00 00 00 00 00 00 00 3e ab be 15 42 77 68 81 00 00 00 00 00 00 00 00 3e 96 59 29 ".replaceAll(" ", ""));
 //        printudp("0e7b0180320c5000");
 //        printudp("0df50100310c9200220502426a1dd200000000000000003e93ec7642559b0900000000000000003e862d0d1a080e0300c0381103c0e00441203c180501100481405014ffaf580a090e2d2d2d2d2d2d2d2d");

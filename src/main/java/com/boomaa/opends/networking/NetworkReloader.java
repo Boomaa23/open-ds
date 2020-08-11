@@ -29,12 +29,18 @@ public class NetworkReloader extends DisplayEndpoint {
                 if (ROBOT_FRAME != null) {
                     ROBOT_FRAME.dispose();
                 }
-                String rioIp = "localhost"; //TODO remove after testing, change to AddressConstants.getRioAddress()
+                String rioIp = "localhost"; //TODO remove after testing
+//                String rioIp = AddressConstants.getRioAddress();
                 InetAddress.getByName(rioIp);
+                MainJDEC.IS_ENABLED.setEnabled(true);
                 RIO_UDP_INTERFACE = new UDPInterface(rioIp, AddressConstants.RIO_PORTS.getUdpClient(),  AddressConstants.RIO_PORTS.getUdpServer());
                 RIO_TCP_INTERFACE = new TCPInterface(rioIp, AddressConstants.RIO_PORTS.getTcp());
             }
         } catch (UnknownHostException ignored) {
+            MainJDEC.IS_ENABLED.setEnabled(false);
+            if (MainJDEC.IS_ENABLED.isSelected()) {
+                MainJDEC.IS_ENABLED.setSelected(false);
+            }
         }
     }
 

@@ -78,6 +78,7 @@ public class DisplayEndpoint implements MainJDEC {
         MainFrame.display();
         twentyMsClock.start();
     }
+
     public static PacketParser getPacketParser(String name, byte[] data) {
         try {
             return (PacketParser) Class.forName(parserClass + "$" + name).getConstructor(byte[].class).newInstance(data);
@@ -92,4 +93,6 @@ public class DisplayEndpoint implements MainJDEC {
                 2020
         };
     }
+
+
 }
