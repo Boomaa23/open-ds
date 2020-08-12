@@ -33,8 +33,9 @@ public class NetworkReloader extends DisplayEndpoint {
 //                String rioIp = AddressConstants.getRioAddress();
                 InetAddress.getByName(rioIp);
                 MainJDEC.IS_ENABLED.setEnabled(true);
-                RIO_UDP_INTERFACE = new UDPInterface(rioIp, AddressConstants.RIO_PORTS.getUdpClient(),  AddressConstants.RIO_PORTS.getUdpServer());
-                RIO_TCP_INTERFACE = new TCPInterface(rioIp, AddressConstants.RIO_PORTS.getTcp());
+                PortTriple rioPorts = AddressConstants.getRioPorts();
+                RIO_UDP_INTERFACE = new UDPInterface(rioIp, rioPorts.getUdpClient(), rioPorts.getUdpServer());
+                RIO_TCP_INTERFACE = new TCPInterface(rioIp, rioPorts.getTcp());
             }
         } catch (UnknownHostException ignored) {
             MainJDEC.IS_ENABLED.setEnabled(false);
@@ -67,8 +68,10 @@ public class NetworkReloader extends DisplayEndpoint {
                 if (FMS_FRAME != null) {
                     FMS_FRAME.dispose();
                 }
-                FMS_UDP_INTERFACE = new UDPInterface(AddressConstants.FMS_IP, AddressConstants.FMS_PORTS.getUdpClient(), AddressConstants.FMS_PORTS.getUdpClient());
-                FMS_TCP_INTERFACE = new TCPInterface(AddressConstants.FMS_IP, AddressConstants.FMS_PORTS.getTcp());
+                PortTriple fmsPorts = AddressConstants.getFMSPorts();
+                String fmsIp = AddressConstants.getFMSIp();
+                FMS_UDP_INTERFACE = new UDPInterface(fmsIp, fmsPorts.getUdpClient(), fmsPorts.getUdpClient());
+                FMS_TCP_INTERFACE = new TCPInterface(fmsIp, fmsPorts.getTcp());
                 break;
         }
     }

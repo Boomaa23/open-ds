@@ -6,18 +6,21 @@ import com.boomaa.opends.data.receive.ReceiveTag;
 import com.boomaa.opends.data.receive.TagValueMap;
 import com.boomaa.opends.util.ArrayUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class PacketParser {
     protected final byte[] packet;
     private final Protocol protocol;
     private final Remote remote;
     private final int tagStartIndex;
-    private TagValueMap<?> tagValue;
+    private List<TagValueMap<?>> tagValues = new ArrayList<>();
 
     public PacketParser(byte[] packet, Protocol protocol, Remote remote, int tagStartIndex) {
         this.packet = packet;
         this.protocol = protocol;
         this.remote = remote;
-        this.tagStartIndex = tagStartIndex + 1;
+        this.tagStartIndex = tagStartIndex;
     }
 
     public Protocol getProtocol() {
@@ -28,30 +31,24 @@ public abstract class PacketParser {
         return remote;
     }
 
-    public abstract int getTagSize();
-
-    public int getTagFlag() {
-        if (tagStartIndex < packet.length) {
-            return packet[tagStartIndex];
-        }
-        return -1;
-    }
-
-    public TagValueMap<?> getTag() {
-        if (tagValue != null) {
-            return tagValue;
+    public List<TagValueMap<?>> getTags() {
+        if (tagValues.size() != 0) {
+            return tagValues;
         }
         if (tagStartIndex < packet.length) {
-            for (ReceiveTag tag : ReceiveTag.values()) {
-                if (tag.getRemote() == remote && tag.getProtocol() == protocol
-                        && tag.getFlag() == packet[tagStartIndex]) {
-                    TagValueMap<?> value = tag.getAction().getValue(ArrayUtils.sliceArr(packet, tagStartIndex), getTagSize());
-                    this.tagValue = value;
-                    return value;
+            byte[] tagPacket = ArrayUtils.sliceArr(packet, tagStartIndex);
+            int c = 0;
+            while (c < tagPacket.length) {
+                int size = tagPacket[c];
+                for (ReceiveTag tag : ReceiveTag.values()) {
+                    if (tag.getRemote() == remote && tag.getProtocol() == protocol && tag.getFlag() == tagPacket[c + 1]) {
+                        this.tagValues.add(tag.getAction().getValue(ArrayUtils.sliceArr(tagPacket, c + 2, c + size + 1), size));
+                    }
                 }
+                c += size + 1;
             }
         }
-        return null;
+        return tagValues;
     }
 
     public byte[] getPacket() {

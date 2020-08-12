@@ -11,7 +11,7 @@ import com.boomaa.opends.display.frames.FMSFrame;
 
 public class Creator2020 extends PacketCreator {
     @Override
-    public byte[] dsToRioUdp(SendTag tag) {
+    public byte[] dsToRioUdp() {
         PacketBuilder builder = getSequenced();
         builder.addInt(0x01);
         int control = (ESTOP_BTN.wasPressed() ? Control.ESTOP.getFlag() : 0)
@@ -28,35 +28,43 @@ public class Creator2020 extends PacketCreator {
         }
         builder.addInt(request);
         builder.addInt(new AllianceStation(ALLIANCE_NUM.getSelectedIndex(), ALLIANCE_COLOR.getSelectedItem().equals("Blue")).getGlobalNum());
-        if (tag != null) {
-            builder.addBytes(tag.getBytes());
+
+        if (SEQUENCE_COUNTER.getCounter() <= 10) {
+            builder.addBytes(SendTag.DATE.getBytes());
+            builder.addBytes(SendTag.TIMEZONE.getBytes());
         }
+        if (IS_ENABLED.isSelected()) {
+            builder.addBytes(SendTag.JOYSTICK.getBytes());
+        }
+
         return builder.build();
     }
 
     @Override
-    public byte[] dsToRioTcp(SendTag tag) {
-        if (tag != null) {
-            byte[] tagData = tag.getValue().getTagData();
-            byte[] out = new byte[2 + tagData.length];
-
-            //TODO figure out 2-len size
-            tagData[0] = (byte) (out.length << 8);
-            tagData[1] = (byte) out.length;
-            tagData[2] = (byte) tag.getFlag();
-            System.arraycopy(tagData, 0, out, 3, tagData.length);
-            return out;
-        }
+    public byte[] dsToRioTcp() {
+//        PacketBuilder builder = new PacketBuilder();
+//        for (SendTag tag : tags) {
+//            byte[] tagData = tag.getValue().getTagData();
+//            byte[] out = new byte[2 + tagData.length];
+//
+//            //TODO figure out 2-len size
+//            tagData[0] = (byte) (out.length << 8);
+//            tagData[1] = (byte) out.length;
+//            tagData[2] = (byte) tag.getFlag();
+//            System.arraycopy(tagData, 0, out, 3, tagData.length);
+//            builder.addBytes(out);
+//        }
+//        return builder.build();
         return new byte[0];
     }
 
     @Override
-    public byte[] dsToFmsUdp(SendTag tag) {
+    public byte[] dsToFmsUdp() {
         return new byte[0];
     }
 
     @Override
-    public byte[] dsToFmsTcp(SendTag tag) {
+    public byte[] dsToFmsTcp() {
         return new byte[0];
     }
 }

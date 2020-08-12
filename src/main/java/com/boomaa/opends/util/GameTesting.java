@@ -1,7 +1,7 @@
 package com.boomaa.opends.util;
 
 import com.boomaa.opends.data.receive.parser.Parser2020;
-import com.boomaa.opends.usb.USBUtils;
+import com.boomaa.opends.usb.USBInterface;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -12,7 +12,7 @@ public class GameTesting {
     }
 
     public static void main(String[] args) throws URISyntaxException, IOException {
-        USBUtils.refreshDevices();
+        USBInterface.refreshControllers();
 //        List<String> data = Files.readAllLines(Paths.get("C:/Users/Nikhil/Desktop/text.txt"));
 //        for (String d : data) {
 //            if (!d.isBlank() && !d.isEmpty()) {
@@ -31,9 +31,9 @@ public class GameTesting {
 
     public static void printtcp(String str) {
         Parser2020.RioToDsTcp tcp = new Parser2020.RioToDsTcp(decodeHexString(str));
-        if (tcp.getTag().containsKey("Error Code")) {
-            System.out.println(tcp.getTag());
-        }
+//        if (tcp.getTags().containsKey("Error Code")) {
+//            System.out.println(tcp.getTags());
+//        }
     }
 
     public static void printudp(String str) {
@@ -47,8 +47,8 @@ public class GameTesting {
             System.out.println(udp.getTrace());
             System.out.println(udp.getBatteryVoltage());
             System.out.println(udp.isRequestingDate());
-            System.out.println(udp.getTagSize());
-            System.out.println(udp.getTag());
+//            System.out.println(udp.getTagSize());
+            System.out.println(udp.getTags());
             System.out.println();
 //        }
     }

@@ -59,22 +59,13 @@ public class Parser2020 {
         public boolean isRequestingDate() {
             return packet[7] == 0x01;
         }
-
-        @Override
-        public int getTagSize() {
-            return 8 < packet.length ? packet[8] : -1;
-        }
     }
 
     public static class RioToDsTcp extends PacketParser {
         public RioToDsTcp(byte[] packet) {
             super(packet, Protocol.TCP, Remote.ROBO_RIO, 1);
         }
-
-        @Override
-        public int getTagSize() {
-            return NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 0, 2));
-        }
+        //TODO tag size on TCP is UInt16, not single-byte int
     }
 
     public static class FmsToDsUdp extends PacketParser {
@@ -140,21 +131,12 @@ public class Parser2020 {
         public int getRemainingTime() {
             return NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 21, 23));
         }
-
-        @Override
-        public int getTagSize() {
-            return packet.length - 22;
-        }
     }
 
     public static class FmsToDsTcp extends PacketParser {
         public FmsToDsTcp(byte[] packet) {
-            super(packet, Protocol.TCP, Remote.FMS, 3);
+            super(packet, Protocol.TCP, Remote.FMS, 0);
         }
-
-        @Override
-        public int getTagSize() {
-            return NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 0, 2));
-        }
+        //TODO tag size on TCP is UInt16, not single-byte int
     }
 }

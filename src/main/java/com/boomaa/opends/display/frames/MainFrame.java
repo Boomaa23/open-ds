@@ -28,8 +28,7 @@ public class MainFrame implements MainJDEC {
         }
 
         FRAME.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        FRAME.setPreferredSize(new Dimension(535, 315));
-        FRAME.setResizable(false);
+        FRAME.setResizable(true);
         FRAME.pack();
         FRAME.setLocationRelativeTo(null);
         FRAME.setVisible(true);

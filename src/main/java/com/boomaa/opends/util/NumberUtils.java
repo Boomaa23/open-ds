@@ -17,6 +17,10 @@ public class NumberUtils {
         return (long) ((bytes[3] * Math.pow(256, 3)) + (bytes[2] * Math.pow(256, 2)) + (bytes[1] * 256) + bytes[0]);
     }
 
+    public static int getInt8(double in) {
+        return (int) (in * 127);
+    }
+
     public static int getUInt8(byte num) {
         return num & 0xFF;
     }

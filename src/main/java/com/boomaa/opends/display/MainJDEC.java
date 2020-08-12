@@ -26,9 +26,9 @@ public interface MainJDEC {
      JComboBox<String> ALLIANCE_COLOR = new JComboBox<>(new String[] { "Red", "Blue" });
      JComboBox<Integer> ALLIANCE_NUM = new JComboBox<>(new Integer[] { 1, 2, 3 });
 
-     StickyButton RESTART_CODE_BTN = new StickyButton("Restart Robot Code");
-     StickyButton RESTART_ROBO_RIO_BTN = new StickyButton("Restart RoboRIO");
-     StickyButton ESTOP_BTN = new StickyButton("Emergency Stop");
+     StickyButton RESTART_CODE_BTN = new StickyButton("Restart Robot Code", 10);
+     StickyButton RESTART_ROBO_RIO_BTN = new StickyButton("Restart RoboRIO", 10);
+     StickyButton ESTOP_BTN = new StickyButton("Emergency Stop", 10);
 
      OverlayField GAME_DATA = new OverlayField("Game Data", 6);
      OverlayField TEAM_NUMBER = new OverlayField("Team Number", 6);
@@ -39,6 +39,7 @@ public interface MainJDEC {
      JCheckBox SIMULATE_ROBOT = new JCheckBox("Simulate Robot");
 
      JButton LOG_BTN = new JButton("Open Log");
+     JButton JS_BTN = new JButton("Joysticks");
 
      JLabel BAT_VOLTAGE = new JLabel("0.00 V");
      HideableLabel ROBOT_CONNECTION_STATUS = new HideableLabel(false, "Connected");

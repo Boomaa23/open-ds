@@ -5,7 +5,7 @@ import java.net.Socket;
 
 public class SimulatedRobot extends SimulateBase {
     public SimulatedRobot() {
-        super(AddressConstants.RIO_PORTS, new TCPServer(AddressConstants.RIO_PORTS.getTcp()) {
+        super(AddressConstants.getRioPorts(), new TCPServer(AddressConstants.getRioPorts().getTcp()) {
             @Override
             public void onRun(Socket client, OutputStream out, byte[] data) {
 

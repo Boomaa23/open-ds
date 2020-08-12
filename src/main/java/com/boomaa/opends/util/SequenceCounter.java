@@ -21,4 +21,8 @@ public class SequenceCounter {
     public byte[] getBytes() {
         return new byte[] { (byte) (counter >> 8), (byte) counter };
     }
+
+    public short getCounter() {
+        return counter;
+    }
 }

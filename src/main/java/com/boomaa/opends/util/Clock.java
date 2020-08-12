@@ -1,8 +1,8 @@
 package com.boomaa.opends.util;
 
 public abstract class Clock extends Thread {
-    private final int msToCycle;
-    private boolean done = false;
+    protected final int msToCycle;
+    protected boolean done = false;
 
     public Clock(int msToCycle) {
         this.msToCycle = msToCycle;
@@ -15,8 +15,7 @@ public abstract class Clock extends Thread {
         while (!done) {
             try {
                 Thread.sleep(msToCycle);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            } catch (InterruptedException ignored) {
             }
             onCycle();
         }

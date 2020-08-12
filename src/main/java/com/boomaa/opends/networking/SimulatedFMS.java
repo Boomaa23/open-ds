@@ -5,7 +5,7 @@ import java.net.Socket;
 
 public class SimulatedFMS extends SimulateBase {
     public SimulatedFMS() {
-        super(AddressConstants.FMS_PORTS, new TCPServer(AddressConstants.FMS_PORTS.getTcp()) {
+        super(AddressConstants.getFMSPorts(), new TCPServer(AddressConstants.getFMSPorts().getTcp()) {
             @Override
             public void onRun(Socket client, OutputStream out, byte[] data) {
 

@@ -11,6 +11,7 @@ import com.boomaa.opends.networking.SimulatedFMS;
 import com.boomaa.opends.networking.SimulatedRobot;
 import com.boomaa.opends.networking.TCPInterface;
 import com.boomaa.opends.networking.UDPInterface;
+import com.boomaa.opends.usb.USBInterface;
 import com.boomaa.opends.util.Clock;
 
 import java.lang.reflect.InvocationTargetException;
@@ -33,6 +34,7 @@ public class DisplayEndpoint implements MainJDEC {
         @Override
         public void onCycle() {
             if (HAS_INITIALIZED) {
+                USBInterface.updateValues();
                 try {
                     parserClass.update();
                     creatorClass.update();
@@ -93,6 +95,4 @@ public class DisplayEndpoint implements MainJDEC {
                 2020
         };
     }
-
-
 }

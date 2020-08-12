@@ -1,26 +1,28 @@
 package com.boomaa.opends.display.elements;
 
-import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.display.frames.MainFrame;
 
 import javax.swing.JPanel;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 
 public class GBCPanelBuilder {
+    private final Container build;
     private final GridBagConstraints gbc;
 
-    public GBCPanelBuilder(GridBagConstraints gbc) {
+    public GBCPanelBuilder(Container build, GridBagConstraints gbc) {
+        this.build = build;
         this.gbc = gbc;
     }
 
-    public GBCPanelBuilder(GBCPanelBuilder panel) {
-        this(panel.getGridBagConstraints());
+    public GBCPanelBuilder(Container build, GBCPanelBuilder panel) {
+        this(build, panel.getGridBagConstraints());
     }
 
-    public GBCPanelBuilder() {
-        this(new GridBagConstraints());
+    public GBCPanelBuilder(Container build) {
+        this(build, new GridBagConstraints());
     }
 
     public GBCPanelBuilder setPos(int x, int y, int width, int height) {
@@ -68,14 +70,14 @@ public class GBCPanelBuilder {
 
     public void build(Component... comps) {
         if (comps.length > 1) {
-            MainJDEC.CONTENT.add(MainFrame.addToPanel(new JPanel(), comps), gbc);
+            build.add(MainFrame.addToPanel(new JPanel(), comps), gbc);
         } else {
-            MainJDEC.CONTENT.add(comps[0], gbc);
+            build.add(comps[0], gbc);
         }
     }
 
     public GBCPanelBuilder clone() {
-        return new GBCPanelBuilder()
+        return new GBCPanelBuilder(build)
                 .setX(gbc.gridx).setY(gbc.gridy)
                 .setWidth(gbc.gridwidth).setHeight(gbc.gridheight)
                 .setAnchor(gbc.anchor).setFill(gbc.fill).setInsets(gbc.insets);

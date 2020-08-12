@@ -3,6 +3,9 @@ package com.boomaa.opends.data.send;
 import com.boomaa.opends.data.holders.Date;
 import com.boomaa.opends.data.holders.Protocol;
 import com.boomaa.opends.data.holders.Remote;
+import com.boomaa.opends.usb.Joystick;
+import com.boomaa.opends.usb.USBInterface;
+import com.boomaa.opends.util.NumberUtils;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -10,7 +13,21 @@ import java.util.List;
 
 public enum SendTag {
     COUNTDOWN(0x07, Protocol.UDP, Remote.ROBO_RIO, null),
-    JOYSTICK(0x0C, Protocol.UDP, Remote.ROBO_RIO, null),
+    JOYSTICK(0x0C, Protocol.UDP, Remote.ROBO_RIO, () -> {
+        PacketBuilder builder = new PacketBuilder();
+        for (Joystick js : USBInterface.getJoysticks()) {
+            builder.addInt(3); //3 axes
+            builder.addInt(NumberUtils.getInt8(js.getX()));
+            builder.addInt(NumberUtils.getInt8(js.getY()));
+            builder.addInt(NumberUtils.getInt8(js.getZ()));
+            builder.addInt(js.numButtons());
+            for (int i = 0; i < js.numButtons(); i++) {
+                //TODO add LSB 0 mapping and button bit encoding
+            }
+            //TODO does the joystick "POV" matter?
+        }
+        return builder.build();
+    }),
     DATE(0x0F, Protocol.UDP, Remote.ROBO_RIO, () -> Date.now().toBytes()),
     TIMEZONE(0x10, Protocol.UDP, Remote.ROBO_RIO, () -> Calendar.getInstance().getTimeZone().getDisplayName().getBytes()),
 

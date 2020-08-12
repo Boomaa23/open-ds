@@ -1,4 +1,4 @@
-package com.boomaa.opends.util;
+package com.boomaa.opends.usb;
 
 public enum JoystickType {
     UNKNOWN(-1),
