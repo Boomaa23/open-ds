@@ -12,13 +12,9 @@ public class NumberUtils {
         return ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getInt();
     }
 
-    public static long getUInt32(byte[] bytes) {
+    public static int getUInt32(byte[] bytes) {
         //TODO make this work correctly
-        return (long) ((bytes[3] * Math.pow(256, 3)) + (bytes[2] * Math.pow(256, 2)) + (bytes[1] * 256) + bytes[0]);
-    }
-
-    public static int getInt8(double in) {
-        return (int) (in * 127);
+        return (int) ((bytes[3] * Math.pow(256, 3)) + (bytes[2] * Math.pow(256, 2)) + (bytes[1] * 256) + bytes[0]);
     }
 
     public static int getUInt8(byte num) {
@@ -38,6 +34,14 @@ public class NumberUtils {
         // make this work correctly
         // ref https://frcture.readthedocs.io/en/latest/driverstation/rio_to_ds.html#pdp-log-0x08
         return out;
+    }
+
+    public static byte[] jIntToByteArray(int in) {
+        return ByteBuffer.allocate(4).putInt(in).array();
+    }
+
+    public static int dblToInt8(double in) {
+        return (int) (in * 127);
     }
 
     public static boolean hasMaskMatch(byte data, byte flag, int... bitmaskPos) {
@@ -66,10 +70,35 @@ public class NumberUtils {
     public static String padByte(byte b) {
         return String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(' ', '0');
     }
+    public static String padNumber(double value, int decimals) {
+        String strVal = String.valueOf(value);
+        StringBuilder sb = new StringBuilder(strVal);
+        int indPDec = strVal.indexOf('.');
+        if (indPDec != -1) {
+            for (int i = sb.length() - indPDec - 1; i < decimals; i++) {
+                sb.append('0');
+            }
+        }
+        return sb.toString();
+    }
 
     public static double roundTo(double value, int decimals) {
         double pow = Math.pow(10, decimals);
         return Math.round(value * pow) / pow;
+    }
+
+    //TODO test that this works
+    public static byte[] packBools(boolean[] bools) {
+        int len = bools.length;
+        int bytes = len >> 3;
+        if ((len & 0x07) != 0) ++bytes;
+        byte[] arr2 = new byte[bytes];
+        for (int i = 0; i < bools.length; i++) {
+            if (bools[i]) {
+                arr2[i >> 3] |= (byte) reverseByte(1 << (i & 0x07));
+            }
+        }
+        return arr2;
     }
 
     // Reverses all the bits in a byte. Used to convert MSB 0 into LSB 0 for button encoding

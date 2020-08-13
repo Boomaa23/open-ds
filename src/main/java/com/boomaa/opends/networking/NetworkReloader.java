@@ -32,7 +32,6 @@ public class NetworkReloader extends DisplayEndpoint {
                 String rioIp = "localhost"; //TODO remove after testing
 //                String rioIp = AddressConstants.getRioAddress();
                 InetAddress.getByName(rioIp);
-                MainJDEC.IS_ENABLED.setEnabled(true);
                 PortTriple rioPorts = AddressConstants.getRioPorts();
                 RIO_UDP_INTERFACE = new UDPInterface(rioIp, rioPorts.getUdpClient(), rioPorts.getUdpServer());
                 RIO_TCP_INTERFACE = new TCPInterface(rioIp, rioPorts.getTcp());

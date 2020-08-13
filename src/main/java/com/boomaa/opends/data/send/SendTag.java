@@ -3,7 +3,9 @@ package com.boomaa.opends.data.send;
 import com.boomaa.opends.data.holders.Date;
 import com.boomaa.opends.data.holders.Protocol;
 import com.boomaa.opends.data.holders.Remote;
+import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.usb.Joystick;
+import com.boomaa.opends.usb.JoystickType;
 import com.boomaa.opends.usb.USBInterface;
 import com.boomaa.opends.util.NumberUtils;
 
@@ -16,24 +18,39 @@ public enum SendTag {
     JOYSTICK(0x0C, Protocol.UDP, Remote.ROBO_RIO, () -> {
         PacketBuilder builder = new PacketBuilder();
         for (Joystick js : USBInterface.getJoysticks()) {
-            builder.addInt(3); //3 axes
-            builder.addInt(NumberUtils.getInt8(js.getX()));
-            builder.addInt(NumberUtils.getInt8(js.getY()));
-            builder.addInt(NumberUtils.getInt8(js.getZ()));
+            builder.addInt(js.numAxes()); //3 axes
+            builder.addInt(NumberUtils.dblToInt8(js.getX()));
+            builder.addInt(NumberUtils.dblToInt8(js.getY()));
+            builder.addInt(NumberUtils.dblToInt8(js.getZ()));
             builder.addInt(js.numButtons());
-            for (int i = 0; i < js.numButtons(); i++) {
-                //TODO add LSB 0 mapping and button bit encoding
-            }
-            //TODO does the joystick "POV" matter?
+            builder.addBytes(NumberUtils.packBools(js.getButtons()));
+            builder.addInt(0); //povCount
         }
         return builder.build();
     }),
-    DATE(0x0F, Protocol.UDP, Remote.ROBO_RIO, () -> Date.now().toBytes()),
+    DATE(0x0F, Protocol.UDP, Remote.ROBO_RIO, () -> Date.now().toSendBytes()),
     TIMEZONE(0x10, Protocol.UDP, Remote.ROBO_RIO, () -> Calendar.getInstance().getTimeZone().getDisplayName().getBytes()),
 
-    JOYSTICK_DESC(0x02, Protocol.TCP, Remote.ROBO_RIO, null),
+    JOYSTICK_DESC(0x02, Protocol.TCP, Remote.ROBO_RIO, () -> {
+        PacketBuilder builder = new PacketBuilder();
+        List<Joystick> js = USBInterface.getJoysticks();
+        for (int i = 0; i < js.size() && i < Joystick.MAX_JS_NUM; i++) {
+            builder.addInt(i);
+            builder.addInt(0); //isXbox
+            builder.addInt(JoystickType.HID_JOYSTICK.numAsInt());
+            //TODO make sure this controller name-getting works VVV
+            builder.addBytes(js.get(i).getController().getName().getBytes());
+            builder.addInt(js.get(i).numAxes()); //numAxes
+            builder.addInt(JoystickType.Axis.X.getInt());
+            builder.addInt(JoystickType.Axis.Y.getInt());
+            builder.addInt(JoystickType.Axis.Z.getInt());
+            builder.addInt(js.get(i).numButtons());
+            builder.addInt(0); //povCount
+        }
+        return builder.build();
+    }),
     MATCH_INFO(0x07, Protocol.TCP, Remote.ROBO_RIO, null),
-    GAME_DATA(0x0E, Protocol.TCP, Remote.ROBO_RIO, null),
+    GAME_DATA(0x0E, Protocol.TCP, Remote.ROBO_RIO, () -> MainJDEC.GAME_DATA.getText().getBytes()),
 
     FIELD_RADIO_METRICS(0x00, Protocol.UDP, Remote.FMS, null),
     COMMS_METRICS(0x01, Protocol.UDP, Remote.FMS, null),
@@ -86,11 +103,20 @@ public enum SendTag {
 
     public byte[] getBytes() {
         byte[] tagData = value.getTagData();
-        byte[] out = new byte[2 + tagData.length];
+        int dataPos = protocol == Protocol.TCP ? 3 : 2;
 
-        tagData[0] = (byte) tagData.length;
-        tagData[1] = (byte) flag;
-        System.arraycopy(tagData, 0, out, 2, tagData.length);
+        byte[] out = new byte[dataPos + tagData.length];
+        if (protocol == Protocol.UDP) {
+            out[0] = (byte) (tagData.length + 1);
+        } else if (protocol == Protocol.TCP) {
+            int lenAll = tagData.length + 1;
+            out[0] = (byte) (lenAll & 0xFF);
+            out[1] = (byte) ((lenAll >>> 8) & 0xFF);
+        }
+
+
+        out[dataPos - 1] = (byte) flag;
+        System.arraycopy(tagData, 0, out, dataPos, tagData.length);
         return out;
     }
 

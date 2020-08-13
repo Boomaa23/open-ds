@@ -6,15 +6,15 @@ import com.boomaa.opends.data.receive.ReceiveTag;
 import com.boomaa.opends.data.receive.TagValueMap;
 import com.boomaa.opends.util.ArrayUtils;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class PacketParser {
     protected final byte[] packet;
     private final Protocol protocol;
     private final Remote remote;
     private final int tagStartIndex;
-    private List<TagValueMap<?>> tagValues = new ArrayList<>();
+    private Map<ReceiveTag, TagValueMap<?>> tagValues = new HashMap<>();
 
     public PacketParser(byte[] packet, Protocol protocol, Remote remote, int tagStartIndex) {
         this.packet = packet;
@@ -31,7 +31,9 @@ public abstract class PacketParser {
         return remote;
     }
 
-    public List<TagValueMap<?>> getTags() {
+    public abstract int getTagSize(int index);
+
+    public Map<ReceiveTag, TagValueMap<?>> getTags() {
         if (tagValues.size() != 0) {
             return tagValues;
         }
@@ -39,10 +41,10 @@ public abstract class PacketParser {
             byte[] tagPacket = ArrayUtils.sliceArr(packet, tagStartIndex);
             int c = 0;
             while (c < tagPacket.length) {
-                int size = tagPacket[c];
+                int size = getTagSize(c + tagStartIndex);
                 for (ReceiveTag tag : ReceiveTag.values()) {
                     if (tag.getRemote() == remote && tag.getProtocol() == protocol && tag.getFlag() == tagPacket[c + 1]) {
-                        this.tagValues.add(tag.getAction().getValue(ArrayUtils.sliceArr(tagPacket, c + 2, c + size + 1), size));
+                        this.tagValues.put(tag, tag.getAction().getValue(ArrayUtils.sliceArr(tagPacket, c + 2, c + size + 1), size).setBaseTag(tag));
                     }
                 }
                 c += size + 1;

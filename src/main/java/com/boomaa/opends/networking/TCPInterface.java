@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 
 public class TCPInterface {
     private Socket socket;
@@ -28,7 +29,7 @@ public class TCPInterface {
         try {
             socket.getOutputStream().write(data);
             return in.readLine().getBytes();
-        } catch (SocketException e) {
+        } catch (SocketException | SocketTimeoutException e) {
             return new byte[0];
         } catch (IOException e) {
             e.printStackTrace();

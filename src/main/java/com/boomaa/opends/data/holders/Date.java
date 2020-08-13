@@ -1,5 +1,6 @@
 package com.boomaa.opends.data.holders;
 
+import com.boomaa.opends.data.send.PacketBuilder;
 import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.NumberUtils;
 
@@ -12,9 +13,9 @@ public class Date {
     private final int hour;
     private final int minute;
     private final int second;
-    private final long microsecond;
+    private final int microsecond;
 
-    public Date(int year, int month, int day, int hour, int minute, int second, long microsecond) {
+    public Date(int year, int month, int day, int hour, int minute, int second, int microsecond) {
         this.year = year;
         this.month = month;
         this.day = day;
@@ -56,18 +57,25 @@ public class Date {
         return second;
     }
 
-    public long getMicrosecond() {
+    public int getMicrosecond() {
         return microsecond;
     }
 
-    public byte[] toBytes() {
-        //TODO implement to-bytes solution
-        return null;
+    public byte[] toSendBytes() {
+        PacketBuilder builder = new PacketBuilder();
+        builder.addBytes(NumberUtils.jIntToByteArray(microsecond));
+        builder.addInt(second);
+        builder.addInt(minute);
+        builder.addInt(hour);
+        builder.addInt(day);
+        builder.addInt(month);
+        builder.addInt(getAdjustedYear());
+        return builder.build();
     }
 
-    public static Date fromBytes(byte[] bytes) {
+    public static Date fromRecvBytes(byte[] bytes) {
         return new Date(
-                NumberUtils.getUInt8(bytes[9]),
+                NumberUtils.getUInt8(bytes[9]) + 1900,
                 NumberUtils.getUInt8(bytes[8]),
                 NumberUtils.getUInt8(bytes[7]),
                 NumberUtils.getUInt8(bytes[6]),
@@ -86,7 +94,7 @@ public class Date {
                 cal.get(Calendar.HOUR_OF_DAY),
                 cal.get(Calendar.MINUTE),
                 cal.get(Calendar.SECOND),
-                cal.get(Calendar.MILLISECOND)
+                cal.get(Calendar.MILLISECOND) * 1000
         );
     }
 }

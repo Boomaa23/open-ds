@@ -59,13 +59,22 @@ public class Parser2020 {
         public boolean isRequestingDate() {
             return packet[7] == 0x01;
         }
+
+        @Override
+        public int getTagSize(int index) {
+            return packet[index];
+        }
     }
 
     public static class RioToDsTcp extends PacketParser {
         public RioToDsTcp(byte[] packet) {
-            super(packet, Protocol.TCP, Remote.ROBO_RIO, 1);
+            super(packet, Protocol.TCP, Remote.ROBO_RIO, 0);
         }
-        //TODO tag size on TCP is UInt16, not single-byte int
+
+        @Override
+        public int getTagSize(int index) {
+            return NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, index, index + 2));
+        }
     }
 
     public static class FmsToDsUdp extends PacketParser {
@@ -125,11 +134,16 @@ public class Parser2020 {
         }
 
         public Date getDate() {
-            return Date.fromBytes(ArrayUtils.sliceArr(packet, 10, 21));
+            return Date.fromRecvBytes(ArrayUtils.sliceArr(packet, 10, 21));
         }
 
         public int getRemainingTime() {
             return NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 21, 23));
+        }
+
+        @Override
+        public int getTagSize(int index) {
+            return packet[index];
         }
     }
 
@@ -137,6 +151,10 @@ public class Parser2020 {
         public FmsToDsTcp(byte[] packet) {
             super(packet, Protocol.TCP, Remote.FMS, 0);
         }
-        //TODO tag size on TCP is UInt16, not single-byte int
+
+        @Override
+        public int getTagSize(int index) {
+            return NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, index, index + 2));
+        }
     }
 }

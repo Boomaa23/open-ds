@@ -13,34 +13,38 @@ public abstract class PopupBase extends JFrame {
     protected Container content;
 
     public PopupBase() {
-        this("PopupBase", new Dimension(640, 480), false, true);
+        this("PopupBase", new Dimension(640, 480));
     }
 
-    public PopupBase(String title, Dimension dimension, boolean resizable, boolean center) {
+    public PopupBase(String title, Dimension dimension) {
         super(title);
         alive.add(this.getClass());
         this.content = this.getContentPane();
         config();
-        display(dimension, resizable, center);
+        display(dimension);
     }
 
     public void config() {
         //default config goes here
         this.setIconImage(MainFrame.FIRST_LOGO);
+        this.setLocationRelativeTo(null);
+        this.setResizable(true);
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 
-    public void display(Dimension dimension, boolean resizable, boolean center) {
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    public void display(Dimension dimension) {
         this.setPreferredSize(dimension);
-        this.setResizable(resizable);
         this.pack();
-        if (center) {
-            this.setLocationRelativeTo(null);
-        }
         this.setVisible(true);
     }
 
     public static boolean isAlive(Class<?> clazz) {
         return alive.contains(clazz);
+    }
+
+    @Override
+    public void dispose() {
+        alive.remove(this.getClass());
+        super.dispose();
     }
 }

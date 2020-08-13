@@ -15,8 +15,9 @@ public class StickyButton extends JButton {
 
     public boolean wasPressed() {
         if (wasPressed) {
-            if (++useCount >= stickyDuration) {
+            if (++useCount > stickyDuration) {
                 wasPressed = false;
+                useCount = 0;
             } else {
                 return true;
             }

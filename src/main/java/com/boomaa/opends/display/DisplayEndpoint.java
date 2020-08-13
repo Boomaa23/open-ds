@@ -13,6 +13,7 @@ import com.boomaa.opends.networking.TCPInterface;
 import com.boomaa.opends.networking.UDPInterface;
 import com.boomaa.opends.usb.USBInterface;
 import com.boomaa.opends.util.Clock;
+import com.boomaa.opends.util.InitChecker;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -25,22 +26,24 @@ public class DisplayEndpoint implements MainJDEC {
     public static SimulatedFMS SIM_FMS;
     public static RobotFrame ROBOT_FRAME;
     public static FMSFrame FMS_FRAME;
+    private static ElementUpdater updater;
+    private static PacketCreator creator;
     private static ProtocolClass parserClass = new ProtocolClass("com.boomaa.opends.data.receive.parser.Parser");
     private static ProtocolClass creatorClass = new ProtocolClass("com.boomaa.opends.data.send.creator.Creator");
     private static ProtocolClass updaterClass = new ProtocolClass("com.boomaa.opends.display.updater.Updater");
-    public static boolean HAS_INITIALIZED = false;
+    public static InitChecker HAS_INITIALIZED = new InitChecker();
 
     private static final Clock twentyMsClock = new Clock(20) {
         @Override
         public void onCycle() {
-            if (HAS_INITIALIZED) {
+            if (HAS_INITIALIZED.getRio()) {
                 USBInterface.updateValues();
                 try {
                     parserClass.update();
                     creatorClass.update();
                     updaterClass.update();
-                    ElementUpdater updater = (ElementUpdater) Class.forName(updaterClass.toString()).getConstructor().newInstance();
-                    PacketCreator creator = (PacketCreator) Class.forName(creatorClass.toString()).getConstructor().newInstance();
+                    updater = (ElementUpdater) Class.forName(updaterClass.toString()).getConstructor().newInstance();
+                    creator = (PacketCreator) Class.forName(creatorClass.toString()).getConstructor().newInstance();
                     if (SIM_ROBOT != null && !SIM_ROBOT.isClosed()) {
                         updater.updateFromRioUdp(getPacketParser("RioToDsUdp", SIM_ROBOT.doLoopbackUDPSend(creator.dsToRioUdp()).getBuffer()));
                         updater.updateFromRioTcp(getPacketParser("RioToDsTcp", SIM_ROBOT.doLoopbackTCPSend(creator.dsToRioTcp())));
@@ -53,32 +56,43 @@ public class DisplayEndpoint implements MainJDEC {
                             updater.updateFromRioTcp(getPacketParser("RioToDsTcp", RIO_TCP_INTERFACE.doInteract(creator.dsToRioTcp())));
                         }
                     }
-                    if (SIM_FMS != null && !SIM_FMS.isClosed()) {
-                        updater.updateFromFmsUdp(getPacketParser("FmsToDsUdp", FMS_UDP_INTERFACE.doReceieve().getBuffer()));
-                        updater.updateFromFmsTcp(getPacketParser("FmsToDsTcp", FMS_TCP_INTERFACE.doInteract(creator.dsToFmsTcp())));
-                    } else {
-                        if (FMS_UDP_INTERFACE != null && !FMS_UDP_INTERFACE.isClosed()) {
-                            updater.updateFromFmsUdp(getPacketParser("FmsToDsUdp", FMS_UDP_INTERFACE.doReceieve().getBuffer()));
-                            FMS_UDP_INTERFACE.doSend(creator.dsToFmsUdp());
-                        }
-                        if (FMS_TCP_INTERFACE != null && !FMS_TCP_INTERFACE.isClosed()) {
-                            updater.updateFromFmsTcp(getPacketParser("FmsToDsTcp", FMS_TCP_INTERFACE.doInteract(creator.dsToFmsTcp())));
-                        }
-                    }
                 } catch (NoSuchMethodException | ClassNotFoundException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
                     e.printStackTrace();
                 }
             } else {
                 NetworkReloader.reloadRio();
+                HAS_INITIALIZED.setRio(true);
+            }
+        }
+    };
+    private static final Clock fiveHundredMsClock = new Clock(500) {
+        @Override
+        public void onCycle() {
+            if (HAS_INITIALIZED.getFms()) {
+                if (SIM_FMS != null && !SIM_FMS.isClosed()) {
+                    updater.updateFromFmsUdp(getPacketParser("FmsToDsUdp", FMS_UDP_INTERFACE.doReceieve().getBuffer()));
+                    updater.updateFromFmsTcp(getPacketParser("FmsToDsTcp", FMS_TCP_INTERFACE.doInteract(creator.dsToFmsTcp())));
+                } else {
+                    if (FMS_UDP_INTERFACE != null && !FMS_UDP_INTERFACE.isClosed()) {
+                        updater.updateFromFmsUdp(getPacketParser("FmsToDsUdp", FMS_UDP_INTERFACE.doReceieve().getBuffer()));
+                        FMS_UDP_INTERFACE.doSend(creator.dsToFmsUdp());
+                    }
+                    if (FMS_TCP_INTERFACE != null && !FMS_TCP_INTERFACE.isClosed()) {
+                        updater.updateFromFmsTcp(getPacketParser("FmsToDsTcp", FMS_TCP_INTERFACE.doInteract(creator.dsToFmsTcp())));
+                    }
+                }
+            } else {
                 NetworkReloader.reloadFms();
-                HAS_INITIALIZED = true;
+                HAS_INITIALIZED.setFms(true);
             }
         }
     };
 
     public static void main(String[] args) {
+        Logger.build();
         MainFrame.display();
         twentyMsClock.start();
+        fiveHundredMsClock.start();
     }
 
     public static PacketParser getPacketParser(String name, byte[] data) {

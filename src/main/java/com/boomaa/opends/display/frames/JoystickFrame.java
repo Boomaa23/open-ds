@@ -2,6 +2,7 @@ package com.boomaa.opends.display.frames;
 
 import com.boomaa.opends.display.PopupBase;
 import com.boomaa.opends.display.elements.GBCPanelBuilder;
+import com.boomaa.opends.display.elements.StickyButton;
 import com.boomaa.opends.usb.Joystick;
 import com.boomaa.opends.usb.USBInterface;
 import com.boomaa.opends.util.Clock;
@@ -17,11 +18,13 @@ public class JoystickFrame extends PopupBase {
     private ValUpdater valUpdater;
 
     public JoystickFrame() {
-        super("Joysticks", new Dimension(310, 210), true, true);
+        super("Joysticks", new Dimension(310, 210));
     }
 
     @Override
     public void config() {
+        super.config();
+        super.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         content.setLayout(new GridBagLayout());
         GBCPanelBuilder base = new GBCPanelBuilder(content).setFill(GridBagConstraints.BOTH).setAnchor(GridBagConstraints.CENTER).setInsets(new Insets(5, 5, 5, 5));
 
@@ -45,6 +48,7 @@ public class JoystickFrame extends PopupBase {
             }
         });
         EmbeddedJDEC.RELOAD_BTN.addActionListener(e -> refreshControllerDisplay());
+        EmbeddedJDEC.CLOSE_BTN.addActionListener(e -> this.dispose());
 
         base.clone().setPos(0, 0, 1, 1).build(EmbeddedJDEC.UP_BTN);
         base.clone().setPos(0, 1, 1, 1).build(EmbeddedJDEC.DOWN_BTN);
@@ -59,11 +63,12 @@ public class JoystickFrame extends PopupBase {
         base.clone().setPos(4, 1, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.VAL_Y);
         base.clone().setPos(4, 2, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.VAL_Z);
 
+        base.clone().setPos(0, 3, 5, 1).build(EmbeddedJDEC.CLOSE_BTN);
+
         if (valUpdater == null || !valUpdater.isAlive()) {
             valUpdater = new ValUpdater();
         }
         valUpdater.start();
-        super.config();
     }
 
     private void swap(int a, int b) {
@@ -100,6 +105,7 @@ public class JoystickFrame extends PopupBase {
         JButton UP_BTN = new JButton("▲");
         JButton DOWN_BTN = new JButton("▼");
         JButton RELOAD_BTN = new JButton("↻");
+        StickyButton CLOSE_BTN = new StickyButton("Close", 1);
     }
 
     public static class ValUpdater extends Clock {

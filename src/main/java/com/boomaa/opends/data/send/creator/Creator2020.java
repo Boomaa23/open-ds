@@ -5,9 +5,11 @@ import com.boomaa.opends.data.holders.Control;
 import com.boomaa.opends.data.holders.Request;
 import com.boomaa.opends.data.send.PacketBuilder;
 import com.boomaa.opends.data.send.SendTag;
+import com.boomaa.opends.display.FMSType;
 import com.boomaa.opends.display.PopupBase;
 import com.boomaa.opends.display.RobotMode;
 import com.boomaa.opends.display.frames.FMSFrame;
+import com.boomaa.opends.display.frames.JoystickFrame;
 
 public class Creator2020 extends PacketCreator {
     @Override
@@ -42,29 +44,28 @@ public class Creator2020 extends PacketCreator {
 
     @Override
     public byte[] dsToRioTcp() {
-//        PacketBuilder builder = new PacketBuilder();
-//        for (SendTag tag : tags) {
-//            byte[] tagData = tag.getValue().getTagData();
-//            byte[] out = new byte[2 + tagData.length];
-//
-//            //TODO figure out 2-len size
-//            tagData[0] = (byte) (out.length << 8);
-//            tagData[1] = (byte) out.length;
-//            tagData[2] = (byte) tag.getFlag();
-//            System.arraycopy(tagData, 0, out, 3, tagData.length);
-//            builder.addBytes(out);
-//        }
-//        return builder.build();
-        return new byte[0];
+        PacketBuilder builder = new PacketBuilder();
+        if (JoystickFrame.EmbeddedJDEC.CLOSE_BTN.wasPressed()) {
+            builder.addBytes(SendTag.JOYSTICK_DESC.getBytes());
+        }
+        if (FMS_TYPE.getSelectedItem() != FMSType.NONE) {
+            builder.addBytes(SendTag.MATCH_INFO.getBytes());
+        }
+        if (!GAME_DATA.getText().isEmpty()) {
+            builder.addBytes(SendTag.GAME_DATA.getBytes());
+        }
+        return builder.build();
     }
 
     @Override
     public byte[] dsToFmsUdp() {
+        //TODO add fms content
         return new byte[0];
     }
 
     @Override
     public byte[] dsToFmsTcp() {
+        //TODO add fms content
         return new byte[0];
     }
 }

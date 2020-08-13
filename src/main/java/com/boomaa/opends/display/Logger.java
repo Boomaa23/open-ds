@@ -14,6 +14,7 @@ import java.util.List;
 
 public class Logger extends OutputStream {
     public static PrintStream OUT;
+    public static JScrollPane PANE;
     private byte[] oneByte;
     private Appender appender;
 
@@ -58,7 +59,7 @@ public class Logger extends OutputStream {
         }
     }
 
-    public static JScrollPane build() {
+    public static void build() {
         JTextArea textArea = new JTextArea(15, 45);
         textArea.addMouseListener(new MouseAdapter() {
             @Override
@@ -70,8 +71,8 @@ public class Logger extends OutputStream {
         textArea.setEditable(false);
 
         OUT = new PrintStream(new Logger(textArea));
-        return new JScrollPane(textArea,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        PANE = new JScrollPane(textArea,
+                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     }
 
     public static class Appender implements Runnable {

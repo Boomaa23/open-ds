@@ -10,7 +10,7 @@ import com.boomaa.opends.util.NumberUtils;
 public enum ReceiveTag {
     //TODO joystick output parsing
     JOYSTICK_OUTPUT(0x01, Protocol.UDP, Remote.ROBO_RIO, null),
-    DISK_INFO(0x04, Protocol.UDP, Remote.ROBO_RIO, (ReceiveTagBase<Long>) (packet, size) ->
+    DISK_INFO(0x04, Protocol.UDP, Remote.ROBO_RIO, (ReceiveTagBase<Integer>) (packet, size) ->
             TagValueMap.singleton("Free Space", NumberUtils.getUInt32(ArrayUtils.sliceArr(packet, 0, 4)))
     ),
     CPU_INFO(0x05, Protocol.UDP, Remote.ROBO_RIO, (ReceiveTagBase<Float>) (packet, size) -> new TagValueMap<Float>()
@@ -24,7 +24,7 @@ public enum ReceiveTag {
             .addTo("CPU 2 Normal %", NumberUtils.getFloat(ArrayUtils.sliceArr(packet, 28, 32)))
             .addTo("CPU 2 Low %", NumberUtils.getFloat(ArrayUtils.sliceArr(packet, 32, 36)))
     ),
-    RAM_INFO(0x06, Protocol.UDP, Remote.ROBO_RIO, (ReceiveTagBase<Long>) (packet, size) -> new TagValueMap<Long>()
+    RAM_INFO(0x06, Protocol.UDP, Remote.ROBO_RIO, (ReceiveTagBase<Integer>) (packet, size) -> new TagValueMap<Integer>()
             .addTo("Block", NumberUtils.getUInt32(ArrayUtils.sliceArr(packet, 0, 4)))
             .addTo("Free Space", NumberUtils.getUInt32(ArrayUtils.sliceArr(packet, 4, 8)))
     ),
