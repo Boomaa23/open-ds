@@ -1,6 +1,10 @@
 package com.boomaa.opends.util;
 
 import com.boomaa.opends.data.receive.parser.Parser2020;
+import com.boomaa.opends.usb.HIDDevice;
+import com.boomaa.opends.usb.USBInterface;
+import com.boomaa.opends.usb.XboxController;
+import net.java.games.input.Rumbler;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -12,7 +16,17 @@ public class GameTesting {
     }
 
     public static void main(String[] args) throws URISyntaxException, IOException {
-//        USBInterface.refreshControllers();
+        USBInterface.refreshControllers();
+//        for (HIDDevice device : USBInterface.getControlDevices()) {
+//            if (device instanceof XboxController) {
+//                Rumbler[] rumblers = device.getController().getRumblers();
+//                if (rumblers != null) {
+//                    for (Rumbler r : rumblers) {
+//                        r.rumble(1000);
+//                    }
+//                }
+//            }
+//        }
 //        System.out.println(Arrays.toString(NumberUtils.extractLongestASCII(decodeHexString("726f626f52494f20496d616765144652435f726f626f52494f5f323031395f763134"))));
 //        System.out.println(Arrays.toString(ArrayUtils.removeBlanks(NumberUtils.getNLengthStrs(decodeHexString("0f4652435f4c69625f56657273696f6e0d4a61766120323031392e342e3100110a1504fc0f06506967656f6e04342e3133000e0a0904fc000350434d04312e3635000e0a0804fc0e0350445004312e333000140a0204fc0d0954616c6f6e2053525804342e313500140a0204fc0b0954616c6f6e2053525804342e313500140a0204fc0a0954616c6f6e2053525804342e313500140a0204fc070954616c6f6e2053525804342e313500140a0204fc040954616c6f6e2053525804342e313500140a0204fc010954616c6f6e2053525804342e313500070a000000000000"), true, true))));
 //        System.out.println(Arrays.toString(NumberUtils.extractAllASCII(decodeHexString("0f4652435f4c69625f56657273696f6e0d4a61766120323031392e342e3100110a1504fc0f06506967656f6e04342e3133000e0a0904fc000350434d04312e3635000e0a0804fc0e0350445004312e333000140a0204fc0d0954616c6f6e2053525804342e313500140a0204fc0b0954616c6f6e2053525804342e313500140a0204fc0a0954616c6f6e2053525804342e313500140a0204fc070954616c6f6e2053525804342e313500140a0204fc040954616c6f6e2053525804342e313500140a0204fc010954616c6f6e2053525804342e313500070a000000000000"))));

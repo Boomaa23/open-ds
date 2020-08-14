@@ -4,9 +4,11 @@ import com.boomaa.opends.data.holders.Date;
 import com.boomaa.opends.data.holders.Protocol;
 import com.boomaa.opends.data.holders.Remote;
 import com.boomaa.opends.display.MainJDEC;
+import com.boomaa.opends.usb.HIDDevice;
 import com.boomaa.opends.usb.Joystick;
 import com.boomaa.opends.usb.JoystickType;
 import com.boomaa.opends.usb.USBInterface;
+import com.boomaa.opends.usb.XboxController;
 import com.boomaa.opends.util.NumberUtils;
 
 import java.util.ArrayList;
@@ -17,13 +19,25 @@ public enum SendTag {
     COUNTDOWN(0x07, Protocol.UDP, Remote.ROBO_RIO, null),
     JOYSTICK(0x0C, Protocol.UDP, Remote.ROBO_RIO, () -> {
         PacketBuilder builder = new PacketBuilder();
-        for (Joystick js : USBInterface.getJoysticks()) {
-            builder.addInt(js.numAxes()); //3 axes
-            builder.addInt(NumberUtils.dblToInt8(js.getX()));
-            builder.addInt(NumberUtils.dblToInt8(js.getY()));
-            builder.addInt(NumberUtils.dblToInt8(js.getZ()));
-            builder.addInt(js.numButtons());
-            builder.addBytes(NumberUtils.packBools(js.getButtons()));
+        for (HIDDevice ctrl : USBInterface.getControlDevices()) {
+            builder.addInt(ctrl.numAxes()); //3 axes
+            if (ctrl instanceof Joystick) {
+                Joystick js = (Joystick) ctrl;
+                builder.addInt(NumberUtils.dblToInt8(js.getX()));
+                builder.addInt(NumberUtils.dblToInt8(js.getY()));
+                builder.addInt(NumberUtils.dblToInt8(js.getZ()));
+            } else if (ctrl instanceof XboxController) {
+                XboxController xbox = (XboxController) ctrl;
+                builder.addInt(NumberUtils.dblToInt8(xbox.getX(true)));
+                builder.addInt(NumberUtils.dblToInt8(xbox.getY(true)));
+                //TODO remove controller trigger padding and add functionality
+                builder.addInt(0);
+                builder.addInt(0);
+                builder.addInt(NumberUtils.dblToInt8(xbox.getX(false)));
+                builder.addInt(NumberUtils.dblToInt8(xbox.getY(false)));
+            }
+            builder.addInt(ctrl.numButtons());
+            builder.addBytes(NumberUtils.packBools(ctrl.getButtons()));
             builder.addInt(0); //povCount
         }
         return builder.build();
@@ -33,18 +47,24 @@ public enum SendTag {
 
     JOYSTICK_DESC(0x02, Protocol.TCP, Remote.ROBO_RIO, () -> {
         PacketBuilder builder = new PacketBuilder();
-        List<Joystick> js = USBInterface.getJoysticks();
-        for (int i = 0; i < js.size() && i < Joystick.MAX_JS_NUM; i++) {
+        List<HIDDevice> ctrl = USBInterface.getControlDevices();
+        for (int i = 0; i < ctrl.size() && i < Joystick.MAX_JS_NUM; i++) {
             builder.addInt(i);
-            builder.addInt(0); //isXbox
-            builder.addInt(JoystickType.HID_JOYSTICK.numAsInt());
+            builder.addInt(ctrl instanceof XboxController ? 1 : 0); //isXbox
+            builder.addInt((ctrl instanceof Joystick ? JoystickType.HID_JOYSTICK : JoystickType.XINPUT_GAMEPAD).numAsInt());
             //TODO make sure this controller name-getting works VVV
-            builder.addBytes(js.get(i).getController().getName().getBytes());
-            builder.addInt(js.get(i).numAxes()); //numAxes
-            builder.addInt(JoystickType.Axis.X.getInt());
-            builder.addInt(JoystickType.Axis.Y.getInt());
-            builder.addInt(JoystickType.Axis.Z.getInt());
-            builder.addInt(js.get(i).numButtons());
+            builder.addBytes(ctrl.get(i).getController().getName().getBytes());
+            builder.addInt(ctrl.get(i).numAxes()); //numAxes
+            if (ctrl instanceof Joystick) {
+                builder.addInt(JoystickType.JSAxis.X.getInt());
+                builder.addInt(JoystickType.JSAxis.Y.getInt());
+                builder.addInt(JoystickType.JSAxis.Z.getInt());
+            } else if (ctrl instanceof XboxController) {
+                for (JoystickType.XboxAxis axis : JoystickType.XboxAxis.values()) {
+                    builder.addInt(axis.getInt());
+                }
+            }
+            builder.addInt(ctrl.get(i).numButtons());
             builder.addInt(0); //povCount
         }
         return builder.build();

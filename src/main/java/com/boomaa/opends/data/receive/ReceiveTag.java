@@ -8,8 +8,11 @@ import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.NumberUtils;
 
 public enum ReceiveTag {
-    //TODO joystick output parsing
-    JOYSTICK_OUTPUT(0x01, Protocol.UDP, Remote.ROBO_RIO, false, null),
+    //TODO joystick output parsing: "output" field
+    JOYSTICK_OUTPUT(0x01, Protocol.UDP, Remote.ROBO_RIO, true, (ReceiveTagBase<Integer>) (packet, size) -> new TagValueMap<Integer>()
+            .addTo("Left Rumble", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 4, 6)))
+            .addTo("Right Rumble", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 6, 8)))
+    ),
     DISK_INFO(0x04, Protocol.UDP, Remote.ROBO_RIO, true, (ReceiveTagBase<Integer>) (packet, size) ->
             TagValueMap.singleton("Free Space", NumberUtils.getUInt32(ArrayUtils.sliceArr(packet, 0, 4)))
     ),

@@ -52,8 +52,16 @@ public enum JoystickType {
         return sb.toString();
     }
 
-    public enum Axis {
+    public enum JSAxis {
         X, Y, Z, TWIST, THROTTLE;
+
+        public int getInt() {
+            return this.ordinal();
+        }
+    }
+
+    public enum XboxAxis {
+        LEFT_X, LEFT_Y, LEFT_TRIGGER, RIGHT_TRIGGER, RIGHT_X, RIGHT_Y;
 
         public int getInt() {
             return this.ordinal();

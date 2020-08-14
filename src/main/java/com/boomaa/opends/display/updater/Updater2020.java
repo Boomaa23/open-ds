@@ -8,7 +8,11 @@ import com.boomaa.opends.data.receive.TagValueMap;
 import com.boomaa.opends.data.receive.parser.PacketParser;
 import com.boomaa.opends.data.receive.parser.Parser2020;
 import com.boomaa.opends.display.frames.StatsFrame;
+import com.boomaa.opends.usb.HIDDevice;
+import com.boomaa.opends.usb.USBInterface;
+import com.boomaa.opends.usb.XboxController;
 import com.boomaa.opends.util.NumberUtils;
+import net.java.games.input.Rumbler;
 
 public class Updater2020 extends ElementUpdater {
     @Override
@@ -78,6 +82,7 @@ public class Updater2020 extends ElementUpdater {
                 StatsFrame.EmbeddedJDEC.CAN_RX_ERR.setText(String.valueOf(canMetrics.get("RX Errors")));
                 StatsFrame.EmbeddedJDEC.CAN_TX_ERR.setText(String.valueOf(canMetrics.get("TX Errors")));
             }
+            //TODO add rumbler capability (JInput != XInput compatible)
         }
     }
 

@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class USBInterface {
-    private static List<Joystick> joysticks = new ArrayList<>();
-    private static Controller[] controllers;
+    private static List<HIDDevice> controlDevices = new ArrayList<>();
+    private static Controller[] rawControllers;
 
     static {
         // Workaround to JInput natives not being bundled with jinput
@@ -56,41 +56,50 @@ public class USBInterface {
     }
 
     public static void refreshControllers() {
-        controllers = createDefaultEnvironment().getControllers();
-        joysticks.clear();
-        for (int i = 0; i < controllers.length; i++) {
-            if (controllers[i].getType() == Controller.Type.STICK) {
-                int btnCtr = 0;
-                for (Component comp : controllers[i].getComponents()) {
-                    if (comp.getIdentifier() instanceof Component.Identifier.Button) {
-                        btnCtr++;
-                    }
-                }
-                joysticks.add(new Joystick(controllers[i], btnCtr));
+        rawControllers = createDefaultEnvironment().getControllers();
+        controlDevices.clear();
+        for (int i = 0; i < rawControllers.length; i++) {
+            if (rawControllers[i].getType() == Controller.Type.STICK) {
+                controlDevices.add(new Joystick(rawControllers[i]));
+            } else if (rawControllers[i].getType() == Controller.Type.GAMEPAD) {
+                controlDevices.add(new XboxController(rawControllers[i]));
             }
         }
     }
 
     public static void updateValues() {
-        if (joysticks.size() == 0) {
+        if (controlDevices.size() == 0) {
             refreshControllers();
         }
-        for (int i = 0; i < joysticks.size(); i++) {
-            Joystick js = joysticks.get(i);
-            Controller controller = js.getController();
+        for (int i = 0; i < controlDevices.size(); i++) {
+            HIDDevice ctrl = controlDevices.get(i);
+            Controller controller = ctrl.getController();
             if (!controller.poll()) {
-                joysticks.remove(js);
+                controlDevices.remove(ctrl);
                 continue;
             }
-            Component ax = controller.getComponent(Component.Identifier.Axis.X);
-            Component ay = controller.getComponent(Component.Identifier.Axis.Y);
-            Component arz = controller.getComponent(Component.Identifier.Axis.RZ);
-            js.setX(ax != null ? ax.getPollData() : 0.0);
-            js.setY(ay != null ? ay.getPollData() : 0.0);
-            js.setZ(arz != null ? arz.getPollData() : 0.0);
+            if (ctrl instanceof Joystick) {
+                Component ax = controller.getComponent(Component.Identifier.Axis.X);
+                Component ay = controller.getComponent(Component.Identifier.Axis.Y);
+                Component arz = controller.getComponent(Component.Identifier.Axis.RZ);
+                Joystick js = (Joystick) ctrl;
+                js.setX(ax != null ? ax.getPollData() : 0.0);
+                js.setY(ay != null ? ay.getPollData() : 0.0);
+                js.setZ(arz != null ? arz.getPollData() : 0.0);
+            } else if (ctrl instanceof XboxController) {
+                Component axl = controller.getComponent(Component.Identifier.Axis.X);
+                Component axr = controller.getComponent(Component.Identifier.Axis.RX);
+                Component ayl = controller.getComponent(Component.Identifier.Axis.Y);
+                Component ayr = controller.getComponent(Component.Identifier.Axis.RY);
+                XboxController xbox = (XboxController) ctrl;
+                xbox.setX(axl != null ? axl.getPollData() : 0.0, true);
+                xbox.setX(axr != null ? axr.getPollData() : 0.0, false);
+                xbox.setY(ayl != null ? ayl.getPollData() : 0.0, true);
+                xbox.setY(ayr != null ? ayr.getPollData() : 0.0, false);
+            }
             for (Component comp : controller.getComponents()) {
                 if (comp.getIdentifier() instanceof Component.Identifier.Button) {
-                    js.setButton(Integer.parseInt(comp.getIdentifier().getName()), comp.getPollData() == 1.0);
+                    ctrl.setButton(Integer.parseInt(comp.getIdentifier().getName()), comp.getPollData() == 1.0);
                 }
             }
         }
@@ -108,12 +117,12 @@ public class USBInterface {
 //        return null;
     }
 
-    public static Controller[] getControllers() {
-        return controllers;
+    public static Controller[] getRawControllers() {
+        return rawControllers;
     }
 
-    public static List<Joystick> getJoysticks() {
+    public static List<HIDDevice> getControlDevices() {
         refreshControllers();
-        return joysticks;
+        return controlDevices;
     }
 }
