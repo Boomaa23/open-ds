@@ -1,5 +1,8 @@
 package com.boomaa.opends.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ArrayUtils {
     public static byte[] sliceArr(byte[] array, int start, int end) {
         byte[] out = new byte[end - start];
@@ -31,5 +34,15 @@ public class ArrayUtils {
             out[i] = bytes[i];
         }
         return out;
+    }
+
+    public static String[] removeBlanks(String[] in) {
+        List<String> out = new ArrayList<>();
+        for (String str : in) {
+            if (!str.isEmpty() && !str.isBlank()) {
+                out.add(str);
+            }
+        }
+        return out.toArray(new String[0]);
     }
 }

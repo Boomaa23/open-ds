@@ -44,7 +44,7 @@ public class DisplayEndpoint implements MainJDEC {
                     updaterClass.update();
                     updater = (ElementUpdater) Class.forName(updaterClass.toString()).getConstructor().newInstance();
                     creator = (PacketCreator) Class.forName(creatorClass.toString()).getConstructor().newInstance();
-                    if (SIM_ROBOT != null && !SIM_ROBOT.isClosed()) {
+                    if (SIM_ROBOT != null && !SIM_ROBOT.isClosed() && updater != null && creator != null) {
                         updater.updateFromRioUdp(getPacketParser("RioToDsUdp", SIM_ROBOT.doLoopbackUDPSend(creator.dsToRioUdp()).getBuffer()));
                         updater.updateFromRioTcp(getPacketParser("RioToDsTcp", SIM_ROBOT.doLoopbackTCPSend(creator.dsToRioTcp())));
                     } else {
@@ -69,7 +69,7 @@ public class DisplayEndpoint implements MainJDEC {
         @Override
         public void onCycle() {
             if (HAS_INITIALIZED.getFms()) {
-                if (SIM_FMS != null && !SIM_FMS.isClosed()) {
+                if (SIM_FMS != null && !SIM_FMS.isClosed() && updater != null && creator != null) {
                     updater.updateFromFmsUdp(getPacketParser("FmsToDsUdp", FMS_UDP_INTERFACE.doReceieve().getBuffer()));
                     updater.updateFromFmsTcp(getPacketParser("FmsToDsTcp", FMS_TCP_INTERFACE.doInteract(creator.dsToFmsTcp())));
                 } else {

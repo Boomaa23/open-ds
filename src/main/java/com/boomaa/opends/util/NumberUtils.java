@@ -2,6 +2,10 @@ package com.boomaa.opends.util;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
+import java.util.ArrayList;
+import java.util.List;
 
 public class NumberUtils {
     public static float getFloat(byte[] bytes) {
@@ -107,5 +111,72 @@ public class NumberUtils {
         in = (in & 0xCC) >> 2 | (in & 0x33) << 2;
         in = (in & 0xAA) >> 1 | (in & 0x55) << 1;
         return in;
+    }
+
+    public static String bytesHumanReadable(long bytes) {
+        if (-1000 < bytes && bytes < 1000) {
+            return bytes + " B";
+        }
+        CharacterIterator ci = new StringCharacterIterator("kMGTPE");
+        while (bytes <= -999_950 || bytes >= 999_950) {
+            bytes /= 1000;
+            ci.next();
+        }
+        return String.format("%.1f %cB", bytes / 1000.0, ci.current());
+    }
+
+    public static String[] extractAllASCII(byte[] bytes) {
+        List<String> asciiList = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < bytes.length; i++) {
+            char val = (char) bytes[i];
+            if (val > 31 && val < 127) {
+                sb.append(val);
+            } else if (sb.length() > 0) {
+                asciiList.add(sb.toString());
+                sb = new StringBuilder();
+            }
+            if (i == bytes.length - 1 && sb.length() > 0) {
+                asciiList.add(sb.toString());
+            }
+        }
+        return asciiList.toArray(new String[0]);
+    }
+
+    public static String[] getNLengthStrs(byte[] bytes, int nSize, boolean strictASCII) {
+        if (nSize < 1 || nSize > 2) {
+            throw new IllegalArgumentException("Not a valid n-size: \"" + nSize + "\"");
+        }
+        List<String> asciiList = new ArrayList<>();
+        int i = 0;
+        int n = -1;
+        while (i < bytes.length) {
+            if (n == -1) {
+                if (nSize == 1) {
+                    n = bytes[i];
+                } else if (i + 1 < bytes.length) {
+                    n = getUInt16(new byte[] { bytes[i], bytes[++i]});
+                }
+                i++;
+            } else {
+                String rawValue = new String(ArrayUtils.sliceArr(bytes, i, i + n));
+                if (strictASCII) {
+                    StringBuilder sb = new StringBuilder();
+                    char[] valChar = rawValue.toCharArray();
+                    for (char currChar : valChar) {
+                        if (currChar > 31 && currChar < 127) {
+                            sb.append(currChar);
+                        }
+                    }
+                    asciiList.add(sb.toString());
+                } else {
+                    asciiList.add(rawValue);
+                }
+                i += n;
+                n = -1;
+            }
+        }
+        String[] out = asciiList.toArray(new String[0]);
+        return strictASCII ? ArrayUtils.removeBlanks(out) : out;
     }
 }

@@ -40,8 +40,12 @@ public class TCPInterface {
     public void close() {
         this.closed = true;
         try {
-            socket.close();
-            in.close();
+            if (socket != null) {
+                socket.close();
+            }
+            if (in != null) {
+                in.close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
