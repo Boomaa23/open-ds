@@ -40,6 +40,14 @@ public class NumberUtils {
         return out;
     }
 
+    public static byte[] intToByteArr(int in) {
+        //TODO test if this is the correct ordering
+        byte[] out = new byte[2];
+        out[0] = (byte) ((in >>> 8) & 0xFF);
+        out[1] = (byte) (in & 0xFF);
+        return out;
+    }
+
     public static byte[] jIntToByteArray(int in) {
         return ByteBuffer.allocate(4).putInt(in).array();
     }

@@ -5,8 +5,12 @@ import net.java.games.input.Component;
 import net.java.games.input.Controller;
 import net.java.games.input.ControllerEnvironment;
 
+import java.io.File;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.net.URISyntaxException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
@@ -24,22 +28,12 @@ public class USBInterface {
         UnzipUtils.unzip(USBInterface.getJarPath(), tmpPath);
         System.setProperty("java.library.path", tmpPath);
         try {
-            Field fieldSysPath = ClassLoader.class.getDeclaredField("sys_paths");
-            fieldSysPath.setAccessible(true);
-            fieldSysPath.set(null, null);
+            MethodHandles.Lookup cl = MethodHandles.privateLookupIn(ClassLoader.class, MethodHandles.lookup());
+            VarHandle sys_paths = cl.findStaticVarHandle(ClassLoader.class, "sys_paths", String[].class);
+            sys_paths.set(null);
         } catch (IllegalAccessException | NoSuchFieldException e) {
             e.printStackTrace();
         }
-
-        // Allow below environment workaround to work without issues on windows 8/8.1
-        AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
-            String os = System.getProperty("os.name", "").trim();
-            if (os.startsWith("Windows 8")) {
-                System.setProperty("jinput.useDefaultPlugin", "false");
-                System.setProperty("net.java.games.input.plugins", "net.java.games.input.DirectAndRawInputEnvironmentPlugin");
-            }
-            return null;
-        });
     }
 
     private static ControllerEnvironment createDefaultEnvironment() {
@@ -106,15 +100,13 @@ public class USBInterface {
     }
 
     public static String getJarPath() {
-        return "C:\\Users\\Nikhil\\Desktop\\open-ds.jar";
-        //TODO uncomment this out when not testing
-//        try {
-//            return new File(DisplayEndpoint.class.getProtectionDomain()
-//                    .getCodeSource().getLocation().toURI()).getPath();
-//        } catch (URISyntaxException e) {
-//            e.printStackTrace();
-//        }
-//        return null;
+        try {
+            return new File(USBInterface.class.getProtectionDomain()
+                    .getCodeSource().getLocation().toURI()).getPath();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static Controller[] getRawControllers() {

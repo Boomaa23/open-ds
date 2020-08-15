@@ -51,4 +51,12 @@ public abstract class HIDDevice {
         }
         return btnCtr;
     }
+
+    public interface Axis {
+        int ordinal();
+
+        default int getInt() {
+            return this.ordinal();
+        }
+    }
 }

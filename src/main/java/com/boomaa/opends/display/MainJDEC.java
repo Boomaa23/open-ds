@@ -47,4 +47,6 @@ public interface MainJDEC {
      HideableLabel FMS_CONNECTION_STATUS = new HideableLabel(false, "Connected");
      HideableLabel BROWNOUT_STATUS = new HideableLabel(false, "Voltage");
      MultiValueLabel ROBOT_CODE_STATUS = new MultiValueLabel(false, "Running", "Initializing");
+
+     JLabel CHALLENGE_RESPONSE = new JLabel("");
 }

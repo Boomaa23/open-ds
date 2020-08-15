@@ -1,19 +1,16 @@
 package com.boomaa.opends.display.updater;
 
-import com.boomaa.opends.data.receive.ReceiveTag;
 import com.boomaa.opends.data.receive.TVMList;
 import com.boomaa.opends.data.receive.TagValueMap;
 import com.boomaa.opends.data.receive.parser.PacketParser;
 import com.boomaa.opends.display.Logger;
 import com.boomaa.opends.display.MainJDEC;
 
-import java.util.Map;
-
 public abstract class ElementUpdater implements MainJDEC {
-    protected abstract void doUpdateFromRioUdp(PacketParser data);
-    protected abstract void doUpdateFromRioTcp(PacketParser data);
-    protected abstract void doUpdateFromFmsUdp(PacketParser data);
-    protected abstract void doUpdateFromFmsTcp(PacketParser data);
+    protected abstract void doUpdateFromRioUdp(PacketParser data, TVMList tagMap);
+    protected abstract void doUpdateFromRioTcp(PacketParser data, TVMList tagMap);
+    protected abstract void doUpdateFromFmsUdp(PacketParser data, TVMList tagMap);
+    protected abstract void doUpdateFromFmsTcp(PacketParser data, TVMList tagMap);
 
     protected abstract void resetDataRioUdp();
     protected abstract void resetDataRioTcp();
@@ -22,7 +19,7 @@ public abstract class ElementUpdater implements MainJDEC {
 
     public void updateFromRioUdp(PacketParser data) {
         if (data.getPacket().length != 0) {
-            doUpdateFromRioUdp(data);
+            doUpdateFromRioUdp(data, data.getTags());
             doLog(data);
         } else {
             resetDataRioUdp();
@@ -31,7 +28,7 @@ public abstract class ElementUpdater implements MainJDEC {
 
     public void updateFromRioTcp(PacketParser data) {
         if (data.getPacket().length != 0) {
-            doUpdateFromRioTcp(data);
+            doUpdateFromRioTcp(data, data.getTags());
             doLog(data);
         } else {
             resetDataRioTcp();
@@ -40,7 +37,7 @@ public abstract class ElementUpdater implements MainJDEC {
 
     public void updateFromFmsUdp(PacketParser data) {
         if (data.getPacket().length != 0) {
-            doUpdateFromFmsUdp(data);
+            doUpdateFromFmsUdp(data, data.getTags());
             doLog(data);
         } else {
             resetDataFmsUdp();
@@ -49,7 +46,7 @@ public abstract class ElementUpdater implements MainJDEC {
 
     public void updateFromFmsTcp(PacketParser data) {
         if (data.getPacket().length != 0) {
-            doUpdateFromFmsTcp(data);
+            doUpdateFromFmsTcp(data, data.getTags());
             doLog(data);
         } else {
             resetDataFmsTcp();
@@ -57,12 +54,11 @@ public abstract class ElementUpdater implements MainJDEC {
     }
 
     private void doLog(PacketParser data) {
-        if (Logger.OUT != null) {
-            for (TagValueMap<?> tvm : data.getTags()) {
-                if (tvm.getBaseTag().includeInLog()) {
-                    Logger.OUT.println(tvm.toLogString(true));
-                }
+        for (TagValueMap<?> tvm : data.getTags()) {
+            if (tvm.getBaseTag().includeInLog() == Logger.Include.ALWAYS) {
+                Logger.OUT.println(tvm.toLogString(true));
             }
+            //TODO conditional logger output
         }
     }
 }

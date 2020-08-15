@@ -39,4 +39,8 @@ public class Joystick extends HIDDevice {
     public int numAxes() {
         return 3;
     }
+
+    public enum Axis implements HIDDevice.Axis {
+        X, Y, Z, TWIST, THROTTLE
+    }
 }

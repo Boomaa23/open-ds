@@ -18,6 +18,22 @@ public class Logger extends OutputStream {
     private byte[] oneByte;
     private Appender appender;
 
+    static {
+        JTextArea textArea = new JTextArea(15, 45);
+        textArea.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                textArea.setCaretPosition(textArea.getDocument().getLength());
+                textArea.update(textArea.getGraphics());
+            }
+        });
+        textArea.setEditable(false);
+
+        OUT = new PrintStream(new Logger(textArea));
+        PANE = new JScrollPane(textArea,
+                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    }
+
     public Logger(JTextArea textArea) {
         oneByte = new byte[1];
         appender = new Appender(textArea);
@@ -57,22 +73,6 @@ public class Logger extends OutputStream {
         } catch (UnsupportedEncodingException thr) {
             return new String(ba, str, len);
         }
-    }
-
-    public static void build() {
-        JTextArea textArea = new JTextArea(15, 45);
-        textArea.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                textArea.setCaretPosition(textArea.getDocument().getLength());
-                textArea.update(textArea.getGraphics());
-            }
-        });
-        textArea.setEditable(false);
-
-        OUT = new PrintStream(new Logger(textArea));
-        PANE = new JScrollPane(textArea,
-                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     }
 
     public static class Appender implements Runnable {
@@ -134,5 +134,9 @@ public class Logger extends OutputStream {
             clear = false;
             queue = true;
         }
+    }
+
+    public enum Include {
+        ALWAYS, NEVER, CONDITIONALLY
     }
 }

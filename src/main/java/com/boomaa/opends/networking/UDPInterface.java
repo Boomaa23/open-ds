@@ -41,10 +41,13 @@ public class UDPInterface {
         byte[] buffer = new byte[bufSize];
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
         try {
+            while (serverSocket == null) {
+                Thread.sleep(50);
+            }
             serverSocket.receive(packet);
         } catch (SocketTimeoutException | SocketException e) {
             return new UDPTransform(new byte[0], packet);
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
         return new UDPTransform(buffer, packet);

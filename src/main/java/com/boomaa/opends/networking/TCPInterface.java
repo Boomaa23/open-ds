@@ -27,11 +27,14 @@ public class TCPInterface {
 
     public byte[] doInteract(byte[] data) {
         try {
+            while (socket == null || in == null) {
+                Thread.sleep(50);
+            }
             socket.getOutputStream().write(data);
             return in.readLine().getBytes();
         } catch (SocketException | SocketTimeoutException e) {
             return new byte[0];
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
         return null;

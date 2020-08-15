@@ -36,28 +36,28 @@ public class DisplayEndpoint implements MainJDEC {
     private static final Clock twentyMsClock = new Clock(20) {
         @Override
         public void onCycle() {
+            parserClass.update();
+            creatorClass.update();
+            updaterClass.update();
+            try {
+            updater = (ElementUpdater) Class.forName(updaterClass.toString()).getConstructor().newInstance();
+            creator = (PacketCreator) Class.forName(creatorClass.toString()).getConstructor().newInstance();
+            } catch (NoSuchMethodException | ClassNotFoundException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+                e.printStackTrace();
+            }
             if (HAS_INITIALIZED.getRio()) {
                 USBInterface.updateValues();
-                try {
-                    parserClass.update();
-                    creatorClass.update();
-                    updaterClass.update();
-                    updater = (ElementUpdater) Class.forName(updaterClass.toString()).getConstructor().newInstance();
-                    creator = (PacketCreator) Class.forName(creatorClass.toString()).getConstructor().newInstance();
-                    if (SIM_ROBOT != null && !SIM_ROBOT.isClosed() && updater != null && creator != null) {
-                        updater.updateFromRioUdp(getPacketParser("RioToDsUdp", SIM_ROBOT.doLoopbackUDPSend(creator.dsToRioUdp()).getBuffer()));
-                        updater.updateFromRioTcp(getPacketParser("RioToDsTcp", SIM_ROBOT.doLoopbackTCPSend(creator.dsToRioTcp())));
-                    } else {
-                        if (RIO_UDP_INTERFACE != null && !RIO_UDP_INTERFACE.isClosed()) {
-                            updater.updateFromRioUdp(getPacketParser("RioToDsUdp", RIO_UDP_INTERFACE.doReceieve().getBuffer()));
-                            RIO_UDP_INTERFACE.doSend(creator.dsToRioUdp());
-                        }
-                        if (RIO_TCP_INTERFACE != null && !RIO_TCP_INTERFACE.isClosed()) {
-                            updater.updateFromRioTcp(getPacketParser("RioToDsTcp", RIO_TCP_INTERFACE.doInteract(creator.dsToRioTcp())));
-                        }
+                if (SIM_ROBOT != null && !SIM_ROBOT.isClosed() && updater != null && creator != null) {
+//                        updater.updateFromRioUdp(getPacketParser("RioToDsUdp", SIM_ROBOT.doLoopbackUDPSend(creator.dsToRioUdp()).getBuffer()));
+//                        updater.updateFromRioTcp(getPacketParser("RioToDsTcp", SIM_ROBOT.doLoopbackTCPSend(creator.dsToRioTcp())));
+                } else {
+                    if (RIO_UDP_INTERFACE != null && !RIO_UDP_INTERFACE.isClosed()) {
+                        updater.updateFromRioUdp(getPacketParser("RioToDsUdp", RIO_UDP_INTERFACE.doReceieve().getBuffer()));
+                        RIO_UDP_INTERFACE.doSend(creator.dsToRioUdp());
                     }
-                } catch (NoSuchMethodException | ClassNotFoundException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
-                    e.printStackTrace();
+                    if (RIO_TCP_INTERFACE != null && !RIO_TCP_INTERFACE.isClosed()) {
+                        updater.updateFromRioTcp(getPacketParser("RioToDsTcp", RIO_TCP_INTERFACE.doInteract(creator.dsToRioTcp())));
+                    }
                 }
             } else {
                 NetworkReloader.reloadRio();
@@ -70,8 +70,8 @@ public class DisplayEndpoint implements MainJDEC {
         public void onCycle() {
             if (HAS_INITIALIZED.getFms()) {
                 if (SIM_FMS != null && !SIM_FMS.isClosed() && updater != null && creator != null) {
-                    updater.updateFromFmsUdp(getPacketParser("FmsToDsUdp", FMS_UDP_INTERFACE.doReceieve().getBuffer()));
-                    updater.updateFromFmsTcp(getPacketParser("FmsToDsTcp", FMS_TCP_INTERFACE.doInteract(creator.dsToFmsTcp())));
+//                    updater.updateFromFmsUdp(getPacketParser("FmsToDsUdp", FMS_UDP_INTERFACE.doReceieve().getBuffer()));
+//                    updater.updateFromFmsTcp(getPacketParser("FmsToDsTcp", FMS_TCP_INTERFACE.doInteract(creator.dsToFmsTcp())));
                 } else {
                     if (FMS_UDP_INTERFACE != null && !FMS_UDP_INTERFACE.isClosed()) {
                         updater.updateFromFmsUdp(getPacketParser("FmsToDsUdp", FMS_UDP_INTERFACE.doReceieve().getBuffer()));
@@ -83,13 +83,11 @@ public class DisplayEndpoint implements MainJDEC {
                 }
             } else {
                 NetworkReloader.reloadFms();
-                HAS_INITIALIZED.setFms(true);
             }
         }
     };
 
     public static void main(String[] args) {
-        Logger.build();
         MainFrame.display();
         twentyMsClock.start();
         fiveHundredMsClock.start();

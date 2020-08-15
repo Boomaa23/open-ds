@@ -16,4 +16,8 @@ public class TVMList extends ArrayList<TagValueMap<?>> {
     public TagValueMap<?> first() {
         return this.get(0);
     }
+
+    public boolean isEmpty() {
+        return this.size() == 0;
+    }
 }

@@ -5,19 +5,19 @@ import com.boomaa.opends.util.NumberUtils;
 public class AllianceStation {
     private final int sidedNum;
     private final boolean isBlue;
-    private String status;
+    private Status status;
 
     public AllianceStation(int sidedZeroedNum, boolean isBlue) {
         this.sidedNum = sidedZeroedNum;
         this.isBlue = isBlue;
     }
 
-    public AllianceStation setStatus(String status) {
+    public AllianceStation setStatus(Status status) {
         this.status = status;
         return this;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
@@ -32,5 +32,9 @@ public class AllianceStation {
     public static AllianceStation getFromByte(byte b) {
         int num = NumberUtils.getUInt8(b);
         return new AllianceStation(num, num >= 3);
+    }
+
+    public enum Status {
+        GOOD, BAD, WAITING
     }
 }

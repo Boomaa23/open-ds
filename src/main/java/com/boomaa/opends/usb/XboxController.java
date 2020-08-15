@@ -40,4 +40,8 @@ public class XboxController extends HIDDevice {
     public int numAxes() {
         return 4;
     }
+
+    public enum Axis implements HIDDevice.Axis {
+        LEFT_X, LEFT_Y, LEFT_TRIGGER, RIGHT_TRIGGER, RIGHT_X, RIGHT_Y
+    }
 }

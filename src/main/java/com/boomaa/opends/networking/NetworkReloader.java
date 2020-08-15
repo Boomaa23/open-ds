@@ -6,6 +6,7 @@ import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.display.frames.FMSFrame;
 import com.boomaa.opends.display.frames.RobotFrame;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -22,6 +23,7 @@ public class NetworkReloader extends DisplayEndpoint {
                 }
                 SIM_ROBOT = new SimulatedRobot();
                 ROBOT_FRAME = new RobotFrame();
+                HAS_INITIALIZED.setFms(true);
             } else {
                 if (SIM_ROBOT != null && !SIM_ROBOT.isClosed()) {
                     SIM_ROBOT.close();
@@ -29,14 +31,16 @@ public class NetworkReloader extends DisplayEndpoint {
                 if (ROBOT_FRAME != null) {
                     ROBOT_FRAME.dispose();
                 }
-                String rioIp = "localhost"; //TODO remove after testing
-//                String rioIp = AddressConstants.getRioAddress();
+//                String rioIp = "localhost"; //TODO remove after testing
+                String rioIp = AddressConstants.getRioAddress();
                 InetAddress.getByName(rioIp);
                 PortTriple rioPorts = AddressConstants.getRioPorts();
                 RIO_UDP_INTERFACE = new UDPInterface(rioIp, rioPorts.getUdpClient(), rioPorts.getUdpServer());
                 RIO_TCP_INTERFACE = new TCPInterface(rioIp, rioPorts.getTcp());
+                HAS_INITIALIZED.setRio(true);
             }
         } catch (UnknownHostException ignored) {
+            HAS_INITIALIZED.setRio(false);
             MainJDEC.IS_ENABLED.setEnabled(false);
             if (MainJDEC.IS_ENABLED.isSelected()) {
                 MainJDEC.IS_ENABLED.setSelected(false);
@@ -62,6 +66,7 @@ public class NetworkReloader extends DisplayEndpoint {
             case SIMULATED:
                 FMS_FRAME = new FMSFrame();
                 SIM_FMS = new SimulatedFMS();
+                HAS_INITIALIZED.setFms(true);
                 break;
             case REAL:
                 if (FMS_FRAME != null) {
@@ -69,8 +74,17 @@ public class NetworkReloader extends DisplayEndpoint {
                 }
                 PortTriple fmsPorts = AddressConstants.getFMSPorts();
                 String fmsIp = AddressConstants.getFMSIp();
-                FMS_UDP_INTERFACE = new UDPInterface(fmsIp, fmsPorts.getUdpClient(), fmsPorts.getUdpClient());
-                FMS_TCP_INTERFACE = new TCPInterface(fmsIp, fmsPorts.getTcp());
+                try {
+                    InetAddress.getByName(fmsIp).isReachable(100);
+                    FMS_UDP_INTERFACE = new UDPInterface(fmsIp, fmsPorts.getUdpClient(), fmsPorts.getUdpClient());
+                    FMS_TCP_INTERFACE = new TCPInterface(fmsIp, fmsPorts.getTcp());
+                    HAS_INITIALIZED.setFms(true);
+                } catch (IOException ignored) {
+                    HAS_INITIALIZED.setFms(false);
+                }
+                break;
+            case NONE:
+                HAS_INITIALIZED.setFms(false);
                 break;
         }
     }

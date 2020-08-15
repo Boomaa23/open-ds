@@ -1,14 +1,10 @@
 package com.boomaa.opends.util;
 
 import com.boomaa.opends.data.receive.parser.Parser2020;
-import com.boomaa.opends.usb.HIDDevice;
 import com.boomaa.opends.usb.USBInterface;
-import com.boomaa.opends.usb.XboxController;
-import net.java.games.input.Rumbler;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Arrays;
 
 public class GameTesting {
     public static byte getAlliance(boolean isBlue, int num) {
