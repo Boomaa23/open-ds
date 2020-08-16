@@ -14,7 +14,6 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Image;
 import java.awt.Insets;
-import java.awt.event.ItemEvent;
 
 public class Layout2020 extends LayoutPlacer {
     public Layout2020() {
@@ -30,8 +29,6 @@ public class Layout2020 extends LayoutPlacer {
         TEAM_NUMBER.getDocument().addDocumentListener(new TeamNumListener());
         TEAM_NUMBER.setText("5818"); //TODO remove after testing
         IS_ENABLED.setEnabled(false);
-        SIMULATE_ROBOT.addActionListener((e) -> NetworkReloader.reloadRio());
-        FMS_TYPE.addItemListener((e) -> { if (e.getStateChange() == ItemEvent.SELECTED) { NetworkReloader.reloadFms(); } });
 
         base.clone().setPos(0, 0, 6, 1).setFill(GridBagConstraints.NONE).build(TITLE);
         base.clone().setPos(0, 1, 6, 1).setFill(GridBagConstraints.NONE).build(LINK);
@@ -69,5 +66,7 @@ public class Layout2020 extends LayoutPlacer {
         base.clone().setPos(5, 5, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(FMS_CONNECTION_STATUS);
         base.clone().setPos(4, 6, 1, 1).setAnchor(GridBagConstraints.LINE_END).setFill(GridBagConstraints.NONE).build(new JLabel("Brownout: "));
         base.clone().setPos(5, 6, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(BROWNOUT_STATUS);
+        base.clone().setPos(4, 7, 1, 1).setAnchor(GridBagConstraints.LINE_END).setFill(GridBagConstraints.NONE).build(new JLabel("Time: "));
+        base.clone().setPos(5, 7, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(MATCH_TIME);
     }
 }

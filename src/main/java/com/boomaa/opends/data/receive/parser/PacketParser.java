@@ -8,10 +8,10 @@ import com.boomaa.opends.util.ArrayUtils;
 
 public abstract class PacketParser {
     protected final byte[] packet;
-    private final Protocol protocol;
-    private final Remote remote;
-    private final int tagStartIndex;
-    private TVMList tagValues = new TVMList();
+    protected final Protocol protocol;
+    protected final Remote remote;
+    protected final int tagStartIndex;
+    protected TVMList tagValues = new TVMList();
 
     public PacketParser(byte[] packet, Protocol protocol, Remote remote, int tagStartIndex) {
         this.packet = packet;
@@ -37,8 +37,9 @@ public abstract class PacketParser {
         if (tagStartIndex < packet.length) {
             byte[] tagPacket = ArrayUtils.sliceArr(packet, tagStartIndex);
             int c = 0;
-            while (c < tagPacket.length) {
-                int size = getTagSize(c + tagStartIndex);
+            int size = 0;
+            while ((c + 1 + size) < tagPacket.length) {
+                size = getTagSize(c + tagStartIndex);
                 for (ReceiveTag tag : ReceiveTag.values()) {
                     if (tag.getRemote() == remote && tag.getProtocol() == protocol && tag.getFlag() == tagPacket[c + 1]) {
                         this.tagValues.add(tag.getAction().getValue(ArrayUtils.sliceArr(tagPacket, c + 2, c + size + 1), size).setBaseTag(tag));

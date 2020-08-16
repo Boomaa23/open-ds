@@ -31,8 +31,11 @@ public class TCPInterface {
                 Thread.sleep(50);
             }
             socket.getOutputStream().write(data);
-            return in.readLine().getBytes();
-        } catch (SocketException | SocketTimeoutException e) {
+            String out = in.readLine();
+            return out != null ? out.getBytes() : null;
+        } catch (SocketException e) {
+            return null;
+        } catch (SocketTimeoutException e) {
             return new byte[0];
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();

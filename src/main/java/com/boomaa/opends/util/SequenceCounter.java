@@ -2,11 +2,13 @@ package com.boomaa.opends.util;
 
 public class SequenceCounter {
     private final boolean isRoundTrip;
+    private final int offset;
     private short counter;
 
     public SequenceCounter(boolean isRoundTrip, int offset) {
         this.isRoundTrip = isRoundTrip;
-        this.counter = (short) ((isRoundTrip ? -2 : -1) + offset);
+        this.offset = offset;
+        reset();
     }
 
     public SequenceCounter(boolean isRoundTrip) {
@@ -18,8 +20,13 @@ public class SequenceCounter {
         return this;
     }
 
+    public SequenceCounter reset() {
+        this.counter = (short) ((isRoundTrip ? -2 : 1) + offset);
+        return this;
+    }
+
     public byte[] getBytes() {
-        return new byte[] { (byte) (counter >> 8), (byte) counter };
+        return NumberUtils.intToBytePair(counter);
     }
 
     public short getCounter() {

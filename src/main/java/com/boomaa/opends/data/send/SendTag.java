@@ -4,7 +4,11 @@ import com.boomaa.opends.data.holders.Date;
 import com.boomaa.opends.data.holders.Protocol;
 import com.boomaa.opends.data.holders.Remote;
 import com.boomaa.opends.display.MainJDEC;
-import com.boomaa.opends.usb.*;
+import com.boomaa.opends.usb.HIDDevice;
+import com.boomaa.opends.usb.Joystick;
+import com.boomaa.opends.usb.JoystickType;
+import com.boomaa.opends.usb.USBInterface;
+import com.boomaa.opends.usb.XboxController;
 import com.boomaa.opends.util.NumberUtils;
 
 import java.util.ArrayList;
@@ -75,18 +79,18 @@ public enum SendTag {
     PD_INFO(0x04, Protocol.UDP, Remote.FMS, null),
 
     WPILIB_VER(0x00, Protocol.TCP, Remote.FMS, null),
-    RIO_VER(0x01, Protocol.TCP, Remote.FMS, WPILIB_VER.value),
-    DS_VER(0x02, Protocol.TCP, Remote.FMS, WPILIB_VER.value),
-    PDP_VER(0x03, Protocol.TCP, Remote.FMS, WPILIB_VER.value),
-    PCM_VER(0x04, Protocol.TCP, Remote.FMS, WPILIB_VER.value),
-    CANJAG_VER(0x05, Protocol.TCP, Remote.FMS, WPILIB_VER.value),
-    CANTALON_VER(0x06, Protocol.TCP, Remote.FMS, WPILIB_VER.value),
-    THIRD_PARTY_DEVICE_VER(0x07, Protocol.TCP, Remote.FMS, WPILIB_VER.value),
+    RIO_VER(0x01, Protocol.TCP, Remote.FMS, null),
+    DS_VER(0x02, Protocol.TCP, Remote.FMS, null),
+    PDP_VER(0x03, Protocol.TCP, Remote.FMS, null),
+    PCM_VER(0x04, Protocol.TCP, Remote.FMS, null),
+    CANJAG_VER(0x05, Protocol.TCP, Remote.FMS, null),
+    CANTALON_VER(0x06, Protocol.TCP, Remote.FMS, null),
+    THIRD_PARTY_DEVICE_VER(0x07, Protocol.TCP, Remote.FMS, null),
     USAGE_REPORT(0x15, Protocol.TCP, Remote.FMS, null),
     LOG_DATA(0x16, Protocol.TCP, Remote.FMS, null),
     ERR_AND_EVENT_DATA(0x17, Protocol.TCP, Remote.FMS, null),
     TEAM_NUMBER(0x18, Protocol.TCP, Remote.FMS, () ->
-            NumberUtils.intToByteArr(Integer.parseInt(MainJDEC.TEAM_NUMBER.getText()))
+            NumberUtils.intToBytePair(Integer.parseInt(MainJDEC.TEAM_NUMBER.getText()))
     ),
     CHALLENGE_RESPONSE(0x1B, Protocol.TCP, Remote.FMS, () ->
             MainJDEC.CHALLENGE_RESPONSE.getText().getBytes()
@@ -130,7 +134,7 @@ public enum SendTag {
             out[0] = (byte) (tagData.length + 1);
         } else if (protocol == Protocol.TCP) {
             int lenAll = tagData.length + 1;
-            byte[] b = NumberUtils.intToByteArr(lenAll);
+            byte[] b = NumberUtils.intToBytePair(lenAll);
             //TODO replace with arraycopy()
             out[0] = b[0];
             out[1] = b[1];

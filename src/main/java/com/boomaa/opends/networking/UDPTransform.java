@@ -5,10 +5,12 @@ import java.net.DatagramPacket;
 public class UDPTransform {
     private final byte[] buffer;
     private final DatagramPacket packet;
+    private final boolean blank;
 
-    public UDPTransform(byte[] buffer, DatagramPacket packet) {
+    public UDPTransform(byte[] buffer, DatagramPacket packet, boolean blank) {
         this.buffer = buffer;
         this.packet = packet;
+        this.blank = blank;
     }
 
     public String asString() {
@@ -21,5 +23,9 @@ public class UDPTransform {
 
     public DatagramPacket getPacket() {
         return packet;
+    }
+
+    public boolean isBlank() {
+        return blank;
     }
 }

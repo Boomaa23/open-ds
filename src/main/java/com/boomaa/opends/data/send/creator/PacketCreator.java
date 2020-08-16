@@ -6,8 +6,8 @@ import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.util.SequenceCounter;
 
 public abstract class PacketCreator implements MainJDEC {
-    protected static final SequenceCounter SEQUENCE_COUNTER_RIO = resetSequenceCounter();
-    protected static final SequenceCounter SEQUENCE_COUNTER_FMS = resetSequenceCounter();
+    public static final SequenceCounter SEQUENCE_COUNTER_RIO = new SequenceCounter(true);
+    public static final SequenceCounter SEQUENCE_COUNTER_FMS = new SequenceCounter(true);
 
     public abstract byte[] dsToRioUdp();
     public abstract byte[] dsToRioTcp();
@@ -18,7 +18,7 @@ public abstract class PacketCreator implements MainJDEC {
         return new PacketBuilder().addBytes((remote == Remote.FMS ? SEQUENCE_COUNTER_FMS : SEQUENCE_COUNTER_RIO).increment().getBytes());
     }
 
-    public static SequenceCounter resetSequenceCounter() {
-        return new SequenceCounter(true);
+    public static SequenceCounter resetSequenceCounter(Remote remote) {
+        return (remote == Remote.FMS ? SEQUENCE_COUNTER_FMS : SEQUENCE_COUNTER_RIO).reset();
     }
 }

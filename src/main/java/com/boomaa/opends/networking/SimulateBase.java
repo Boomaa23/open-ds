@@ -1,5 +1,7 @@
 package com.boomaa.opends.networking;
 
+import java.io.IOException;
+
 public class SimulateBase {
     protected final PortTriple ports;
     protected final TCPServer tcpAsRemote;
@@ -7,7 +9,7 @@ public class SimulateBase {
     protected final UDPInterface udpAsRemote;
     protected final UDPInterface udpAsDs;
 
-    public SimulateBase(PortTriple ports, TCPServer tcpAsRemote) {
+    public SimulateBase(PortTriple ports, TCPServer tcpAsRemote) throws IOException {
         this.ports = ports;
         this.tcpAsRemote = tcpAsRemote;
         this.tcpAsDs = new TCPInterface(AddressConstants.LOCALHOST, ports.getTcp());

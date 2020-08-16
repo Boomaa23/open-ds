@@ -1,7 +1,10 @@
 package com.boomaa.opends.networking;
 
+import com.boomaa.opends.display.frames.ErrorBox;
+
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -12,6 +15,8 @@ public abstract class TCPServer extends Thread {
     public TCPServer(int port) {
         try {
             this.socket = new ServerSocket(port);
+        } catch (BindException e) {
+            ErrorBox.show(e.getMessage());
         } catch (IOException e) {
             e.printStackTrace();
         }

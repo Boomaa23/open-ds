@@ -2,6 +2,7 @@ package com.boomaa.opends.display.frames;
 
 import com.boomaa.opends.display.PopupBase;
 import com.boomaa.opends.display.elements.GBCPanelBuilder;
+import com.boomaa.opends.display.elements.HideableLabel;
 
 import javax.swing.JLabel;
 import java.awt.Dimension;
@@ -68,22 +69,22 @@ public class StatsFrame extends PopupBase {
     }
 
     public interface EmbeddedJDEC {
-        JLabel DISK_SPACE = new JLabel("");
-        JLabel RAM_SPACE = new JLabel("");
-        JLabel CPU_PERCENT = new JLabel("");
-        JLabel ROBORIO_VERSION = new JLabel("");
-        JLabel WPILIB_VERSION = new JLabel("");
+        HideableLabel DISK_SPACE = new HideableLabel(false, "");
+        HideableLabel RAM_SPACE = new HideableLabel(false, "");
+        HideableLabel CPU_PERCENT = new HideableLabel(false, "");
+        HideableLabel ROBORIO_VERSION = new HideableLabel(false, "");
+        HideableLabel WPILIB_VERSION = new HideableLabel(false, "");
 
-        JLabel CAN_UTILIZATION = new JLabel("");
-        JLabel CAN_BUS_OFF = new JLabel("");
-        JLabel CAN_TX_FULL = new JLabel("");
-        JLabel CAN_RX_ERR = new JLabel("");
-        JLabel CAN_TX_ERR = new JLabel("");
+        HideableLabel CAN_UTILIZATION = new HideableLabel(false, "");
+        HideableLabel CAN_BUS_OFF = new HideableLabel(false, "");
+        HideableLabel CAN_TX_FULL = new HideableLabel(false, "");
+        HideableLabel CAN_RX_ERR = new HideableLabel(false, "");
+        HideableLabel CAN_TX_ERR = new HideableLabel(false, "");
         
-        JLabel DISABLE_FAULTS_COMMS = new JLabel("");
-        JLabel DISABLE_FAULTS_12V = new JLabel("");
-        JLabel RAIL_FAULTS_6V = new JLabel("");
-        JLabel RAIL_FAULTS_5V = new JLabel("");
-        JLabel RAIL_FAULTS_3P3V = new JLabel("");
+        HideableLabel DISABLE_FAULTS_COMMS = new HideableLabel(false, "");
+        HideableLabel DISABLE_FAULTS_12V = new HideableLabel(false, "");
+        HideableLabel RAIL_FAULTS_6V = new HideableLabel(false, "");
+        HideableLabel RAIL_FAULTS_5V = new HideableLabel(false, "");
+        HideableLabel RAIL_FAULTS_3P3V = new HideableLabel(false, "");
     }
 }

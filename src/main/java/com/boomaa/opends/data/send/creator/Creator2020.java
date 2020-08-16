@@ -71,7 +71,7 @@ public class Creator2020 extends PacketCreator {
         if (ROBOT_CONNECTION_STATUS.isDisplayed()) {
             status += 0x20;
         }
-        if (DisplayEndpoint.HAS_INITIALIZED.getRio()) {
+        if (DisplayEndpoint.NET_IF_INIT.isOrInit(Remote.ROBO_RIO)) {
             status += 0x10 + 0x08;
         }
         if (IS_ENABLED.isSelected()) {
@@ -89,9 +89,9 @@ public class Creator2020 extends PacketCreator {
 
         String teamStr = TEAM_NUMBER.getText();
         if (teamStr != null && !teamStr.isEmpty()) {
-            builder.addBytes(NumberUtils.intToByteArr(Integer.parseInt(teamStr)));
+            builder.addBytes(NumberUtils.intToBytePair(Integer.parseInt(teamStr)));
         }
-        if (DisplayEndpoint.HAS_INITIALIZED.getRio()) {
+        if (DisplayEndpoint.NET_IF_INIT.isOrInit(Remote.ROBO_RIO)) {
             double bat = Double.parseDouble(BAT_VOLTAGE.getText().replaceAll(" V", ""));
             //TODO test if this battery re-encoder works
             int b1 = (int) bat;
@@ -108,6 +108,6 @@ public class Creator2020 extends PacketCreator {
         //TODO add fms content
         PacketBuilder builder = new PacketBuilder();
         builder.addBytes(SendTag.TEAM_NUMBER.getBytes());
-        return builder.build();
+        return builder.size() != 0 ? builder.build() : SendTag.DS_PING.getBytes();
     }
 }

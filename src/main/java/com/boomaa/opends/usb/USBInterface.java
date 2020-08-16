@@ -9,12 +9,10 @@ import java.io.File;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.net.URISyntaxException;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class USBInterface {
     private static List<HIDDevice> controlDevices = new ArrayList<>();
@@ -38,6 +36,18 @@ public class USBInterface {
 
     private static ControllerEnvironment createDefaultEnvironment() {
         // More reflection workarounds to get JInput to rescan usb devices each time this method is called
+        final Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+        for (final Thread thread : threadSet) {
+            final String name = thread.getClass().getName();
+            if (name.equals("net.java.games.input.RawInputEventQueue$QueueThread")) {
+                thread.interrupt();
+                try {
+                    thread.join();
+                } catch (final InterruptedException e) {
+                    thread.interrupt();
+                }
+            }
+        }
         try {
             Constructor<ControllerEnvironment> constructor = (Constructor<ControllerEnvironment>)
                     Class.forName("net.java.games.input.DefaultControllerEnvironment").getDeclaredConstructors()[0];

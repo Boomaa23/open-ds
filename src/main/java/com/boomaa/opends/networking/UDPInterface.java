@@ -11,14 +11,13 @@ public class UDPInterface {
     private int bufSize = 1024;
     private boolean closed;
 
-    public UDPInterface(String clientIp, int clientPort, int serverPort) {
+    public UDPInterface(String clientIp, int clientPort, int serverPort) throws SocketException {
         try {
             this.ip = InetAddress.getByName(clientIp);
             this.clientPort = clientPort;
             this.clientSocket = new DatagramSocket();
             this.serverSocket = new DatagramSocket(serverPort);
-            this.serverSocket.setSoTimeout(100);
-        } catch (SocketException | UnknownHostException e) {
+        } catch (UnknownHostException e) {
             e.printStackTrace();
         }
     }
@@ -41,16 +40,16 @@ public class UDPInterface {
         byte[] buffer = new byte[bufSize];
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
         try {
-            while (serverSocket == null) {
-                Thread.sleep(50);
+            if (closed) {
+                return new UDPTransform(new byte[0], packet, true);
             }
             serverSocket.receive(packet);
         } catch (SocketTimeoutException | SocketException e) {
-            return new UDPTransform(new byte[0], packet);
-        } catch (IOException | InterruptedException e) {
+            return new UDPTransform(new byte[0], packet, true);
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        return new UDPTransform(buffer, packet);
+        return new UDPTransform(buffer, packet, false);
     }
 
     public void setBufSize(int bufSize) {

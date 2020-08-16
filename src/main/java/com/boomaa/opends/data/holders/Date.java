@@ -63,7 +63,7 @@ public class Date {
 
     public byte[] toSendBytes() {
         PacketBuilder builder = new PacketBuilder();
-        builder.addBytes(NumberUtils.jIntToByteArray(microsecond));
+        builder.addBytes(NumberUtils.jIntToByteArr(microsecond));
         builder.addInt(second);
         builder.addInt(minute);
         builder.addInt(hour);

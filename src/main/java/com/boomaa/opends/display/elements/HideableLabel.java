@@ -31,4 +31,10 @@ public class HideableLabel extends JLabel {
     public boolean isDisplayed() {
         return displayed;
     }
+
+    @Override
+    public void setText(String text) {
+        setDisplay(true);
+        super.setText(text);
+    }
 }

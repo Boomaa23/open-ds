@@ -8,7 +8,8 @@ import com.boomaa.opends.data.receive.TVMList;
 import com.boomaa.opends.data.receive.TagValueMap;
 import com.boomaa.opends.data.receive.parser.PacketParser;
 import com.boomaa.opends.data.receive.parser.Parser2020;
-import com.boomaa.opends.display.MainJDEC;
+import com.boomaa.opends.data.send.creator.PacketCreator;
+import com.boomaa.opends.display.Logger;
 import com.boomaa.opends.display.frames.StatsFrame;
 import com.boomaa.opends.util.NumberUtils;
 
@@ -111,14 +112,21 @@ public class Updater2020 extends ElementUpdater {
 
     @Override
     protected void doUpdateFromFmsUdp(PacketParser data, TVMList tagMap) {
+        Parser2020.FmsToDsUdp fmsUdp = (Parser2020.FmsToDsUdp) data;
+        Logger.OUT.println(fmsUdp.getAllianceStation());
+        Logger.OUT.println(fmsUdp.getTournamentLevel());
+        Logger.OUT.println(fmsUdp.getMatchNumber());
+        Logger.OUT.println(fmsUdp.getPlayNumber());
+        MATCH_TIME.setText(String.valueOf(fmsUdp.getRemainingTime()));
         //TODO add fms content
     }
 
     @Override
     protected void doUpdateFromFmsTcp(PacketParser data, TVMList tagMap) {
         //TODO add fms content
+        FMS_CONNECTION_STATUS.forceDisplay();
         TVMList challenge = tagMap.getMatching(ReceiveTag.CHALLENGE_QUESTION);
-        if (challenge != null) {
+        if (!challenge.isEmpty()) {
             int value = (Integer) challenge.first().get("Challenge Value");
             int teamNum = Integer.parseInt(TEAM_NUMBER.getText());
             CHALLENGE_RESPONSE.setText(Challenge.getResponse(value, teamNum));
@@ -132,35 +140,39 @@ public class Updater2020 extends ElementUpdater {
         ROBOT_CODE_STATUS.forceHide();
         BROWNOUT_STATUS.forceHide();
 
-        StatsFrame.EmbeddedJDEC.DISK_SPACE.setText("");
-        StatsFrame.EmbeddedJDEC.RAM_SPACE.setText("");
-        StatsFrame.EmbeddedJDEC.CPU_PERCENT.setText("");
-        StatsFrame.EmbeddedJDEC.CAN_UTILIZATION.setText("");
-        StatsFrame.EmbeddedJDEC.CAN_BUS_OFF.setText("");
-        StatsFrame.EmbeddedJDEC.CAN_TX_FULL.setText("");
-        StatsFrame.EmbeddedJDEC.CAN_RX_ERR.setText("");
-        StatsFrame.EmbeddedJDEC.CAN_TX_ERR.setText("");
+        StatsFrame.EmbeddedJDEC.DISK_SPACE.forceHide();
+        StatsFrame.EmbeddedJDEC.RAM_SPACE.forceHide();
+        StatsFrame.EmbeddedJDEC.CPU_PERCENT.forceHide();
+        StatsFrame.EmbeddedJDEC.CAN_UTILIZATION.forceHide();
+        StatsFrame.EmbeddedJDEC.CAN_BUS_OFF.forceHide();
+        StatsFrame.EmbeddedJDEC.CAN_TX_FULL.forceHide();
+        StatsFrame.EmbeddedJDEC.CAN_RX_ERR.forceHide();
+        StatsFrame.EmbeddedJDEC.CAN_TX_ERR.forceHide();
     }
 
     @Override
     protected void resetDataRioTcp() {
-        StatsFrame.EmbeddedJDEC.DISABLE_FAULTS_COMMS.setText("");
-        StatsFrame.EmbeddedJDEC.DISABLE_FAULTS_12V.setText("");
-        StatsFrame.EmbeddedJDEC.RAIL_FAULTS_6V.setText("");
-        StatsFrame.EmbeddedJDEC.RAIL_FAULTS_5V.setText("");
-        StatsFrame.EmbeddedJDEC.RAIL_FAULTS_3P3V.setText("");
-        StatsFrame.EmbeddedJDEC.ROBORIO_VERSION.setText("");
-        StatsFrame.EmbeddedJDEC.WPILIB_VERSION.setText("");
+        StatsFrame.EmbeddedJDEC.DISABLE_FAULTS_COMMS.forceHide();
+        StatsFrame.EmbeddedJDEC.DISABLE_FAULTS_12V.forceHide();
+        StatsFrame.EmbeddedJDEC.RAIL_FAULTS_6V.forceHide();
+        StatsFrame.EmbeddedJDEC.RAIL_FAULTS_5V.forceHide();
+        StatsFrame.EmbeddedJDEC.RAIL_FAULTS_3P3V.forceHide();
+        StatsFrame.EmbeddedJDEC.ROBORIO_VERSION.forceHide();
+        StatsFrame.EmbeddedJDEC.WPILIB_VERSION.forceHide();
+        PacketCreator.SEQUENCE_COUNTER_RIO.reset();
     }
 
     @Override
     protected void resetDataFmsUdp() {
+        FMS_CONNECTION_STATUS.forceHide();
+        MATCH_TIME.forceHide();
         //TODO add fms content
     }
 
     @Override
     protected void resetDataFmsTcp() {
         CHALLENGE_RESPONSE.setText("");
+        PacketCreator.SEQUENCE_COUNTER_FMS.reset();
         //TODO add fms content
     }
 }

@@ -29,6 +29,15 @@ public class AllianceStation {
         return sidedNum + (isBlue ? 3 : 0);
     }
 
+    @Override
+    public String toString() {
+        return "AllianceStation{" +
+                "sidedNum=" + sidedNum +
+                ", isBlue=" + isBlue +
+                ", status=" + status +
+                '}';
+    }
+
     public static AllianceStation getFromByte(byte b) {
         int num = NumberUtils.getUInt8(b);
         return new AllianceStation(num, num >= 3);

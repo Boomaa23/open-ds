@@ -30,6 +30,10 @@ public class PacketBuilder {
         return this;
     }
 
+    public int size() {
+        return packet.size();
+    }
+
     public byte[] build() {
         byte[] out = new byte[packet.size()];
         for (int i = 0; i < out.length; i++) {

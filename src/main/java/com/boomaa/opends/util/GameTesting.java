@@ -1,7 +1,6 @@
 package com.boomaa.opends.util;
 
 import com.boomaa.opends.data.receive.parser.Parser2020;
-import com.boomaa.opends.usb.USBInterface;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -12,7 +11,7 @@ public class GameTesting {
     }
 
     public static void main(String[] args) throws URISyntaxException, IOException {
-        USBInterface.refreshControllers();
+//        USBInterface.refreshControllers();
 //        for (HIDDevice device : USBInterface.getControlDevices()) {
 //            if (device instanceof XboxController) {
 //                Rumbler[] rumblers = device.getController().getRumblers();

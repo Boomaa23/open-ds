@@ -9,16 +9,19 @@ import java.util.List;
 
 public class NumberUtils {
     public static float getFloat(byte[] bytes) {
-        return ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getFloat();
+        return ByteBuffer.wrap(bytes).order(ByteOrder.BIG_ENDIAN).getFloat();
     }
 
     public static int getInt32(byte[] bytes) {
-        return ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getInt();
+        return ByteBuffer.wrap(bytes).order(ByteOrder.BIG_ENDIAN).getInt();
     }
 
     public static int getUInt32(byte[] bytes) {
-        //TODO make this work correctly
-        return (int) ((bytes[3] * Math.pow(256, 3)) + (bytes[2] * Math.pow(256, 2)) + (bytes[1] * 256) + bytes[0]);
+        //TODO make this work correctly, check byte ordering
+        return (bytes[3] & 0xFF)
+                | ((bytes[2] & 0xFF) << 8)
+                | ((bytes[1] & 0xFF) << 16)
+                | ((bytes[0] & 0xFF) << 24);
     }
 
     public static int getUInt8(byte num) {
@@ -40,15 +43,14 @@ public class NumberUtils {
         return out;
     }
 
-    public static byte[] intToByteArr(int in) {
-        //TODO test if this is the correct ordering
+    public static byte[] intToBytePair(int in) {
         byte[] out = new byte[2];
         out[0] = (byte) ((in >>> 8) & 0xFF);
         out[1] = (byte) (in & 0xFF);
         return out;
     }
 
-    public static byte[] jIntToByteArray(int in) {
+    public static byte[] jIntToByteArr(int in) {
         return ByteBuffer.allocate(4).putInt(in).array();
     }
 

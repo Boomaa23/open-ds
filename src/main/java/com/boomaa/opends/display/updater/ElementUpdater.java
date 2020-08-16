@@ -3,6 +3,7 @@ package com.boomaa.opends.display.updater;
 import com.boomaa.opends.data.receive.TVMList;
 import com.boomaa.opends.data.receive.TagValueMap;
 import com.boomaa.opends.data.receive.parser.PacketParser;
+import com.boomaa.opends.data.receive.parser.ParserNull;
 import com.boomaa.opends.display.Logger;
 import com.boomaa.opends.display.MainJDEC;
 
@@ -18,38 +19,38 @@ public abstract class ElementUpdater implements MainJDEC {
     protected abstract void resetDataFmsTcp();
 
     public void updateFromRioUdp(PacketParser data) {
-        if (data.getPacket().length != 0) {
+        if (data instanceof ParserNull) {
+            resetDataRioUdp();
+        } else {
             doUpdateFromRioUdp(data, data.getTags());
             doLog(data);
-        } else {
-            resetDataRioUdp();
         }
     }
 
     public void updateFromRioTcp(PacketParser data) {
-        if (data.getPacket().length != 0) {
+        if (data instanceof ParserNull) {
+            resetDataRioTcp();
+        } else {
             doUpdateFromRioTcp(data, data.getTags());
             doLog(data);
-        } else {
-            resetDataRioTcp();
         }
     }
 
     public void updateFromFmsUdp(PacketParser data) {
-        if (data.getPacket().length != 0) {
+        if (data instanceof ParserNull) {
+            resetDataFmsUdp();
+        } else {
             doUpdateFromFmsUdp(data, data.getTags());
             doLog(data);
-        } else {
-            resetDataFmsUdp();
         }
     }
 
     public void updateFromFmsTcp(PacketParser data) {
-        if (data.getPacket().length != 0) {
+        if (data instanceof ParserNull) {
+            resetDataFmsTcp();
+        } else {
             doUpdateFromFmsTcp(data, data.getTags());
             doLog(data);
-        } else {
-            resetDataFmsTcp();
         }
     }
 

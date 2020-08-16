@@ -30,8 +30,8 @@ public interface MainJDEC {
      StickyButton RESTART_ROBO_RIO_BTN = new StickyButton("Restart RoboRIO", 10);
      StickyButton ESTOP_BTN = new StickyButton("Emergency Stop", 10);
 
-     OverlayField GAME_DATA = new OverlayField("Game Data", 6);
-     OverlayField TEAM_NUMBER = new OverlayField("Team Number", 6);
+     OverlayField GAME_DATA = new OverlayField("Game Data", 6, false);
+     OverlayField TEAM_NUMBER = new OverlayField("Team Number", 6, false);
 
      JComboBox<Integer> PROTOCOL_YEAR = new JComboBox<>(DisplayEndpoint.getValidProtocolYears());
      JComboBox<FMSType> FMS_TYPE = new JComboBox<>(FMSType.values());
@@ -46,6 +46,7 @@ public interface MainJDEC {
      HideableLabel ROBOT_CONNECTION_STATUS = new HideableLabel(false, "Connected");
      HideableLabel FMS_CONNECTION_STATUS = new HideableLabel(false, "Connected");
      HideableLabel BROWNOUT_STATUS = new HideableLabel(false, "Voltage");
+     HideableLabel MATCH_TIME = new HideableLabel(false, "0");
      MultiValueLabel ROBOT_CODE_STATUS = new MultiValueLabel(false, "Running", "Initializing");
 
      JLabel CHALLENGE_RESPONSE = new JLabel("");
