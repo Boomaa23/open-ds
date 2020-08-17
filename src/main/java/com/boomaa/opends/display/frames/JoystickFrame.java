@@ -119,7 +119,7 @@ public class JoystickFrame extends PopupBase {
         JButton UP_BTN = new JButton("▲");
         JButton DOWN_BTN = new JButton("▼");
         JButton RELOAD_BTN = new JButton("↻");
-        StickyButton CLOSE_BTN = new StickyButton("Close", 1);
+        StickyButton CLOSE_BTN = new StickyButton("Close", 5);
     }
 
     public static class ValUpdater extends Clock {

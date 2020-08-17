@@ -8,6 +8,7 @@ public abstract class HIDDevice {
     protected final Controller controller;
     protected final int numButtons;
     protected boolean[] buttons;
+    protected int index = -1;
 
     public HIDDevice(Controller controller) {
         this.controller = controller;
@@ -29,6 +30,14 @@ public abstract class HIDDevice {
 
     public boolean[] getButtons() {
         return buttons;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public int getIndex() {
+        return index;
     }
 
     public int numButtons() {

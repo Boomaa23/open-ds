@@ -1,3 +1,5 @@
 .idea/*
 target
 open-ds.jar
+*.class
+src/main/java/com/boomaa/opends/util/battery/winbase.h

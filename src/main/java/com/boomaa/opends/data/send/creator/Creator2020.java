@@ -13,8 +13,11 @@ import com.boomaa.opends.display.RobotMode;
 import com.boomaa.opends.display.frames.FMSFrame;
 import com.boomaa.opends.display.frames.JoystickFrame;
 import com.boomaa.opends.util.NumberUtils;
+import com.boomaa.opends.util.SequenceCounter;
 
 public class Creator2020 extends PacketCreator {
+    public static SequenceCounter FMS_TCP_PACKET_COUNTER = new SequenceCounter(false);
+
     @Override
     public byte[] dsToRioUdp() {
         PacketBuilder builder = getSequenced(Remote.ROBO_RIO);
@@ -107,7 +110,13 @@ public class Creator2020 extends PacketCreator {
     public byte[] dsToFmsTcp() {
         //TODO add fms content
         PacketBuilder builder = new PacketBuilder();
-        builder.addBytes(SendTag.TEAM_NUMBER.getBytes());
+        if (FMS_TCP_PACKET_COUNTER.getCounter() < 5) {
+            builder.addBytes(SendTag.TEAM_NUMBER.getBytes());
+        }
+        if (!CHALLENGE_RESPONSE.getText().isEmpty()) {
+            builder.addBytes(SendTag.CHALLENGE_RESPONSE.getBytes());
+            CHALLENGE_RESPONSE.setText("");
+        }
         return builder.size() != 0 ? builder.build() : SendTag.DS_PING.getBytes();
     }
 }

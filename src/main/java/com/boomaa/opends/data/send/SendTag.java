@@ -1,9 +1,12 @@
 package com.boomaa.opends.data.send;
 
+import com.boomaa.opends.data.UsageReporting;
 import com.boomaa.opends.data.holders.Date;
 import com.boomaa.opends.data.holders.Protocol;
 import com.boomaa.opends.data.holders.Remote;
 import com.boomaa.opends.display.MainJDEC;
+import com.boomaa.opends.display.RobotMode;
+import com.boomaa.opends.networking.WlanConnection;
 import com.boomaa.opends.usb.HIDDevice;
 import com.boomaa.opends.usb.Joystick;
 import com.boomaa.opends.usb.JoystickType;
@@ -11,6 +14,7 @@ import com.boomaa.opends.usb.USBInterface;
 import com.boomaa.opends.usb.XboxController;
 import com.boomaa.opends.util.NumberUtils;
 
+import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -30,9 +34,8 @@ public enum SendTag {
                 XboxController xbox = (XboxController) ctrl;
                 builder.addInt(NumberUtils.dblToInt8(xbox.getX(true)));
                 builder.addInt(NumberUtils.dblToInt8(xbox.getY(true)));
-                //TODO remove controller trigger padding and add functionality
-                builder.addInt(0);
-                builder.addInt(0);
+                builder.addInt(NumberUtils.dblToInt8(xbox.getTrigger(true)));
+                builder.addInt(NumberUtils.dblToInt8(xbox.getTrigger(false)));
                 builder.addInt(NumberUtils.dblToInt8(xbox.getX(false)));
                 builder.addInt(NumberUtils.dblToInt8(xbox.getY(false)));
             }
@@ -50,13 +53,15 @@ public enum SendTag {
     JOYSTICK_DESC(0x02, Protocol.TCP, Remote.ROBO_RIO, () -> {
         PacketBuilder builder = new PacketBuilder();
         List<HIDDevice> ctrl = USBInterface.getControlDevices();
-        for (int i = 0; i < ctrl.size() && i < Joystick.MAX_JS_NUM; i++) {
+        for (int i = 0; i < ctrl.size() && i < HIDDevice.MAX_JS_NUM; i++) {
             HIDDevice cDev = ctrl.get(i);
             builder.addInt(i);
             builder.addInt(cDev instanceof XboxController ? 1 : 0); //isXbox
             builder.addInt((cDev instanceof XboxController ? JoystickType.XINPUT_GAMEPAD : JoystickType.HID_JOYSTICK).numAsInt());
             //TODO make sure this controller name-getting works VVV
-            builder.addBytes(cDev.getController().getName().getBytes());
+            String name = cDev.getController().getName();
+            builder.addInt(name.length());
+            builder.addBytes(name.getBytes());
             builder.addInt(cDev.numAxes()); //numAxes
             HIDDevice.Axis[] axes = cDev instanceof XboxController ? XboxController.Axis.values() : Joystick.Axis.values();
             for (HIDDevice.Axis axis : axes) {
@@ -72,8 +77,16 @@ public enum SendTag {
             MainJDEC.GAME_DATA.getText().getBytes()
     ),
 
-    FIELD_RADIO_METRICS(0x00, Protocol.UDP, Remote.FMS, null),
-    COMMS_METRICS(0x01, Protocol.UDP, Remote.FMS, null),
+    FIELD_RADIO_METRICS(0x00, Protocol.UDP, Remote.FMS, () ->
+            new PacketBuilder().addInt(WlanConnection.getRadio(Integer.parseInt(MainJDEC.TEAM_NUMBER.getText())).getSignal())
+                    .addInt(0x00).addInt(0x00).build() //TODO bandwidth utilization (uint16)
+    ),
+    //TODO lost packets (uint16), sent packets (uint16), avg trip time (uint8)
+    COMMS_METRICS(0x01, Protocol.UDP, Remote.FMS, () ->
+            new PacketBuilder().addInt(0x00).addInt(0x00)
+                    .addInt(0x00).addInt(0x00)
+                    .addInt(0x00).build()
+    ),
     LAPTOP_METRICS(0x02, Protocol.UDP, Remote.FMS, null),
     ROBOT_RADIO_METRICS(0x03, Protocol.UDP, Remote.FMS, null),
     PD_INFO(0x04, Protocol.UDP, Remote.FMS, null),
@@ -86,8 +99,48 @@ public enum SendTag {
     CANJAG_VER(0x05, Protocol.TCP, Remote.FMS, null),
     CANTALON_VER(0x06, Protocol.TCP, Remote.FMS, null),
     THIRD_PARTY_DEVICE_VER(0x07, Protocol.TCP, Remote.FMS, null),
-    USAGE_REPORT(0x15, Protocol.TCP, Remote.FMS, null),
-    LOG_DATA(0x16, Protocol.TCP, Remote.FMS, null),
+    USAGE_REPORT(0x15, Protocol.TCP, Remote.FMS, () -> {
+        PacketBuilder builder = new PacketBuilder();
+        builder.addBytes(NumberUtils.intToBytePair(Integer.parseInt(MainJDEC.TEAM_NUMBER.getText())));
+        builder.addInt(0x00); //Unknown
+        //TODO add usage report encoding
+        builder.addBytes(UsageReporting.encode(new String[0], new String[9], new UsageReporting.IdPrefix[0]));
+        return builder.build();
+    }),
+    LOG_DATA(0x16, Protocol.TCP, Remote.FMS, () -> {
+        PacketBuilder builder = new PacketBuilder();
+        //TODO implement trip time, lost packets, CAN, signalDb, bandwidth, "Watchdog" on status
+        builder.addInt(0x01); //tripTime
+        builder.addInt(0x00); //lostPackets
+        builder.addBytes(NumberUtils.intToBytePair(Integer.parseInt(MainJDEC.TEAM_NUMBER.getText())));
+        int status = 0;
+        if (MainJDEC.BROWNOUT_STATUS.isDisplayed()) {
+            status += 0x80;
+        }
+//        if () {
+//            status += 0x40;
+//        }
+        RobotMode mode = (RobotMode) MainJDEC.ROBOT_DRIVE_MODE.getSelectedItem();
+        if (mode != null) {
+            //TODO test if we can add DS and robot status flags
+            switch (mode) {
+                case TELEOPERATED:
+                    status += 0x20 + 0x04;
+                    break;
+                case AUTONOMOUS:
+                    status += 0x10 + 0x02;
+                    break;
+            }
+        }
+        if (!MainJDEC.IS_ENABLED.isSelected()) {
+            status += 0x08 + 0x01;
+        }
+        builder.addInt(status);
+        builder.addInt(0x01); //CAN
+        builder.addInt(0x01); //SignalDb
+        builder.addBytes(NumberUtils.intToBytePair(0x01)); //bandwidth
+        return builder.build();
+    }),
     ERR_AND_EVENT_DATA(0x17, Protocol.TCP, Remote.FMS, null),
     TEAM_NUMBER(0x18, Protocol.TCP, Remote.FMS, () ->
             NumberUtils.intToBytePair(Integer.parseInt(MainJDEC.TEAM_NUMBER.getText()))

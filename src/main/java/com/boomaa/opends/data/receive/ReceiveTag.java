@@ -61,7 +61,7 @@ public enum ReceiveTag {
     RADIO_EVENTS(0x00, Protocol.TCP, Remote.ROBO_RIO, Logger.Include.ALWAYS, (ReceiveTagBase<String>) (packet, size) ->
             TagValueMap.singleton("Message", new String(packet))
     ),
-    USAGE_REPORT(0x01, Protocol.TCP, Remote.ROBO_RIO, Logger.Include.ALWAYS, (ReceiveTagBase<String>) UsageReporting::build),
+    USAGE_REPORT(0x01, Protocol.TCP, Remote.ROBO_RIO, Logger.Include.ALWAYS, (ReceiveTagBase<String>) UsageReporting::decode),
     DISABLE_FAULTS(0x04, Protocol.TCP, Remote.ROBO_RIO, Logger.Include.ALWAYS, (ReceiveTagBase<Integer>) (packet, size) -> new TagValueMap<Integer>()
             .addTo("Comms", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 0, 2)))
             .addTo("12V", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 2, 4)))

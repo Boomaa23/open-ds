@@ -21,7 +21,7 @@ public class SequenceCounter {
     }
 
     public SequenceCounter reset() {
-        this.counter = (short) ((isRoundTrip ? -2 : 1) + offset);
+        this.counter = (short) ((isRoundTrip ? 2 : 1) + offset);
         return this;
     }
 

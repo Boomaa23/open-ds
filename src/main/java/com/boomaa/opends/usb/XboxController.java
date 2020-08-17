@@ -7,6 +7,8 @@ public class XboxController extends HIDDevice {
     protected double leftY = 0.0;
     protected double rightX = 0.0;
     protected double rightY = 0.0;
+    protected double leftTrigger = 0.0;
+    protected double rightTrigger = 0.0;
 
     public XboxController(Controller controller) {
         super(controller);
@@ -36,9 +38,21 @@ public class XboxController extends HIDDevice {
         }
     }
 
+    public double getTrigger(boolean isLeft) {
+        return isLeft ? leftTrigger : rightTrigger;
+    }
+
+    public void setTrigger(double trigger, boolean isLeft) {
+        if (isLeft) {
+            this.leftTrigger = trigger;
+        } else {
+            this.rightTrigger = trigger;
+        }
+    }
+
     @Override
     public int numAxes() {
-        return 4;
+        return 6;
     }
 
     public enum Axis implements HIDDevice.Axis {

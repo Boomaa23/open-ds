@@ -17,20 +17,28 @@ import java.util.Set;
 public class USBInterface {
     private static List<HIDDevice> controlDevices = new ArrayList<>();
     private static Controller[] rawControllers;
+    private static boolean hasLibraryInit = false;
 
     static {
         // Workaround to JInput natives not being bundled with jinput
         //  extracts all natives to system temp folder from jar
         //  throws an illegal reflection error (not exception)
-        String tmpPath = System.getProperty("java.io.tmpdir");
-        UnzipUtils.unzip(USBInterface.getJarPath(), tmpPath);
-        System.setProperty("java.library.path", tmpPath);
-        try {
-            MethodHandles.Lookup cl = MethodHandles.privateLookupIn(ClassLoader.class, MethodHandles.lookup());
-            VarHandle sys_paths = cl.findStaticVarHandle(ClassLoader.class, "sys_paths", String[].class);
-            sys_paths.set(null);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            e.printStackTrace();
+        initLibraries(false);
+    }
+
+    public static void initLibraries(boolean force) {
+        if (!hasLibraryInit || force) {
+            String tmpPath = System.getProperty("java.io.tmpdir");
+            UnzipUtils.unzip(USBInterface.getJarPath(), tmpPath);
+            System.setProperty("java.library.path", tmpPath);
+            try {
+                MethodHandles.Lookup cl = MethodHandles.privateLookupIn(ClassLoader.class, MethodHandles.lookup());
+                VarHandle sys_paths = cl.findStaticVarHandle(ClassLoader.class, "sys_paths", String[].class);
+                sys_paths.set(null);
+            } catch (IllegalAccessException | NoSuchFieldException e) {
+                e.printStackTrace();
+            }
+            hasLibraryInit = true;
         }
     }
 

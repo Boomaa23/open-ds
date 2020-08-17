@@ -29,6 +29,10 @@ public class AllianceStation {
         return sidedNum + (isBlue ? 3 : 0);
     }
 
+    public boolean isBlue() {
+        return isBlue;
+    }
+
     @Override
     public String toString() {
         return "AllianceStation{" +

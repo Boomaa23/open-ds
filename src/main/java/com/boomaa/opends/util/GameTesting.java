@@ -1,6 +1,9 @@
 package com.boomaa.opends.util;
 
 import com.boomaa.opends.data.receive.parser.Parser2020;
+import com.boomaa.opends.util.battery.BatteryFill;
+import com.boomaa.opends.util.battery.BatteryInfo;
+import com.boomaa.opends.util.battery.Win32BatteryJNI;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -11,6 +14,24 @@ public class GameTesting {
     }
 
     public static void main(String[] args) throws URISyntaxException, IOException {
+//        System.out.println(BatteryInfo.getPercent());
+//        System.out.println(BatteryInfo.getLifeTime());
+//        System.out.println(BatteryInfo.getFullTime());
+//        System.out.println(BatteryInfo.getFlag());
+//        System.out.println(BatteryInfo.hasBattery());
+//        System.out.println(BatteryInfo.isPluggedIn());
+//        Enumeration<NetworkInterface> net =  NetworkInterface.getNetworkInterfaces();
+//        for (Iterator<NetworkInterface> it = net.asIterator(); it.hasNext(); ) {
+//            NetworkInterface n = it.next();
+//            byte[] hw = n.getHardwareAddress();
+//            if (hw != null) {
+//                System.out.println(n);
+//                System.out.println(Arrays.toString(hw));
+//                System.out.println(Arrays.toString(n.inetAddresses().toArray()));
+//                System.out.println();
+//            }
+//
+//        }
 //        USBInterface.refreshControllers();
 //        for (HIDDevice device : USBInterface.getControlDevices()) {
 //            if (device instanceof XboxController) {
