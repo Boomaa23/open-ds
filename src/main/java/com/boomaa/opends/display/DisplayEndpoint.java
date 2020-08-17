@@ -5,6 +5,7 @@ import com.boomaa.opends.data.holders.Remote;
 import com.boomaa.opends.data.receive.parser.PacketParser;
 import com.boomaa.opends.data.receive.parser.ParserNull;
 import com.boomaa.opends.data.send.creator.PacketCreator;
+import com.boomaa.opends.display.frames.ErrorBox;
 import com.boomaa.opends.display.frames.MainFrame;
 import com.boomaa.opends.display.updater.ElementUpdater;
 import com.boomaa.opends.networking.NetworkReloader;
@@ -39,6 +40,8 @@ public class DisplayEndpoint implements MainJDEC {
                 creator = (PacketCreator) Class.forName(creatorClass.toString()).getConstructor().newInstance();
             } catch (NoSuchMethodException | ClassNotFoundException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
                 e.printStackTrace();
+                ErrorBox.show(e.getMessage());
+                System.exit(1);
             }
         }
     };

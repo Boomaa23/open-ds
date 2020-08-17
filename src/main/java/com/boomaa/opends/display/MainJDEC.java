@@ -13,6 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import java.awt.Container;
 
+// JDEC = (J)ava (D)isplay (E)lement (C)onstants
 public interface MainJDEC {
      JFrame FRAME = new JFrame("OpenDS");
      Container CONTENT = FRAME.getContentPane();
