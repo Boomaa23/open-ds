@@ -31,8 +31,8 @@ public interface MainJDEC {
      StickyButton RESTART_ROBO_RIO_BTN = new StickyButton("Restart RoboRIO", 10);
      StickyButton ESTOP_BTN = new StickyButton("Emergency Stop", 10);
 
-     OverlayField GAME_DATA = new OverlayField("Game Data", 6, false);
-     OverlayField TEAM_NUMBER = new OverlayField("Team Number", 6, false);
+     OverlayField GAME_DATA = new OverlayField("Game Data", 6);
+     OverlayField TEAM_NUMBER = new OverlayField("Team Number", 6);
 
      JComboBox<Integer> PROTOCOL_YEAR = new JComboBox<>(DisplayEndpoint.getValidProtocolYears());
      JComboBox<FMSType> FMS_TYPE = new JComboBox<>(FMSType.values());

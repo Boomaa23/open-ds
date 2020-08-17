@@ -12,7 +12,7 @@ import java.awt.Insets;
 
 public class StatsFrame extends PopupBase {
     public StatsFrame() {
-        super("Statistics", new Dimension(520, 235));
+        super("Statistics", new Dimension(540, 250));
     }
 
     @Override

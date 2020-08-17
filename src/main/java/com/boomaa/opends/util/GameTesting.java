@@ -4,8 +4,10 @@ import com.boomaa.opends.data.receive.parser.Parser2020;
 import com.boomaa.opends.util.battery.BatteryFill;
 import com.boomaa.opends.util.battery.BatteryInfo;
 import com.boomaa.opends.util.battery.Win32BatteryJNI;
+import com.sun.management.OperatingSystemMXBean;
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.net.URISyntaxException;
 
 public class GameTesting {
@@ -14,6 +16,7 @@ public class GameTesting {
     }
 
     public static void main(String[] args) throws URISyntaxException, IOException {
+//        System.out.println(load);
 //        System.out.println(BatteryInfo.getPercent());
 //        System.out.println(BatteryInfo.getLifeTime());
 //        System.out.println(BatteryInfo.getFullTime());

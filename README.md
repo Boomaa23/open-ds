@@ -55,7 +55,7 @@ If you run into issues, ensure the following criteria are met:
     * Windows 7, 8/8.1, or 10
 * UNIX (Linux)
     * Linux kernel version greater than 2.6.35
-    * [`iwconfig`](https://linux.die.net/man/8/iwconfig), [`test`](https://linux.die.net/man/1/test), and [`cat`](https://linux.die.net/man/1/cat) are all runnable
+    * [`iwlist`](https://linux.die.net/man/8/iwlist), [`test`](https://linux.die.net/man/1/test), and [`cat`](https://linux.die.net/man/1/cat) are all runnable
     * [`sysfs-class-power`](https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-class-power) accessible without root user access
 
 ## License

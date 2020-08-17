@@ -72,9 +72,9 @@ public class USBInterface {
         controlDevices.clear();
         for (int i = 0; i < rawControllers.length; i++) {
             if (rawControllers[i].getType() == Controller.Type.STICK) {
-                controlDevices.add(new Joystick(rawControllers[i]));
+                controlDevices.add(new Joystick(rawControllers[i], controlDevices.size()));
             } else if (rawControllers[i].getType() == Controller.Type.GAMEPAD) {
-                controlDevices.add(new XboxController(rawControllers[i]));
+                controlDevices.add(new XboxController(rawControllers[i], controlDevices.size()));
             }
         }
     }

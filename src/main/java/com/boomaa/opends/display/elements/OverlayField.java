@@ -8,12 +8,10 @@ import java.awt.event.FocusListener;
 @SuppressWarnings("serial")
 public class OverlayField extends JTextField implements FocusListener {
     private final String hint;
-    private final boolean isNullable;
     private boolean showingHint;
 
-    public OverlayField(final String hint, final int col, boolean isNullable) {
+    public OverlayField(final String hint, final int col) {
         super(hint, col);
-        this.isNullable = isNullable;
         super.setForeground(Color.GRAY);
         this.hint = hint;
         this.showingHint = true;

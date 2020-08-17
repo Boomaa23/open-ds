@@ -13,7 +13,10 @@ import com.boomaa.opends.usb.JoystickType;
 import com.boomaa.opends.usb.USBInterface;
 import com.boomaa.opends.usb.XboxController;
 import com.boomaa.opends.util.NumberUtils;
+import com.boomaa.opends.util.battery.BatteryInfo;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -77,19 +80,27 @@ public enum SendTag {
             MainJDEC.GAME_DATA.getText().getBytes()
     ),
 
-    FIELD_RADIO_METRICS(0x00, Protocol.UDP, Remote.FMS, () ->
-            new PacketBuilder().addInt(WlanConnection.getRadio(Integer.parseInt(MainJDEC.TEAM_NUMBER.getText())).getSignal())
-                    .addInt(0x00).addInt(0x00).build() //TODO bandwidth utilization (uint16)
-    ),
+    FIELD_RADIO_METRICS(0x00, Protocol.UDP, Remote.FMS, null),
     //TODO lost packets (uint16), sent packets (uint16), avg trip time (uint8)
     COMMS_METRICS(0x01, Protocol.UDP, Remote.FMS, () ->
             new PacketBuilder().addInt(0x00).addInt(0x00)
                     .addInt(0x00).addInt(0x00)
                     .addInt(0x00).build()
     ),
-    LAPTOP_METRICS(0x02, Protocol.UDP, Remote.FMS, null),
-    ROBOT_RADIO_METRICS(0x03, Protocol.UDP, Remote.FMS, null),
-    PD_INFO(0x04, Protocol.UDP, Remote.FMS, null),
+    LAPTOP_METRICS(0x02, Protocol.UDP, Remote.FMS, () -> {
+        PacketBuilder builder = new PacketBuilder().addInt(BatteryInfo.getPercent());
+        double load = -1;
+        while (load == -1) {
+            load = ManagementFactory.getPlatformMXBean(com.sun.management.OperatingSystemMXBean.class).getSystemCpuLoad();
+        }
+        builder.addInt((int) (load * 100));
+        return builder.build();
+    }),
+    ROBOT_RADIO_METRICS(0x03, Protocol.UDP, Remote.FMS, () ->
+            new PacketBuilder().addInt(WlanConnection.getRadio(Integer.parseInt(MainJDEC.TEAM_NUMBER.getText())).getSignal())
+                    .addInt(0x00).addInt(0x00).build() //TODO bandwidth utilization (uint16)
+    ),
+    PD_INFO(0x04, Protocol.UDP, Remote.FMS, () -> new byte[0]),
 
     WPILIB_VER(0x00, Protocol.TCP, Remote.FMS, null),
     RIO_VER(0x01, Protocol.TCP, Remote.FMS, null),
@@ -117,7 +128,7 @@ public enum SendTag {
         if (MainJDEC.BROWNOUT_STATUS.isDisplayed()) {
             status += 0x80;
         }
-//        if () {
+//        if () { //watchdog
 //            status += 0x40;
 //        }
         RobotMode mode = (RobotMode) MainJDEC.ROBOT_DRIVE_MODE.getSelectedItem();

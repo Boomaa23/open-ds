@@ -10,8 +10,8 @@ public class XboxController extends HIDDevice {
     protected double leftTrigger = 0.0;
     protected double rightTrigger = 0.0;
 
-    public XboxController(Controller controller) {
-        super(controller);
+    public XboxController(Controller controller, int index) {
+        super(controller, index);
     }
 
     public double getX(boolean isLeft) {

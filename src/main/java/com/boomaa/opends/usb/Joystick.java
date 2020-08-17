@@ -7,8 +7,8 @@ public class Joystick extends HIDDevice {
     protected double y = 0.0;
     protected double z = 0.0;
 
-    public Joystick(Controller controller) {
-        super(controller);
+    public Joystick(Controller controller, int index) {
+        super(controller, index);
     }
 
     public double getX() {
