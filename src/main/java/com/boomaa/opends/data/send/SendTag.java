@@ -26,6 +26,7 @@ public enum SendTag {
     COUNTDOWN(0x07, Protocol.UDP, Remote.ROBO_RIO, null),
     JOYSTICK(0x0C, Protocol.UDP, Remote.ROBO_RIO, () -> {
         PacketBuilder builder = new PacketBuilder();
+        USBInterface.updateValues();
         for (HIDDevice ctrl : USBInterface.getControlDevices()) {
             builder.addInt(ctrl.numAxes()); //3 axes
             if (ctrl instanceof Joystick) {
@@ -58,7 +59,7 @@ public enum SendTag {
         List<HIDDevice> ctrl = USBInterface.getControlDevices();
         for (int i = 0; i < ctrl.size() && i < HIDDevice.MAX_JS_NUM; i++) {
             HIDDevice cDev = ctrl.get(i);
-            builder.addInt(i);
+            builder.addInt(cDev.getIndex());
             builder.addInt(cDev instanceof XboxController ? 1 : 0); //isXbox
             builder.addInt((cDev instanceof XboxController ? JoystickType.XINPUT_GAMEPAD : JoystickType.HID_JOYSTICK).numAsInt());
             //TODO make sure this controller name-getting works VVV
@@ -81,12 +82,7 @@ public enum SendTag {
     ),
 
     FIELD_RADIO_METRICS(0x00, Protocol.UDP, Remote.FMS, null),
-    //TODO lost packets (uint16), sent packets (uint16), avg trip time (uint8)
-    COMMS_METRICS(0x01, Protocol.UDP, Remote.FMS, () ->
-            new PacketBuilder().addInt(0x00).addInt(0x00)
-                    .addInt(0x00).addInt(0x00)
-                    .addInt(0x00).build()
-    ),
+    COMMS_METRICS(0x01, Protocol.UDP, Remote.FMS, null),
     LAPTOP_METRICS(0x02, Protocol.UDP, Remote.FMS, () -> {
         PacketBuilder builder = new PacketBuilder().addInt(BatteryInfo.getPercent());
         double load = -1;

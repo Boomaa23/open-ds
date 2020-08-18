@@ -15,12 +15,14 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.util.ArrayList;
+import java.util.List;
 
 public class JoystickFrame extends PopupBase {
     private ValUpdater valUpdater;
 
     public JoystickFrame() {
-        super("Joysticks", new Dimension(450, 210));
+        super("Joysticks", new Dimension(450, 265));
     }
 
     @Override
@@ -44,6 +46,19 @@ public class JoystickFrame extends PopupBase {
             if (device != null) {
                 EmbeddedJDEC.INDEX_SET.setEnabled(true);
                 EmbeddedJDEC.INDEX_SET.setText(String.valueOf(device.getIndex()));
+
+                EmbeddedJDEC.BUTTONS.clear();
+                EmbeddedJDEC.BUTTON_GRID.removeAll();
+                GBCPanelBuilder gbcButton = new GBCPanelBuilder(EmbeddedJDEC.BUTTON_GRID);
+                boolean[] buttons = device.getButtons();
+                for (int i = 0; i < buttons.length; i++) {
+                    JCheckBox cb = new JCheckBox();
+                    cb.setEnabled(false);
+                    cb.setSelected(buttons[i]);
+                    EmbeddedJDEC.BUTTONS.add(i, cb);
+                    gbcButton.clone().setX(i % 12).setY(i / 12).build(new JLabel(String.valueOf(i + 1)));
+                    gbcButton.clone().setX(i % 12).setY((i / 12) + 1).build(cb);
+                }
             } else {
                 EmbeddedJDEC.INDEX_SET.setEnabled(false);
                 EmbeddedJDEC.INDEX_SET.setText("");
@@ -74,7 +89,11 @@ public class JoystickFrame extends PopupBase {
         base.clone().setPos(6, 0, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.VAL_RX);
         base.clone().setPos(6, 1, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.VAL_RY);
 
-        base.clone().setPos(0, 3, 7, 1).build(EmbeddedJDEC.CLOSE_BTN);
+        base.clone().setPos(0, 3, 7, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.BUTTON_GRID);
+
+        base.clone().setPos(0, 4, 7, 1).build(EmbeddedJDEC.CLOSE_BTN);
+
+        EmbeddedJDEC.BUTTON_GRID.setLayout(new GridBagLayout());
 
         if (valUpdater == null || !valUpdater.isAlive()) {
             valUpdater = new ValUpdater();
@@ -84,8 +103,8 @@ public class JoystickFrame extends PopupBase {
 
     private void refreshControllerDisplay() {
         EmbeddedJDEC.LIST_MODEL.clear();
-        for (HIDDevice js : USBInterface.getControlDevices()) {
-            EmbeddedJDEC.LIST_MODEL.add(EmbeddedJDEC.LIST_MODEL.size(), js);
+        for (HIDDevice hid : USBInterface.getControlDevices()) {
+            EmbeddedJDEC.LIST_MODEL.add(EmbeddedJDEC.LIST_MODEL.size(), hid);
         }
     }
 
@@ -111,19 +130,35 @@ public class JoystickFrame extends PopupBase {
         JTextField INDEX_SET = new JTextField("");
         JButton RELOAD_BTN = new JButton("↻");
         StickyButton CLOSE_BTN = new StickyButton("Close", 5);
+
+        JPanel BUTTON_GRID = new JPanel();
+        List<JCheckBox> BUTTONS = new ArrayList<>();
     }
 
     public static class ValUpdater extends Clock {
         public ValUpdater() {
-            super(20);
+            super(100);
         }
 
         @Override
         public void onCycle() {
+            USBInterface.updateValues();
             HIDDevice current = EmbeddedJDEC.LIST.getSelectedValue();
             if (current != null) {
                 try {
-                    current.setIndex(Integer.parseInt(EmbeddedJDEC.INDEX_SET.getText()));
+                    int cIndex = current.getIndex();
+                    int nIndex = Integer.parseInt(EmbeddedJDEC.INDEX_SET.getText());
+                    if (cIndex != nIndex) {
+                        for (HIDDevice dev : USBInterface.getControlDevices()) {
+                            if (dev.getIndex() == nIndex) {
+                                ErrorBox.show("Duplicate index \"" + nIndex + "\" for controller \"" + dev.toString()
+                                        + "\"\nSetting controller \"" + dev.toString() + "\" on index \"" + dev.getIndex()
+                                        + "\"\n to new index \"" + cIndex + "\" and making requested index change");
+                                dev.setIndex(cIndex);
+                            }
+                        }
+                    }
+                    current.setIndex(nIndex);
                 } catch (NumberFormatException ignored) {
                 }
                 if (current instanceof Joystick) {
@@ -140,6 +175,10 @@ public class JoystickFrame extends PopupBase {
                     EmbeddedJDEC.VAL_RX.setText(String.valueOf(NumberUtils.roundTo(xbox.getX(false), 2)));
                     EmbeddedJDEC.VAL_RY.setText(String.valueOf(NumberUtils.roundTo(xbox.getY(false), 2)));
                     EmbeddedJDEC.VAL_Z.setText(" N/A");
+                }
+                boolean[] buttons = current.getButtons();
+                for (int i = 0; i < buttons.length && i < EmbeddedJDEC.BUTTONS.size(); i++) {
+                    EmbeddedJDEC.BUTTONS.get(i).setSelected(buttons[i]);
                 }
             } else {
                 EmbeddedJDEC.VAL_X.setText(" N/A");

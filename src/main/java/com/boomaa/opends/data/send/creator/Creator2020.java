@@ -51,9 +51,7 @@ public class Creator2020 extends PacketCreator {
     @Override
     public byte[] dsToRioTcp() {
         PacketBuilder builder = new PacketBuilder();
-        if (JoystickFrame.EmbeddedJDEC.CLOSE_BTN.wasPressed()) {
-            builder.addBytes(SendTag.JOYSTICK_DESC.getBytes());
-        }
+        builder.addBytes(SendTag.JOYSTICK_DESC.getBytes());
         if (FMS_TYPE.getSelectedItem() != FMSType.NONE) {
             builder.addBytes(SendTag.MATCH_INFO.getBytes());
         }

@@ -24,6 +24,7 @@ public class USBInterface {
         //  extracts all natives to system temp folder from jar
         //  throws an illegal reflection error (not exception)
         initLibraries(false);
+        refreshControllers();
     }
 
     public static void initLibraries(boolean force) {
@@ -80,9 +81,6 @@ public class USBInterface {
     }
 
     public static void updateValues() {
-        if (controlDevices.size() == 0) {
-            refreshControllers();
-        }
         for (int i = 0; i < controlDevices.size(); i++) {
             HIDDevice ctrl = controlDevices.get(i);
             Controller controller = ctrl.getController();
@@ -111,7 +109,10 @@ public class USBInterface {
             }
             for (Component comp : controller.getComponents()) {
                 if (comp.getIdentifier() instanceof Component.Identifier.Button) {
-                    ctrl.setButton(Integer.parseInt(comp.getIdentifier().getName()), comp.getPollData() == 1.0);
+                    try {
+                        ctrl.setButton(Integer.parseInt(comp.getIdentifier().getName()), comp.getPollData() == 1.0);
+                    } catch (NumberFormatException ignored) {
+                    }
                 }
             }
         }
@@ -132,7 +133,6 @@ public class USBInterface {
     }
 
     public static List<HIDDevice> getControlDevices() {
-        refreshControllers();
         return controlDevices;
     }
 }
