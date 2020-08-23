@@ -29,23 +29,6 @@ public class DisplayEndpoint implements MainJDEC {
     private static ProtocolClass updaterClass = new ProtocolClass("com.boomaa.opends.display.updater.Updater");
     public static InitChecker NET_IF_INIT = new InitChecker();
 
-    private static final Clock generalClock = new Clock(1000) {
-        @Override
-        public void onCycle() {
-            parserClass.update();
-            creatorClass.update();
-            updaterClass.update();
-            try {
-                updater = (ElementUpdater) Class.forName(updaterClass.toString()).getConstructor().newInstance();
-                creator = (PacketCreator) Class.forName(creatorClass.toString()).getConstructor().newInstance();
-            } catch (NoSuchMethodException | ClassNotFoundException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
-                e.printStackTrace();
-                ErrorBox.show(e.getMessage());
-                System.exit(1);
-            }
-        }
-    };
-
     private static final Clock rioTcpClock = new Clock(20) {
         @Override
         public void onCycle() {
@@ -90,7 +73,7 @@ public class DisplayEndpoint implements MainJDEC {
     private static final Clock fmsTcpClock = new Clock(20) {
         @Override
         public void onCycle() {
-            if (updater != null && creator != null && MainJDEC.FMS_TYPE.getSelectedItem() == FMSType.REAL) {
+            if (updater != null && creator != null && MainJDEC.FMS_CONNECT.isSelected()) {
                 if (NET_IF_INIT.get(Remote.FMS, Protocol.TCP)) {
                     byte[] fmsTcpGet = FMS_TCP_INTERFACE.doInteract(creator.dsToFmsTcp());
                     if (fmsTcpGet == null) {
@@ -101,9 +84,9 @@ public class DisplayEndpoint implements MainJDEC {
                     }
                 } else {
                     updater.updateFromFmsTcp(ParserNull.getInstance());
-                    NetworkReloader.reloadFms(FMSType.REAL, Protocol.TCP);
+                    NetworkReloader.reloadFms(Protocol.TCP);
                 }
-            } else if (MainJDEC.FMS_TYPE.getSelectedItem() == FMSType.NONE && FMS_TCP_INTERFACE != null) {
+            } else if (!MainJDEC.FMS_CONNECT.isSelected() && FMS_TCP_INTERFACE != null) {
                 updater.updateFromFmsTcp(ParserNull.getInstance());
             }
         }
@@ -112,7 +95,7 @@ public class DisplayEndpoint implements MainJDEC {
     private static final Clock fmsUdpClock = new Clock(20) {
         @Override
         public void onCycle() {
-            if (updater != null && creator != null && MainJDEC.FMS_TYPE.getSelectedItem() == FMSType.REAL) {
+            if (updater != null && creator != null && MainJDEC.FMS_CONNECT.isSelected()) {
                 if (NET_IF_INIT.get(Remote.FMS, Protocol.UDP)) {
                     FMS_UDP_INTERFACE.doSend(creator.dsToFmsUdp());
                     UDPTransform fmsUdpGet = FMS_UDP_INTERFACE.doReceieve();
@@ -124,9 +107,9 @@ public class DisplayEndpoint implements MainJDEC {
                     }
                 } else {
                     updater.updateFromFmsUdp(ParserNull.getInstance());
-                    NetworkReloader.reloadFms(FMSType.REAL, Protocol.UDP);
+                    NetworkReloader.reloadFms(Protocol.UDP);
                 }
-            } else if (MainJDEC.FMS_TYPE.getSelectedItem() == FMSType.NONE && FMS_UDP_INTERFACE != null) {
+            } else if (!MainJDEC.FMS_CONNECT.isSelected() && FMS_UDP_INTERFACE != null) {
                 updater.updateFromFmsUdp(ParserNull.getInstance());
             }
         }
@@ -134,7 +117,19 @@ public class DisplayEndpoint implements MainJDEC {
 
     public static void main(String[] args) {
         MainFrame.display();
-        generalClock.start();
+        PROTOCOL_YEAR.addActionListener((e) -> {
+            parserClass.update();
+            creatorClass.update();
+            updaterClass.update();
+            try {
+                updater = (ElementUpdater) Class.forName(updaterClass.toString()).getConstructor().newInstance();
+                creator = (PacketCreator) Class.forName(creatorClass.toString()).getConstructor().newInstance();
+            } catch (NoSuchMethodException | ClassNotFoundException | IllegalAccessException | InstantiationException | InvocationTargetException e0) {
+                e0.printStackTrace();
+                ErrorBox.show(e0.getMessage());
+                System.exit(1);
+            }
+        });
         fmsTcpClock.start();
         fmsUdpClock.start();
         rioTcpClock.start();

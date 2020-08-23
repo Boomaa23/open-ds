@@ -16,8 +16,6 @@ import com.boomaa.opends.util.NumberUtils;
 import com.boomaa.opends.util.battery.BatteryInfo;
 
 import java.lang.management.ManagementFactory;
-import java.lang.management.OperatingSystemMXBean;
-import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -76,6 +74,7 @@ public enum SendTag {
         }
         return builder.build();
     }),
+    //TODO match info
     MATCH_INFO(0x07, Protocol.TCP, Remote.ROBO_RIO, null),
     GAME_DATA(0x0E, Protocol.TCP, Remote.ROBO_RIO, () ->
             MainJDEC.GAME_DATA.getText().getBytes()
@@ -110,8 +109,7 @@ public enum SendTag {
         PacketBuilder builder = new PacketBuilder();
         builder.addBytes(NumberUtils.intToBytePair(Integer.parseInt(MainJDEC.TEAM_NUMBER.getText())));
         builder.addInt(0x00); //Unknown
-        //TODO add usage report encoding
-        builder.addBytes(UsageReporting.encode(new String[0], new String[9], new UsageReporting.IdPrefix[0]));
+        builder.addBytes(UsageReporting.RECEIVED_USAGE);
         return builder.build();
     }),
     LOG_DATA(0x16, Protocol.TCP, Remote.FMS, () -> {

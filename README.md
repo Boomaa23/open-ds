@@ -1,6 +1,6 @@
 # OpenDS
 
-A reverse-engineered FRC Driver Station
+A reverse-engineered lightweight FRC Driver Station for Windows and Linux
 
 Download [here](http://phptest123.byethost24.com/cdn/open-ds.jar) ([JDK 11+](https://www.oracle.com/java/technologies/javase-downloads.html) required)
 
@@ -39,8 +39,8 @@ rules R66 and R88. OpenDS is intended for testing use only.
     * Disable/Rail faults
     * Packet logging
 * FMS
-    * Connect to a real FMS, offseason FMS, or Cheesy Arena
-    * Simulate an FMS (WIP)
+    * Connect to a offseason FMS or Cheesy Arena
+    * Choose to connect or not
 * Support
     * Lightweight executable
     * Windows and UNIX (Linux) support
@@ -48,15 +48,11 @@ rules R66 and R88. OpenDS is intended for testing use only.
     * Easily modifiable for updated protocol years
     
 ## Setup
-Download the stable jar from [here](http://phptest123.byethost24.com/cdn/open-ds.jar). There are no install prerequisites besides having a Java installation with [JDK 11](https://www.oracle.com/java/technologies/javase-downloads.html) or newer.
+Download the stable jar from [here](http://ncocdn.cf/software/open-ds.jar) and run. There are no prerequisites besides having a Java installation with [JDK 11](https://www.oracle.com/java/technologies/javase-downloads.html) or newer.
 
-If you run into issues, ensure the following criteria are met:
-* Windows
-    * Windows 7, 8/8.1, or 10
-* UNIX (Linux)
-    * Linux kernel version greater than 2.6.35
-    * [`iwlist`](https://linux.die.net/man/8/iwlist), [`test`](https://linux.die.net/man/1/test), and [`cat`](https://linux.die.net/man/1/cat) are all runnable
-    * [`sysfs-class-power`](https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-class-power) accessible without root user access
+If you run into issues, ensure that you are running a 64-bit installation of either Windows 7/8.1/10 or UNIX (Linux) kernel version 2.6.35 or greater.
+
+If there are still issues present, please report it on the "Issues" section of the GitHub [here](https://github.com/Boomaa23/open-ds/issues) and it will be resolved as soon as possible.
 
 ## License
 OpenDS may be used without restriction for the purpose of testing robots by teams and individuals, but is copyrighted material and cannot be redistributed.
@@ -88,14 +84,16 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
->*FIRST®, the FIRST® logo, FIRST® Robotics Competition (formerly also known as FRC®) are trademarks of For Inspiration and Recognition of Science and Technology (FIRST®).*
+>*FIRST®, the FIRST® logo, FIRST® Robotics Competition (formerly also known as FRC®) are trademarks 
+>of For Inspiration and Recognition of Science and Technology (FIRST®), and are used in accordance with branding guidelines*
 
 See [LICENSE.txt](https://github.com/Boomaa23/open-ds/LICENSE.txt) for more details.
 
 ## Contributing
 If you find a bug or issue with OpenDS, please report it on the "Issues" section of the GitHub [here](https://github.com/Boomaa23/open-ds/issues).
 
-For protocol changes in future years, OpenDS is easily modifiable. There are four main classes that need to be implemented for a new protocol year:
+For protocol changes in future years, OpenDS is easily modifiable. Ports, IP addresses, display layouts, and packet creation/parsing are all re-formattable.
+<!-- There are four main classes that need to be implemented for a new protocol year:
 * `PacketParser`
     * Package: `com.boomaa.opends.data.receive.parser`
     * Example: [`Parser2020`](https://github.com/Boomaa23/open-ds/blob/master/src/main/java/com/boomaa/opends/data/receive/parser/Parser2020.java)
@@ -123,4 +121,4 @@ For protocol changes in future years, OpenDS is easily modifiable. There are fou
         packet stream, and methods to reset the elements should connection to the remote (RoboRIO/FMS) stop.
 
 Make sure that naming schemes are followed. Add another integer entry to the array in `DisplayEndpoint:getValidProtocolYears()` 
-when all four main classes have been created. This will allow the selection of the new protocol by the user. Put it first if it should be default.
+when all four main classes have been created. This will allow the selection of the new protocol by the user. Put it first if it should be default.-->

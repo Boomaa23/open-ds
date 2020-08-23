@@ -56,7 +56,7 @@ public abstract class ElementUpdater implements MainJDEC {
 
     private void doLog(PacketParser data) {
         for (TagValueMap<?> tvm : data.getTags()) {
-            if (tvm.getBaseTag().includeInLog() == Logger.Include.ALWAYS) {
+            if (tvm.getBaseTag().includeInLog()) {
                 Logger.OUT.println(tvm.toLogString(true));
             }
             //TODO conditional logger output

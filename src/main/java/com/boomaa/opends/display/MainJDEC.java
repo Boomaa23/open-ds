@@ -35,13 +35,11 @@ public interface MainJDEC {
      OverlayField TEAM_NUMBER = new OverlayField("Team Number", 6);
 
      JComboBox<Integer> PROTOCOL_YEAR = new JComboBox<>(DisplayEndpoint.getValidProtocolYears());
-     JComboBox<FMSType> FMS_TYPE = new JComboBox<>(FMSType.values());
+     JCheckBox FMS_CONNECT = new JCheckBox("Connect FMS");
 
-     JCheckBox SIMULATE_ROBOT = new JCheckBox("Simulate Robot");
-
-     JButton LOG_BTN = new JButton("Open Log");
+     JButton LOG_BTN = new JButton("Log");
      JButton JS_BTN = new JButton("Joysticks");
-     JButton STATS_BTN = new JButton("Statistics");
+     JButton STATS_BTN = new JButton("Stats");
 
      JLabel BAT_VOLTAGE = new JLabel("0.00 V");
      HideableLabel ROBOT_CONNECTION_STATUS = new HideableLabel(false, "Connected");

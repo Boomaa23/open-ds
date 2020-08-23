@@ -136,7 +136,4 @@ public class Logger extends OutputStream {
         }
     }
 
-    public enum Include {
-        ALWAYS, NEVER, CONDITIONALLY
-    }
 }

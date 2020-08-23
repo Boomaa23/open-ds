@@ -6,11 +6,10 @@ import com.boomaa.opends.util.ArrayUtils;
 import java.util.HashMap;
 
 public class UsageReporting {
-    public static byte[] encode(String[] keys, String[] names, IdPrefix[] idPrefixes) {
-        return new byte[0];
-    }
+    public static byte[] RECEIVED_USAGE = null;
 
     public static TagValueMap<String> decode(byte[] bytes, int size) {
+        RECEIVED_USAGE = bytes;
         TagValueMap<String> map = new TagValueMap<>();
         map.addTo("Team Num", new String(ArrayUtils.sliceArr(bytes, 0, 2)));
         char[] asChars = new String(ArrayUtils.sliceArr(bytes, 3)).toCharArray();

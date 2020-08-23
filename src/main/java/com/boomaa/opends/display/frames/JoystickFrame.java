@@ -142,9 +142,9 @@ public class JoystickFrame extends PopupBase {
 
         @Override
         public void onCycle() {
-            USBInterface.updateValues();
             HIDDevice current = EmbeddedJDEC.LIST.getSelectedValue();
             if (current != null) {
+                USBInterface.updateValues();
                 try {
                     int cIndex = current.getIndex();
                     int nIndex = Integer.parseInt(EmbeddedJDEC.INDEX_SET.getText());

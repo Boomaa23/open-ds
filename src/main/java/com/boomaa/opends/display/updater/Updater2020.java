@@ -127,12 +127,10 @@ public class Updater2020 extends ElementUpdater {
         Logger.OUT.println(fmsUdp.getMatchNumber());
         Logger.OUT.println(fmsUdp.getPlayNumber());
         MATCH_TIME.setText(String.valueOf(fmsUdp.getRemainingTime()));
-        //TODO add fms content
     }
 
     @Override
     protected void doUpdateFromFmsTcp(PacketParser data, TVMList tagMap) {
-        //TODO add fms content
         FMS_CONNECTION_STATUS.forceDisplay();
         TVMList challenge = tagMap.getMatching(ReceiveTag.CHALLENGE_QUESTION);
         if (!challenge.isEmpty()) {
@@ -177,7 +175,6 @@ public class Updater2020 extends ElementUpdater {
         MATCH_TIME.forceHide();
         ALLIANCE_COLOR.setEnabled(true);
         ALLIANCE_NUM.setEnabled(true);
-        //TODO add fms content
     }
 
     @Override
@@ -185,6 +182,5 @@ public class Updater2020 extends ElementUpdater {
         CHALLENGE_RESPONSE.setText("");
         PacketCreator.SEQUENCE_COUNTER_FMS.reset();
         Creator2020.FMS_TCP_PACKET_COUNTER.reset();
-        //TODO add fms content
     }
 }

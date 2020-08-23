@@ -1,13 +1,8 @@
 package com.boomaa.opends.util;
 
 import com.boomaa.opends.data.receive.parser.Parser2020;
-import com.boomaa.opends.util.battery.BatteryFill;
-import com.boomaa.opends.util.battery.BatteryInfo;
-import com.boomaa.opends.util.battery.Win32BatteryJNI;
-import com.sun.management.OperatingSystemMXBean;
 
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
 import java.net.URISyntaxException;
 
 public class GameTesting {

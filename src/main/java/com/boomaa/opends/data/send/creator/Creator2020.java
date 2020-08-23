@@ -1,5 +1,6 @@
 package com.boomaa.opends.data.send.creator;
 
+import com.boomaa.opends.data.UsageReporting;
 import com.boomaa.opends.data.holders.AllianceStation;
 import com.boomaa.opends.data.holders.Control;
 import com.boomaa.opends.data.holders.Remote;
@@ -7,11 +8,7 @@ import com.boomaa.opends.data.holders.Request;
 import com.boomaa.opends.data.send.PacketBuilder;
 import com.boomaa.opends.data.send.SendTag;
 import com.boomaa.opends.display.DisplayEndpoint;
-import com.boomaa.opends.display.FMSType;
-import com.boomaa.opends.display.PopupBase;
 import com.boomaa.opends.display.RobotMode;
-import com.boomaa.opends.display.frames.FMSFrame;
-import com.boomaa.opends.display.frames.JoystickFrame;
 import com.boomaa.opends.util.NumberUtils;
 import com.boomaa.opends.util.SequenceCounter;
 
@@ -23,7 +20,7 @@ public class Creator2020 extends PacketCreator {
         PacketBuilder builder = getSequenced(Remote.ROBO_RIO);
         builder.addInt(0x01);
         int control = (ESTOP_BTN.wasPressed() ? Control.ESTOP.getFlag() : 0)
-                + (PopupBase.isAlive(FMSFrame.class) ? Control.FMS_CONNECTED.getFlag() : 0)
+                + (DisplayEndpoint.NET_IF_INIT.isOrInit(Remote.FMS) ? Control.FMS_CONNECTED.getFlag() : 0)
                 + (IS_ENABLED.isSelected() ? Control.ENABLED.getFlag() : 0)
                 + ((RobotMode) ROBOT_DRIVE_MODE.getSelectedItem()).getControlFlag().getFlag();
         builder.addInt(control);
@@ -52,7 +49,7 @@ public class Creator2020 extends PacketCreator {
     public byte[] dsToRioTcp() {
         PacketBuilder builder = new PacketBuilder();
         builder.addBytes(SendTag.JOYSTICK_DESC.getBytes());
-        if (FMS_TYPE.getSelectedItem() != FMSType.NONE) {
+        if (FMS_CONNECT.isSelected()) {
             builder.addBytes(SendTag.MATCH_INFO.getBytes());
         }
         if (!GAME_DATA.getText().isEmpty()) {
@@ -100,13 +97,13 @@ public class Creator2020 extends PacketCreator {
             builder.addInt(b1);
             builder.addInt(b2);
         }
-        //TODO add FMS tags
+        //TODO add FMS tags (not needed?)
         return builder.build();
     }
 
     @Override
     public byte[] dsToFmsTcp() {
-        //TODO add fms content
+        //TODO add fms content (versions not needed?)
         PacketBuilder builder = new PacketBuilder();
         if (FMS_TCP_PACKET_COUNTER.getCounter() < 5) {
             builder.addBytes(SendTag.TEAM_NUMBER.getBytes());
@@ -114,6 +111,10 @@ public class Creator2020 extends PacketCreator {
         if (!CHALLENGE_RESPONSE.getText().isEmpty()) {
             builder.addBytes(SendTag.CHALLENGE_RESPONSE.getBytes());
             CHALLENGE_RESPONSE.setText("");
+        }
+        if (UsageReporting.RECEIVED_USAGE != null) {
+            builder.addBytes(SendTag.USAGE_REPORT.getBytes());
+            UsageReporting.RECEIVED_USAGE = null;
         }
         return builder.size() != 0 ? builder.build() : SendTag.DS_PING.getBytes();
     }

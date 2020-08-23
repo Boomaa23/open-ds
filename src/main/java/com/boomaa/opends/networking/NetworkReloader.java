@@ -3,7 +3,6 @@ package com.boomaa.opends.networking;
 import com.boomaa.opends.data.holders.Protocol;
 import com.boomaa.opends.data.holders.Remote;
 import com.boomaa.opends.display.DisplayEndpoint;
-import com.boomaa.opends.display.FMSType;
 import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.display.frames.ErrorBox;
 
@@ -40,7 +39,7 @@ public class NetworkReloader extends DisplayEndpoint {
         }
     }
 
-    public static void reloadFms(FMSType type, Protocol protocol) {
+    public static void reloadFms(Protocol protocol) {
         if (protocol == Protocol.UDP) {
             if (FMS_UDP_INTERFACE != null) {
                 FMS_UDP_INTERFACE.close();
@@ -54,31 +53,25 @@ public class NetworkReloader extends DisplayEndpoint {
             FMS_TCP_INTERFACE = null;
         }
 
-        switch (type) {
-            case SIMULATED:
-                //TODO robot simulation implementation
-                break;
-            case REAL:
-                PortTriple fmsPorts = AddressConstants.getFMSPorts();
-                String fmsIp = AddressConstants.getFMSIp();
-                try {
-                    InetAddress.getByName(fmsIp);
-                    if (protocol == Protocol.UDP) {
-                        FMS_UDP_INTERFACE = new UDPInterface(fmsIp, fmsPorts.getUdpClient(), fmsPorts.getUdpServer());
-                    }
-                    if (protocol == Protocol.TCP) {
-                        FMS_TCP_INTERFACE = new TCPInterface(fmsIp, fmsPorts.getTcp());
-                    }
-                    NET_IF_INIT.set(true, Remote.FMS, protocol);
-                } catch (IOException e) {
-                    MainJDEC.FMS_TYPE.setSelectedItem(FMSType.NONE);
-                    ErrorBox.show(e.getMessage());
-                    NET_IF_INIT.set(false, Remote.FMS, protocol);
+        if (FMS_CONNECT.isSelected()) {
+            PortTriple fmsPorts = AddressConstants.getFMSPorts();
+            String fmsIp = AddressConstants.getFMSIp();
+            try {
+                InetAddress.getByName(fmsIp);
+                if (protocol == Protocol.UDP) {
+                    FMS_UDP_INTERFACE = new UDPInterface(fmsIp, fmsPorts.getUdpClient(), fmsPorts.getUdpServer());
                 }
-                break;
-            case NONE:
+                if (protocol == Protocol.TCP) {
+                    FMS_TCP_INTERFACE = new TCPInterface(fmsIp, fmsPorts.getTcp());
+                }
+                NET_IF_INIT.set(true, Remote.FMS, protocol);
+            } catch (IOException e) {
+                MainJDEC.FMS_CONNECT.setSelected(false);
+                ErrorBox.show(e.getMessage());
                 NET_IF_INIT.set(false, Remote.FMS, protocol);
-                break;
+            }
+        } else {
+            NET_IF_INIT.set(false, Remote.FMS, protocol);
         }
     }
 }

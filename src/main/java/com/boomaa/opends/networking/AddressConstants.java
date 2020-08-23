@@ -27,8 +27,14 @@ public class AddressConstants {
     private static Object getProtoYearValue(String base) {
         try {
             return AddressConstants.class.getDeclaredField(base + "_" + MainJDEC.PROTOCOL_YEAR.getSelectedItem()).get(null);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
+        } catch (NoSuchFieldException e0) {
+            try {
+                return AddressConstants.class.getDeclaredField(base + "_2020").get(null);
+            } catch (NoSuchFieldException | IllegalAccessException e1) {
+                e1.printStackTrace();
+            }
+        } catch (IllegalAccessException e2) {
+            e2.printStackTrace();
         }
         return null;
     }

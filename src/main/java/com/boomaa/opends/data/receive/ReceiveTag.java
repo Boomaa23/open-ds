@@ -4,20 +4,20 @@ import com.boomaa.opends.data.UsageReporting;
 import com.boomaa.opends.data.holders.AllianceStation;
 import com.boomaa.opends.data.holders.Protocol;
 import com.boomaa.opends.data.holders.Remote;
-import com.boomaa.opends.display.Logger;
+import com.boomaa.opends.display.InLog;
 import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.NumberUtils;
 
 public enum ReceiveTag {
     //TODO joystick output parsing: "output" field
-    JOYSTICK_OUTPUT(0x01, Protocol.UDP, Remote.ROBO_RIO, Logger.Include.ALWAYS, (ReceiveTagBase<Integer>) (packet, size) -> new TagValueMap<Integer>()
+    JOYSTICK_OUTPUT(0x01, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS, (ReceiveTagBase<Integer>) (packet, size) -> new TagValueMap<Integer>()
             .addTo("Left Rumble", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 4, 6)))
             .addTo("Right Rumble", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 6, 8)))
     ),
-    DISK_INFO(0x04, Protocol.UDP, Remote.ROBO_RIO, Logger.Include.ALWAYS, (ReceiveTagBase<Integer>) (packet, size) ->
+    DISK_INFO(0x04, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS, (ReceiveTagBase<Integer>) (packet, size) ->
             TagValueMap.singleton("Free Space", NumberUtils.getUInt32(ArrayUtils.sliceArr(packet, 0, 4)))
     ),
-    CPU_INFO(0x05, Protocol.UDP, Remote.ROBO_RIO, Logger.Include.ALWAYS, (ReceiveTagBase<Float>) (packet, size) -> {
+    CPU_INFO(0x05, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS, (ReceiveTagBase<Float>) (packet, size) -> {
         float numCpus = NumberUtils.getFloat(ArrayUtils.sliceArr(packet, 0, 4));
         TagValueMap<Float> map = new TagValueMap<Float>().addTo("Number of CPUs", numCpus);
         for (int i = 0; i < numCpus; i++) {
@@ -30,11 +30,11 @@ public enum ReceiveTag {
         }
         return map;
     }),
-    RAM_INFO(0x06, Protocol.UDP, Remote.ROBO_RIO, Logger.Include.ALWAYS, (ReceiveTagBase<Integer>) (packet, size) -> new TagValueMap<Integer>()
+    RAM_INFO(0x06, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS, (ReceiveTagBase<Integer>) (packet, size) -> new TagValueMap<Integer>()
             .addTo("Block", NumberUtils.getUInt32(ArrayUtils.sliceArr(packet, 0, 4)))
             .addTo("Free Space", NumberUtils.getUInt32(ArrayUtils.sliceArr(packet, 4, 8)))
     ),
-    PDP_LOG(0x08, Protocol.UDP, Remote.ROBO_RIO, Logger.Include.ALWAYS, (ReceiveTagBase<Integer>) (packet, size) -> {
+    PDP_LOG(0x08, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS, (ReceiveTagBase<Integer>) (packet, size) -> {
         int[] rawValues = new int[packet.length * 8];
         for (int i = 0; i < packet.length; i++) {
             char[] bin = NumberUtils.padByte(packet[i]).toCharArray();
@@ -50,28 +50,28 @@ public enum ReceiveTag {
         }
         return map;
     }),
-    UDP_R2D_UNKNOWN(0x09, Protocol.UDP, Remote.ROBO_RIO, Logger.Include.ALWAYS, (ReceiveTagBase<Byte>) TagValueMap::passPackets),
-    CAN_METRICS(0x0E, Protocol.UDP, Remote.ROBO_RIO, Logger.Include.ALWAYS, (ReceiveTagBase<Float>) (packet, size) -> new TagValueMap<Float>()
+    UDP_R2D_UNKNOWN(0x09, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS, (ReceiveTagBase<Byte>) TagValueMap::passPackets),
+    CAN_METRICS(0x0E, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS, (ReceiveTagBase<Float>) (packet, size) -> new TagValueMap<Float>()
             .addTo("Utilization %", NumberUtils.getFloat(ArrayUtils.sliceArr(packet, 0, 4)))
             .addTo("Bus Off", (float) NumberUtils.getUInt32(ArrayUtils.sliceArr(packet, 4, 8)))
             .addTo("TX Full", (float) NumberUtils.getUInt32(ArrayUtils.sliceArr(packet, 8, 12)))
             .addTo("RX Errors", (float) NumberUtils.getUInt8(packet[12]))
             .addTo("TX Errors", (float) NumberUtils.getUInt8(packet[13]))
     ),
-    RADIO_EVENTS(0x00, Protocol.TCP, Remote.ROBO_RIO, Logger.Include.ALWAYS, (ReceiveTagBase<String>) (packet, size) ->
+    RADIO_EVENTS(0x00, Protocol.TCP, Remote.ROBO_RIO, InLog.ALWAYS, (ReceiveTagBase<String>) (packet, size) ->
             TagValueMap.singleton("Message", new String(packet))
     ),
-    USAGE_REPORT(0x01, Protocol.TCP, Remote.ROBO_RIO, Logger.Include.ALWAYS, (ReceiveTagBase<String>) UsageReporting::decode),
-    DISABLE_FAULTS(0x04, Protocol.TCP, Remote.ROBO_RIO, Logger.Include.ALWAYS, (ReceiveTagBase<Integer>) (packet, size) -> new TagValueMap<Integer>()
+    USAGE_REPORT(0x01, Protocol.TCP, Remote.ROBO_RIO, InLog.ALWAYS, (ReceiveTagBase<String>) UsageReporting::decode),
+    DISABLE_FAULTS(0x04, Protocol.TCP, Remote.ROBO_RIO, InLog.ALWAYS, (ReceiveTagBase<Integer>) (packet, size) -> new TagValueMap<Integer>()
             .addTo("Comms", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 0, 2)))
             .addTo("12V", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 2, 4)))
     ),
-    RAIL_FAULTS(0x05, Protocol.TCP, Remote.ROBO_RIO, Logger.Include.ALWAYS, (ReceiveTagBase<Integer>) (packet, size) -> new TagValueMap<Integer>()
+    RAIL_FAULTS(0x05, Protocol.TCP, Remote.ROBO_RIO, InLog.ALWAYS, (ReceiveTagBase<Integer>) (packet, size) -> new TagValueMap<Integer>()
             .addTo("6V", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 0, 2)))
             .addTo("5V", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 2, 4)))
             .addTo("3.3V", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 4, 6)))
     ),
-    VERSION_INFO(0x0A, Protocol.TCP, Remote.ROBO_RIO, Logger.Include.ALWAYS, (ReceiveTagBase<String>) (packet, size) -> {
+    VERSION_INFO(0x0A, Protocol.TCP, Remote.ROBO_RIO, InLog.ALWAYS, (ReceiveTagBase<String>) (packet, size) -> {
         TagValueMap<String> map = new TagValueMap<>();
         String devType = "Unknown";
         switch (NumberUtils.getUInt8(packet[0])) {
@@ -88,7 +88,7 @@ public enum ReceiveTag {
         map.put("Version", nameAndVer[1]);
         return map;
     }),
-    ERROR_MESSAGE(0x0B, Protocol.TCP, Remote.ROBO_RIO, Logger.Include.ALWAYS, (ReceiveTagBase<String>) (packet, size) -> {
+    ERROR_MESSAGE(0x0B, Protocol.TCP, Remote.ROBO_RIO, InLog.ALWAYS, (ReceiveTagBase<String>) (packet, size) -> {
         TagValueMap<String> map = new TagValueMap<String>()
                 .addTo("Timestamp", String.valueOf(NumberUtils.getFloat(ArrayUtils.sliceArr(packet, 0 ,4))))
                 .addTo("Sequence Num", String.valueOf(NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 4, 6))))
@@ -106,14 +106,14 @@ public enum ReceiveTag {
         }
         return map;
     }),
-    STANDARD_OUT(0x0C, Protocol.TCP, Remote.ROBO_RIO, Logger.Include.ALWAYS, (ReceiveTagBase<String>) (packet, size) -> new TagValueMap<String>()
+    STANDARD_OUT(0x0C, Protocol.TCP, Remote.ROBO_RIO, InLog.ALWAYS, (ReceiveTagBase<String>) (packet, size) -> new TagValueMap<String>()
             .addTo("Timestamp", String.valueOf(NumberUtils.getFloat(ArrayUtils.sliceArr(packet, 0 ,4))))
             .addTo("Sequence Num", String.valueOf(NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 4, 6))))
             .addTo("Message", new String(ArrayUtils.sliceArr(packet, 6)))
     ),
-    TCP_R2D_UNKNOWN(0x0D, Protocol.TCP, Remote.ROBO_RIO, Logger.Include.ALWAYS, (ReceiveTagBase<Byte>) TagValueMap::passPackets),
+    TCP_R2D_UNKNOWN(0x0D, Protocol.TCP, Remote.ROBO_RIO, InLog.ALWAYS, (ReceiveTagBase<Byte>) TagValueMap::passPackets),
 
-    WPILIB_VER(0x00, Protocol.TCP, Remote.FMS, Logger.Include.ALWAYS, (ReceiveTagBase<String>) (packet, size) -> {
+    WPILIB_VER(0x00, Protocol.TCP, Remote.FMS, InLog.ALWAYS, (ReceiveTagBase<String>) (packet, size) -> {
         TagValueMap<String> map = new TagValueMap<>();
         String[] nStrs = ArrayUtils.removeBlanks(NumberUtils.extractAllASCII(packet));
         if (nStrs.length >= 2) {
@@ -121,17 +121,17 @@ public enum ReceiveTag {
         }
         return map;
     }),
-    RIO_VER(0x01, Protocol.TCP, Remote.FMS, Logger.Include.ALWAYS, WPILIB_VER.action),
-    DS_VER(0x02, Protocol.TCP, Remote.FMS, Logger.Include.ALWAYS, WPILIB_VER.action),
-    PDP_VER(0x03, Protocol.TCP, Remote.FMS, Logger.Include.ALWAYS, WPILIB_VER.action),
-    PCM_VER(0x04, Protocol.TCP, Remote.FMS, Logger.Include.ALWAYS, WPILIB_VER.action),
-    CANJAG_VER(0x05, Protocol.TCP, Remote.FMS, Logger.Include.ALWAYS, WPILIB_VER.action),
-    CANTALON_VER(0x06, Protocol.TCP, Remote.FMS, Logger.Include.ALWAYS, WPILIB_VER.action),
-    THIRD_PARTY_DEVICE_VER(0x07, Protocol.TCP, Remote.FMS, Logger.Include.ALWAYS, WPILIB_VER.action),
-    EVENT_CODE(0x14, Protocol.TCP, Remote.FMS, Logger.Include.ALWAYS, (ReceiveTagBase<String>) (packet, size) ->
+    RIO_VER(0x01, Protocol.TCP, Remote.FMS, InLog.ALWAYS, WPILIB_VER.action),
+    DS_VER(0x02, Protocol.TCP, Remote.FMS, InLog.ALWAYS, WPILIB_VER.action),
+    PDP_VER(0x03, Protocol.TCP, Remote.FMS, InLog.ALWAYS, WPILIB_VER.action),
+    PCM_VER(0x04, Protocol.TCP, Remote.FMS, InLog.ALWAYS, WPILIB_VER.action),
+    CANJAG_VER(0x05, Protocol.TCP, Remote.FMS, InLog.ALWAYS, WPILIB_VER.action),
+    CANTALON_VER(0x06, Protocol.TCP, Remote.FMS, InLog.ALWAYS, WPILIB_VER.action),
+    THIRD_PARTY_DEVICE_VER(0x07, Protocol.TCP, Remote.FMS, InLog.ALWAYS, WPILIB_VER.action),
+    EVENT_CODE(0x14, Protocol.TCP, Remote.FMS, InLog.ALWAYS, (ReceiveTagBase<String>) (packet, size) ->
             TagValueMap.singleton("Event Name", new String(ArrayUtils.sliceArr(packet, 1)))
     ),
-    STATION_INFO(0x19, Protocol.TCP, Remote.FMS, Logger.Include.ALWAYS, (ReceiveTagBase<AllianceStation>) (packet, size) -> {
+    STATION_INFO(0x19, Protocol.TCP, Remote.FMS, InLog.ALWAYS, (ReceiveTagBase<AllianceStation>) (packet, size) -> {
         AllianceStation.Status status = null;
         switch (NumberUtils.getUInt8(packet[1])) {
             case 0: status = AllianceStation.Status.GOOD; break;
@@ -140,19 +140,19 @@ public enum ReceiveTag {
         }
         return TagValueMap.singleton("Alliance Station", AllianceStation.getFromByte(packet[0]).setStatus(status));
     }),
-    CHALLENGE_QUESTION(0x1A, Protocol.TCP, Remote.FMS, Logger.Include.ALWAYS, (ReceiveTagBase<Integer>) (packet, size) ->
+    CHALLENGE_QUESTION(0x1A, Protocol.TCP, Remote.FMS, InLog.ALWAYS, (ReceiveTagBase<Integer>) (packet, size) ->
             TagValueMap.singleton("Challenge Value", NumberUtils.getUInt16(
                     ArrayUtils.sliceArr(packet, packet.length - 2, packet.length)))
     ),
-    GAME_DATA(0x1C, Protocol.TCP, Remote.FMS, Logger.Include.ALWAYS, EVENT_CODE.action);
+    GAME_DATA(0x1C, Protocol.TCP, Remote.FMS, InLog.ALWAYS, EVENT_CODE.action);
 
     private final int flag;
     private final Protocol protocol;
     private final Remote remote;
-    private final Logger.Include includeInLog;
+    private final InLog includeInLog;
     private final ReceiveTagBase<?> action;
 
-    ReceiveTag(int flag, Protocol protocol, Remote remote, Logger.Include includeInLog, ReceiveTagBase<?> action) {
+    ReceiveTag(int flag, Protocol protocol, Remote remote, InLog includeInLog, ReceiveTagBase<?> action) {
         this.flag = flag;
         this.protocol = protocol;
         this.remote = remote;
@@ -172,8 +172,8 @@ public enum ReceiveTag {
         return remote;
     }
 
-    public Logger.Include includeInLog() {
-        return includeInLog;
+    public boolean includeInLog() {
+        return includeInLog.isInLog();
     }
 
     public ReceiveTagBase<?> getAction() {
