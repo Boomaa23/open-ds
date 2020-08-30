@@ -34,7 +34,7 @@ public interface MainJDEC {
      OverlayField GAME_DATA = new OverlayField("Game Data", 6);
      OverlayField TEAM_NUMBER = new OverlayField("Team Number", 6);
 
-     JComboBox<Integer> PROTOCOL_YEAR = new JComboBox<>(DisplayEndpoint.getValidProtocolYears());
+     JComboBox<Integer> PROTOCOL_YEAR = new JComboBox<>(DisplayEndpoint.VALID_PROTOCOL_YEARS);
      JCheckBox FMS_CONNECT = new JCheckBox("Connect FMS");
 
      JButton LOG_BTN = new JButton("Log");

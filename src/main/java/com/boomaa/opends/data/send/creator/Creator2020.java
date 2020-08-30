@@ -3,6 +3,7 @@ package com.boomaa.opends.data.send.creator;
 import com.boomaa.opends.data.UsageReporting;
 import com.boomaa.opends.data.holders.AllianceStation;
 import com.boomaa.opends.data.holders.Control;
+import com.boomaa.opends.data.holders.Protocol;
 import com.boomaa.opends.data.holders.Remote;
 import com.boomaa.opends.data.holders.Request;
 import com.boomaa.opends.data.send.PacketBuilder;
@@ -10,11 +11,9 @@ import com.boomaa.opends.data.send.SendTag;
 import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.display.RobotMode;
 import com.boomaa.opends.util.NumberUtils;
-import com.boomaa.opends.util.SequenceCounter;
+import com.boomaa.opends.util.PacketCounters;
 
 public class Creator2020 extends PacketCreator {
-    public static SequenceCounter FMS_TCP_PACKET_COUNTER = new SequenceCounter(false);
-
     @Override
     public byte[] dsToRioUdp() {
         PacketBuilder builder = getSequenced(Remote.ROBO_RIO);
@@ -105,7 +104,7 @@ public class Creator2020 extends PacketCreator {
     public byte[] dsToFmsTcp() {
         //TODO add fms content (versions not needed?)
         PacketBuilder builder = new PacketBuilder();
-        if (FMS_TCP_PACKET_COUNTER.getCounter() < 5) {
+        if (PacketCounters.get(Remote.FMS, Protocol.TCP).getCounter() < 5) {
             builder.addBytes(SendTag.TEAM_NUMBER.getBytes());
         }
         if (!CHALLENGE_RESPONSE.getText().isEmpty()) {

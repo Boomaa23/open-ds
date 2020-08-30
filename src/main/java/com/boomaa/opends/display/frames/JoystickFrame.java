@@ -2,6 +2,7 @@ package com.boomaa.opends.display.frames;
 
 import com.boomaa.opends.display.PopupBase;
 import com.boomaa.opends.display.elements.GBCPanelBuilder;
+import com.boomaa.opends.display.elements.HideableLabel;
 import com.boomaa.opends.display.elements.StickyButton;
 import com.boomaa.opends.usb.HIDDevice;
 import com.boomaa.opends.usb.Joystick;
@@ -121,11 +122,11 @@ public class JoystickFrame extends PopupBase {
         JList<HIDDevice> LIST = new JList<>(LIST_MODEL);
         JScrollPane LIST_SCR = new JScrollPane(LIST);
 
-        JLabel VAL_X = new JLabel();
-        JLabel VAL_Y = new JLabel();
-        JLabel VAL_Z = new JLabel();
-        JLabel VAL_RX = new JLabel();
-        JLabel VAL_RY = new JLabel();
+        HideableLabel VAL_X = new HideableLabel(true);
+        HideableLabel VAL_Y = new HideableLabel(true);
+        HideableLabel VAL_Z = new HideableLabel(true);
+        HideableLabel VAL_RX = new HideableLabel(true);
+        HideableLabel VAL_RY = new HideableLabel(true);
 
         JTextField INDEX_SET = new JTextField("");
         JButton RELOAD_BTN = new JButton("↻");
@@ -163,17 +164,17 @@ public class JoystickFrame extends PopupBase {
                 }
                 if (current instanceof Joystick) {
                     Joystick js = (Joystick) current;
-                    EmbeddedJDEC.VAL_X.setText(String.valueOf(NumberUtils.roundTo(js.getX(), 2)));
-                    EmbeddedJDEC.VAL_Y.setText(String.valueOf(NumberUtils.roundTo(js.getY(), 2)));
-                    EmbeddedJDEC.VAL_Z.setText(String.valueOf(NumberUtils.roundTo(js.getZ(), 2)));
+                    EmbeddedJDEC.VAL_X.setText(NumberUtils.roundTo(js.getX(), 2));
+                    EmbeddedJDEC.VAL_Y.setText(NumberUtils.roundTo(js.getY(), 2));
+                    EmbeddedJDEC.VAL_Z.setText(NumberUtils.roundTo(js.getZ(), 2));
                     EmbeddedJDEC.VAL_RX.setText(" N/A");
                     EmbeddedJDEC.VAL_RY.setText(" N/A");
                 } else if (current instanceof XboxController) {
                     XboxController xbox = (XboxController) current;
-                    EmbeddedJDEC.VAL_X.setText(String.valueOf(NumberUtils.roundTo(xbox.getX(true), 2)));
-                    EmbeddedJDEC.VAL_Y.setText(String.valueOf(NumberUtils.roundTo(xbox.getY(true), 2)));
-                    EmbeddedJDEC.VAL_RX.setText(String.valueOf(NumberUtils.roundTo(xbox.getX(false), 2)));
-                    EmbeddedJDEC.VAL_RY.setText(String.valueOf(NumberUtils.roundTo(xbox.getY(false), 2)));
+                    EmbeddedJDEC.VAL_X.setText(NumberUtils.roundTo(xbox.getX(true), 2));
+                    EmbeddedJDEC.VAL_Y.setText(NumberUtils.roundTo(xbox.getY(true), 2));
+                    EmbeddedJDEC.VAL_RX.setText(NumberUtils.roundTo(xbox.getX(false), 2));
+                    EmbeddedJDEC.VAL_RY.setText(NumberUtils.roundTo(xbox.getY(false), 2));
                     EmbeddedJDEC.VAL_Z.setText(" N/A");
                 }
                 boolean[] buttons = current.getButtons();

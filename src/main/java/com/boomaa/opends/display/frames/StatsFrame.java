@@ -69,22 +69,22 @@ public class StatsFrame extends PopupBase {
     }
 
     public interface EmbeddedJDEC {
-        HideableLabel DISK_SPACE = new HideableLabel(false, "");
-        HideableLabel RAM_SPACE = new HideableLabel(false, "");
-        HideableLabel CPU_PERCENT = new HideableLabel(false, "");
-        HideableLabel ROBORIO_VERSION = new HideableLabel(false, "");
-        HideableLabel WPILIB_VERSION = new HideableLabel(false, "");
+        HideableLabel DISK_SPACE = new HideableLabel(false);
+        HideableLabel RAM_SPACE = new HideableLabel(false);
+        HideableLabel CPU_PERCENT = new HideableLabel(false);
+        HideableLabel ROBORIO_VERSION = new HideableLabel(false);
+        HideableLabel WPILIB_VERSION = new HideableLabel(false);
 
-        HideableLabel CAN_UTILIZATION = new HideableLabel(false, "");
-        HideableLabel CAN_BUS_OFF = new HideableLabel(false, "");
-        HideableLabel CAN_TX_FULL = new HideableLabel(false, "");
-        HideableLabel CAN_RX_ERR = new HideableLabel(false, "");
-        HideableLabel CAN_TX_ERR = new HideableLabel(false, "");
+        HideableLabel CAN_UTILIZATION = new HideableLabel(false);
+        HideableLabel CAN_BUS_OFF = new HideableLabel(false);
+        HideableLabel CAN_TX_FULL = new HideableLabel(false);
+        HideableLabel CAN_RX_ERR = new HideableLabel(false);
+        HideableLabel CAN_TX_ERR = new HideableLabel(false);
         
-        HideableLabel DISABLE_FAULTS_COMMS = new HideableLabel(false, "");
-        HideableLabel DISABLE_FAULTS_12V = new HideableLabel(false, "");
-        HideableLabel RAIL_FAULTS_6V = new HideableLabel(false, "");
-        HideableLabel RAIL_FAULTS_5V = new HideableLabel(false, "");
-        HideableLabel RAIL_FAULTS_3P3V = new HideableLabel(false, "");
+        HideableLabel DISABLE_FAULTS_COMMS = new HideableLabel(false);
+        HideableLabel DISABLE_FAULTS_12V = new HideableLabel(false);
+        HideableLabel RAIL_FAULTS_6V = new HideableLabel(false);
+        HideableLabel RAIL_FAULTS_5V = new HideableLabel(false);
+        HideableLabel RAIL_FAULTS_3P3V = new HideableLabel(false);
     }
 }

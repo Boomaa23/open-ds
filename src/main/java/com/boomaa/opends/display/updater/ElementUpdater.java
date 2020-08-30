@@ -19,37 +19,47 @@ public abstract class ElementUpdater implements MainJDEC {
     protected abstract void resetDataFmsTcp();
 
     public void updateFromRioUdp(PacketParser data) {
+        doUpdateGeneric(data);
         if (data instanceof ParserNull) {
             resetDataRioUdp();
         } else {
+            data.getPacketCounter().increment();
             doUpdateFromRioUdp(data, data.getTags());
-            doLog(data);
         }
     }
 
     public void updateFromRioTcp(PacketParser data) {
+        doUpdateGeneric(data);
         if (data instanceof ParserNull) {
             resetDataRioTcp();
         } else {
             doUpdateFromRioTcp(data, data.getTags());
-            doLog(data);
         }
     }
 
     public void updateFromFmsUdp(PacketParser data) {
+        doUpdateGeneric(data);
         if (data instanceof ParserNull) {
             resetDataFmsUdp();
         } else {
             doUpdateFromFmsUdp(data, data.getTags());
-            doLog(data);
         }
     }
 
     public void updateFromFmsTcp(PacketParser data) {
+        doUpdateGeneric(data);
         if (data instanceof ParserNull) {
             resetDataFmsTcp();
         } else {
             doUpdateFromFmsTcp(data, data.getTags());
+        }
+    }
+
+    private void doUpdateGeneric(PacketParser data) {
+        if (data instanceof ParserNull) {
+            data.getPacketCounter().reset();
+        } else {
+            data.getPacketCounter().increment();
             doLog(data);
         }
     }
@@ -59,7 +69,6 @@ public abstract class ElementUpdater implements MainJDEC {
             if (tvm.getBaseTag().includeInLog()) {
                 Logger.OUT.println(tvm.toLogString(true));
             }
-            //TODO conditional logger output
         }
     }
 }

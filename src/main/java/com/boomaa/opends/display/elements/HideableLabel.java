@@ -11,6 +11,10 @@ public class HideableLabel extends JLabel {
         this.displayed = displayedByDefault;
     }
 
+    public HideableLabel(boolean displayedByDefault) {
+        this(displayedByDefault, "");
+    }
+
     public void setDisplay(boolean visible) {
         this.setVisible(visible);
         displayed = visible;
@@ -36,5 +40,21 @@ public class HideableLabel extends JLabel {
     public void setText(String text) {
         setDisplay(true);
         super.setText(text);
+    }
+
+    public void setText(int text) {
+        this.setText(String.valueOf(text));
+    }
+
+    public void setText(double text) {
+        this.setText(String.valueOf(text));
+    }
+
+    public void setText(float text) {
+        this.setText(String.valueOf(text));
+    }
+
+    public void setText(Object text) {
+        this.setText(String.valueOf(text));
     }
 }

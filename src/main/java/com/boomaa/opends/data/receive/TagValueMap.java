@@ -12,18 +12,6 @@ public class TagValueMap<T> extends HashMap<String, T> {
         return this;
     }
 
-    public String toLogString(boolean addTimestamp) {
-        StringBuilder sb = new StringBuilder();
-        if (addTimestamp) {
-            sb.append(Calendar.getInstance().getTime().toString()).append("> ");
-        }
-        for (Map.Entry<String, T> entry : this.entrySet()) {
-            sb.append(entry.getKey()).append(": ").append(entry.getValue()).append(", ");
-        }
-        sb.setLength(sb.length() - 2);
-        return sb.toString();
-    }
-
     public TagValueMap<T> setBaseTag(ReceiveTag baseTag) {
         this.baseTag = baseTag;
         return this;
@@ -43,5 +31,17 @@ public class TagValueMap<T> extends HashMap<String, T> {
             map.put("byte_seq_" + i, packet[i]);
         }
         return map;
+    }
+
+    public String toLogString(boolean addTimestamp) {
+        StringBuilder sb = new StringBuilder();
+        if (addTimestamp) {
+            sb.append(Calendar.getInstance().getTime().toString()).append("> ");
+        }
+        for (Map.Entry<String, T> entry : this.entrySet()) {
+            sb.append(entry.getKey()).append(": ").append(entry.getValue()).append(", ");
+        }
+        sb.setLength(sb.length() - 2);
+        return sb.toString();
     }
 }

@@ -22,12 +22,14 @@ public class DisplayEndpoint implements MainJDEC {
     public static TCPInterface RIO_TCP_INTERFACE;
     public static UDPInterface FMS_UDP_INTERFACE;
     public static TCPInterface FMS_TCP_INTERFACE;
+    public static InitChecker NET_IF_INIT = new InitChecker();
+    public static Integer[] VALID_PROTOCOL_YEARS = { 2020 };
+
     private static ElementUpdater updater;
     private static PacketCreator creator;
     private static ProtocolClass parserClass = new ProtocolClass("com.boomaa.opends.data.receive.parser.Parser");
     private static ProtocolClass creatorClass = new ProtocolClass("com.boomaa.opends.data.send.creator.Creator");
     private static ProtocolClass updaterClass = new ProtocolClass("com.boomaa.opends.display.updater.Updater");
-    public static InitChecker NET_IF_INIT = new InitChecker();
 
     private static final Clock rioTcpClock = new Clock(20) {
         @Override
@@ -70,6 +72,7 @@ public class DisplayEndpoint implements MainJDEC {
         }
     };
 
+    //TODO see if FMS clock can be 500ms as per specification
     private static final Clock fmsTcpClock = new Clock(20) {
         @Override
         public void onCycle() {
@@ -117,23 +120,26 @@ public class DisplayEndpoint implements MainJDEC {
 
     public static void main(String[] args) {
         MainFrame.display();
-        PROTOCOL_YEAR.addActionListener((e) -> {
-            parserClass.update();
-            creatorClass.update();
-            updaterClass.update();
-            try {
-                updater = (ElementUpdater) Class.forName(updaterClass.toString()).getConstructor().newInstance();
-                creator = (PacketCreator) Class.forName(creatorClass.toString()).getConstructor().newInstance();
-            } catch (NoSuchMethodException | ClassNotFoundException | IllegalAccessException | InstantiationException | InvocationTargetException e0) {
-                e0.printStackTrace();
-                ErrorBox.show(e0.getMessage());
-                System.exit(1);
-            }
-        });
-        fmsTcpClock.start();
-        fmsUdpClock.start();
+        doProtocolUpdate();
+        PROTOCOL_YEAR.addActionListener((e) -> doProtocolUpdate());
         rioTcpClock.start();
         rioUdpClock.start();
+        fmsTcpClock.start();
+        fmsUdpClock.start();
+    }
+
+    public static void doProtocolUpdate() {
+        parserClass.update();
+        creatorClass.update();
+        updaterClass.update();
+        try {
+            updater = (ElementUpdater) Class.forName(updaterClass.toString()).getConstructor().newInstance();
+            creator = (PacketCreator) Class.forName(creatorClass.toString()).getConstructor().newInstance();
+        } catch (NoSuchMethodException | ClassNotFoundException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            e.printStackTrace();
+            ErrorBox.show(e.getMessage());
+            System.exit(1);
+        }
     }
 
     public static PacketParser getPacketParser(String name, byte[] data) {
@@ -143,11 +149,5 @@ public class DisplayEndpoint implements MainJDEC {
             e.printStackTrace();
         }
         return null;
-    }
-
-    public static Integer[] getValidProtocolYears() {
-        return new Integer[] {
-                2020
-        };
     }
 }

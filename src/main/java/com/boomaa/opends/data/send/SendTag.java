@@ -93,7 +93,8 @@ public enum SendTag {
     }),
     ROBOT_RADIO_METRICS(0x03, Protocol.UDP, Remote.FMS, () ->
             new PacketBuilder().addInt(WlanConnection.getRadio(Integer.parseInt(MainJDEC.TEAM_NUMBER.getText())).getSignal())
-                    .addInt(0x00).addInt(0x00).build() //TODO bandwidth utilization (uint16)
+                    .addInt(0x00).addInt(0x00).build()
+            //TODO bandwidth utilization (uint16)
     ),
     PD_INFO(0x04, Protocol.UDP, Remote.FMS, () -> new byte[0]),
 
@@ -193,9 +194,10 @@ public enum SendTag {
         } else if (protocol == Protocol.TCP) {
             int lenAll = tagData.length + 1;
             byte[] b = NumberUtils.intToBytePair(lenAll);
-            //TODO replace with arraycopy()
-            out[0] = b[0];
-            out[1] = b[1];
+            //TODO test if this arraycopy works & delete commented portion
+            System.arraycopy(b, 0, out, 0, 2);
+//            out[0] = b[0];
+//            out[1] = b[1];
         }
         out[dataPos - 1] = (byte) flag;
         System.arraycopy(tagData, 0, out, dataPos, tagData.length);
