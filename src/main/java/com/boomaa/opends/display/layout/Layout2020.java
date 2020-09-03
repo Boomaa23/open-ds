@@ -6,6 +6,7 @@ import com.boomaa.opends.display.elements.GBCPanelBuilder;
 import com.boomaa.opends.display.frames.JoystickFrame;
 import com.boomaa.opends.display.frames.LogFrame;
 import com.boomaa.opends.display.frames.MainFrame;
+import com.boomaa.opends.display.frames.NTFrame;
 import com.boomaa.opends.display.frames.StatsFrame;
 
 import javax.swing.ImageIcon;
@@ -38,6 +39,11 @@ public class Layout2020 extends LayoutPlacer {
                 new StatsFrame();
             }
         });
+        NT_BTN.addActionListener((e) -> {
+            if (!PopupBase.isAlive(NTFrame.class)) {
+                new NTFrame();
+            }
+        });
         TEAM_NUMBER.getDocument().addDocumentListener(new TeamNumListener());
         TEAM_NUMBER.setText("5818"); //TODO remove after testing
         IS_ENABLED.setEnabled(false);
@@ -63,8 +69,9 @@ public class Layout2020 extends LayoutPlacer {
         base.clone().setPos(2, 2, 2, 1).build(RESTART_CODE_BTN);
         base.clone().setPos(2, 3, 2, 1).build(RESTART_ROBO_RIO_BTN);
         base.clone().setPos(2, 4, 2, 1).build(ESTOP_BTN);
-        base.clone().setPos(2, 5, 2, 1).build(JS_BTN);
-        base.clone().setPos(2, 6, 1, 1).build(STATS_BTN);
+        base.clone().setPos(2, 5, 1, 1).build(JS_BTN);
+        base.clone().setPos(3, 5, 1, 1).build(STATS_BTN);
+        base.clone().setPos(2, 6, 1, 1).build(NT_BTN);
         base.clone().setPos(3, 6, 1, 1).build(LOG_BTN);
         base.clone().setPos(2, 7, 2, 1).build(FMS_CONNECT);
 

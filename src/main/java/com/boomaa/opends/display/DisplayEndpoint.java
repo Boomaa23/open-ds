@@ -12,12 +12,14 @@ import com.boomaa.opends.networking.NetworkReloader;
 import com.boomaa.opends.networking.TCPInterface;
 import com.boomaa.opends.networking.UDPInterface;
 import com.boomaa.opends.networking.UDPTransform;
+import com.boomaa.opends.networktables.NTConnection;
 import com.boomaa.opends.util.Clock;
 import com.boomaa.opends.util.InitChecker;
 
 import java.lang.reflect.InvocationTargetException;
 
 public class DisplayEndpoint implements MainJDEC {
+    public static NTConnection NETWORK_TABLES;
     public static UDPInterface RIO_UDP_INTERFACE;
     public static TCPInterface RIO_TCP_INTERFACE;
     public static UDPInterface FMS_UDP_INTERFACE;
@@ -126,6 +128,8 @@ public class DisplayEndpoint implements MainJDEC {
         rioUdpClock.start();
         fmsTcpClock.start();
         fmsUdpClock.start();
+        NETWORK_TABLES = new NTConnection();
+        NETWORK_TABLES.start();
     }
 
     public static void doProtocolUpdate() {

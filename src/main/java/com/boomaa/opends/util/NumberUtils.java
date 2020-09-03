@@ -8,12 +8,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NumberUtils {
+    public static double getDouble(byte[] bytes) {
+        return byteWrapBig(bytes).getDouble();
+    }
+
     public static float getFloat(byte[] bytes) {
-        return ByteBuffer.wrap(bytes).order(ByteOrder.BIG_ENDIAN).getFloat();
+        return byteWrapBig(bytes).getFloat();
     }
 
     public static int getInt32(byte[] bytes) {
-        return ByteBuffer.wrap(bytes).order(ByteOrder.BIG_ENDIAN).getInt();
+        return byteWrapBig(bytes).getInt();
+    }
+
+    private static ByteBuffer byteWrapBig(byte[] bytes) {
+        return ByteBuffer.wrap(bytes).order(ByteOrder.BIG_ENDIAN);
     }
 
     public static int getUInt32(byte[] bytes) {
@@ -56,6 +64,20 @@ public class NumberUtils {
 
     public static int dblToInt8(double in) {
         return (int) (in * 127);
+    }
+
+    //TODO test to make sure this works
+    public static int readULEB128(byte[] data) {
+        int result = 0;
+        int shift = 0;
+        int b;
+        int ctr = 0;
+        do {
+            b = data[ctr++];
+            result |= (b & 0x7F) << shift;
+            shift += 7;
+        } while ((b & 0x80) != 0);
+        return result;
     }
 
     public static boolean hasMaskMatch(byte data, byte flag, int... bitmaskPos) {

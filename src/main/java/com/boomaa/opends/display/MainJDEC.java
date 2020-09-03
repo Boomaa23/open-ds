@@ -40,6 +40,7 @@ public interface MainJDEC {
      JButton LOG_BTN = new JButton("Log");
      JButton JS_BTN = new JButton("Joysticks");
      JButton STATS_BTN = new JButton("Stats");
+     JButton NT_BTN = new JButton("Shuffleboard");
 
      JLabel BAT_VOLTAGE = new JLabel("0.00 V");
      HideableLabel ROBOT_CONNECTION_STATUS = new HideableLabel(false, "Connected");

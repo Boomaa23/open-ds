@@ -11,6 +11,7 @@ public class GameTesting {
     }
 
     public static void main(String[] args) throws URISyntaxException, IOException {
+        System.out.println(NumberUtils.getUInt16(new byte[] { 01, 01 }));
 //        System.out.println(load);
 //        System.out.println(BatteryInfo.getPercent());
 //        System.out.println(BatteryInfo.getLifeTime());

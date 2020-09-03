@@ -13,11 +13,6 @@
     </properties>
 
     <dependencies>
-<!--        <dependency>-->
-<!--            <groupId>org.hid4java</groupId>-->
-<!--            <artifactId>hid4java</artifactId>-->
-<!--            <version>0.6.0</version>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>net.java.jinput</groupId>
             <artifactId>jinput</artifactId>
