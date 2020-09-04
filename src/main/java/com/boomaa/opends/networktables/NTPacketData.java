@@ -3,15 +3,7 @@ package com.boomaa.opends.networktables;
 import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.NumberUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class NTPacketData {
-    public static final List<NTPacketData> ALL_PACKET_DATA = new ArrayList<>();
-    public static final Map<Integer, NTEntry> ALL_NT_ENTRIES = new HashMap<>();
-
     private final byte[] data;
     private final NTMessageType messageType;
     private int msgId = -1;
@@ -37,14 +29,14 @@ public class NTPacketData {
                 this.seqNum = extractUInt16(usedLength);
                 this.value = extractValue(usedLength);
                 //TODO differentiate path from name, add tables and nesting
-                ALL_NT_ENTRIES.put(msgId, new NTEntry(msgStr, msgId, msgStr, value));
+                NTStorage.NT_ENTRIES.put(msgId, new NTEntry(msgStr, msgId, value));
                 break;
             case kEntryUpdate:
                 this.msgId = extractUInt16(1);
                 this.seqNum = extractUInt16(3);
                 this.dataType = NTDataType.getFromFlag(data[5]);
                 this.value = extractValue(6);
-                ALL_NT_ENTRIES.get(msgId).setValue(value);
+                NTStorage.NT_ENTRIES.get(msgId).setValue(value);
                 break;
             case kServerHello:
             case kExecuteRpc:
@@ -56,7 +48,7 @@ public class NTPacketData {
                 this.msgId = extractUInt16(1);
                 break;
         }
-        ALL_PACKET_DATA.add(this);
+        NTStorage.PACKET_DATA.add(this);
     }
 
     private int extractUInt16(int start) {

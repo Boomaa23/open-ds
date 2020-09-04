@@ -5,6 +5,9 @@ import com.boomaa.opends.networking.TCPInterface;
 import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.Clock;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 public class NTConnection extends Clock {
     private TCPInterface connection;
 
@@ -31,10 +34,17 @@ public class NTConnection extends Clock {
         if (connection != null && !connection.isClosed()) {
             connection.close();
         }
-        this.connection = new TCPInterface(AddressConstants.getRioAddress(), AddressConstants.getRioPorts().getShuffleboard());
-    }
-
-    public void decode() {
+        String rioIp = AddressConstants.getRioAddress();
+        try {
+            InetAddress.getByName(rioIp);
+            this.connection = new TCPInterface(rioIp, AddressConstants.getRioPorts().getShuffleboard());
+        } catch (UnknownHostException ignored) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public TCPInterface getConnection() {

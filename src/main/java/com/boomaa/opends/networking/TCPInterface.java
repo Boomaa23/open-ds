@@ -21,6 +21,7 @@ public class TCPInterface {
         } catch (ConnectException e) {
             this.closed = true;
         } catch (IOException e) {
+            this.closed = true;
             e.printStackTrace();
         }
     }

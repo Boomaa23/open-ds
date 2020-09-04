@@ -4,12 +4,21 @@ public class NTEntry {
     private final String path;
     private final int id;
     private final String key;
+    private final String tabName;
+    private final boolean inShuffleboard;
     private Object value;
 
-    public NTEntry(String path, int id, String key, Object value) {
+    public NTEntry(String path, int id, Object value) {
         this.path = path;
         this.id = id;
-        this.key = key;
+        int ioSecSep = path.indexOf("/", path.indexOf("/") + 1);
+        int ioThirdSep = path.indexOf("/", ioSecSep + 1);
+        this.key = path.substring(ioSecSep + 1, ioThirdSep - 1);
+        this.tabName = path.substring(ioThirdSep + 1);
+        if (!NTStorage.TABS.contains(tabName)) {
+            NTStorage.TABS.add(tabName);
+        }
+        this.inShuffleboard = path.contains("Shuffleboard");
         this.value = value;
     }
 
@@ -31,5 +40,13 @@ public class NTEntry {
 
     public void setValue(Object value) {
         this.value = value;
+    }
+
+    public boolean isInShuffleboard() {
+        return inShuffleboard;
+    }
+
+    public String getTabName() {
+        return tabName;
     }
 }
