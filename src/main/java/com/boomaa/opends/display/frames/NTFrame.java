@@ -5,11 +5,9 @@ import com.boomaa.opends.display.elements.GBCPanelBuilder;
 import com.boomaa.opends.networktables.NTEntry;
 import com.boomaa.opends.networktables.NTStorage;
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.SwingConstants;
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicArrowButton;
 import java.awt.*;
 import java.util.ArrayList;
@@ -17,9 +15,11 @@ import java.util.List;
 
 public class NTFrame extends PopupBase {
     private static final Insets stdInsets = new Insets(5, 5, 5, 5);
+    private static final Border emptyBorder = new EmptyBorder(5, 5, 5, 5);
+    private static final int borderRadius = 5;
     private static final int tabWidth = 6;
     private static final int lineWidth = 8;
-    private JScrollPane entryDisplayWrapper = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    private JScrollPane entryDisplayWrapper;
     private GBCPanelBuilder base;
     private JPanel entryDisplay;
     private int tabStartIndex = 0;
@@ -33,7 +33,8 @@ public class NTFrame extends PopupBase {
     public void config() {
         super.config();
         content.setLayout(new GridBagLayout());
-        base = new GBCPanelBuilder(content).setFill(GridBagConstraints.BOTH).setAnchor(GridBagConstraints.CENTER).setInsets(stdInsets);
+        this.base = new GBCPanelBuilder(content).setFill(GridBagConstraints.BOTH).setAnchor(GridBagConstraints.CENTER).setInsets(stdInsets);
+        this.entryDisplayWrapper = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         int lineHeight = 30;
         BasicArrowButton leftMenubar = new BasicArrowButton(SwingConstants.WEST);
@@ -56,21 +57,14 @@ public class NTFrame extends PopupBase {
         tabsPanel = new JPanel();
         tabsPanel.setPreferredSize(new Dimension(700, lineHeight));
         tabsPanel.setLayout(new GridBagLayout());
-        entryDisplay = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                g.setColor(Color.BLACK);
-//                g.fillRect(0, 0, getWidth(), getHeight());
-                //TODO backgrounds for entries with insets
-            }
-        };
+        entryDisplay = new JPanel();
         entryDisplay.setLayout(new GridBagLayout());
 
         populateTabsBar();
         boolean enableArrows = NTStorage.TABS.size() > tabWidth;
         leftMenubar.setEnabled(enableArrows);
         rightMenubar.setEnabled(enableArrows);
+        populateTab("");
     }
 
     private String truncate(String in, int max, boolean addDots) {
@@ -80,20 +74,31 @@ public class NTFrame extends PopupBase {
     private void populateTab(String name) {
         entryDisplay.removeAll();
         GBCPanelBuilder gbcEntry = new GBCPanelBuilder(entryDisplay).setInsets(stdInsets);
-        List<NTEntry> entries = new ArrayList<>(NTStorage.NT_ENTRIES.values());
-        int row = 0;
-        int tempCtr = 0;
+        List<NTEntry> entries = new ArrayList<>(NTStorage.ENTRIES.values());
         if (!name.isBlank()) {
             for (int i = 0; i < entries.size(); i++) {
                 NTEntry entry = entries.get(i);
                 if (entry.getTabName().equals(name) && entry.isInShuffleboard()) {
-                    gbcEntry.clone().setX(i % lineWidth).setY(row).build(new JLabel(entry.getKey()));
-                    gbcEntry.clone().setX(i % lineWidth).setY(row + 1).build(new JLabel(String.valueOf(entry.getValue())));
-                    tempCtr++;
-                    if (tempCtr > lineWidth - 1) {
-                        row += 2;
-                        tempCtr = 0;
-                    }
+                    JPanel tempPanel = new JPanel() {
+                        @Override
+                        protected void paintComponent(Graphics g) {
+                            super.paintComponent(g);
+                            Graphics2D graphics = (Graphics2D) g;
+                            graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                            graphics.setColor(Color.LIGHT_GRAY);
+                            graphics.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, borderRadius, borderRadius);
+                            graphics.setColor(Color.GRAY);
+                            graphics.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, borderRadius, borderRadius);
+                        }
+                    };
+                    tempPanel.setLayout(new BorderLayout());
+                    JLabel key = new JLabel(entry.getKey());
+                    JLabel value = new JLabel(String.valueOf(entry.getValue()));
+                    tempPanel.add(key, BorderLayout.NORTH);
+                    tempPanel.add(value, BorderLayout.SOUTH);
+                    tempPanel.setBorder(emptyBorder);
+                    gbcEntry.clone().setX(i % lineWidth).setY(i / lineWidth).build(tempPanel);
                 }
             }
         }

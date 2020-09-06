@@ -1,6 +1,6 @@
 # OpenDS
 
-A reverse-engineered lightweight FRC Driver Station for Windows and Linux
+A reverse-engineered lightweight FRC Driver Station alternative for Windows and Linux
 
 Download [here](https://ncocdn.cf/software/open-ds.jar) ([JDK 11+](https://www.oracle.com/java/technologies/javase-downloads.html) required)
 
@@ -38,6 +38,9 @@ rules R66 and R88. OpenDS is intended for testing use only.
     * RoboRIO disk/RAM/CPU/version
     * Disable/Rail faults
     * Packet logging
+* NetworkTables
+    * Read Shuffleboard and SmartDashboard packets
+    * Display NetworkTables passed data
 * FMS
     * Connect to a offseason FMS or Cheesy Arena
     * Choose to connect or not

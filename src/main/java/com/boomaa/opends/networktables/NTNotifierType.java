@@ -1,5 +1,6 @@
 package com.boomaa.opends.networktables;
 
+@Deprecated
 public enum NTNotifierType {
     NT_NOTIFY_NONE(0x00),
     NT_NOTIFY_IMMEDIATE(0x01), // initial listener addition

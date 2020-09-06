@@ -29,14 +29,14 @@ public class NTPacketData {
                 this.seqNum = extractUInt16(usedLength);
                 this.value = extractValue(usedLength);
                 //TODO differentiate path from name, add tables and nesting
-                NTStorage.NT_ENTRIES.put(msgId, new NTEntry(msgStr, msgId, value));
+                NTStorage.ENTRIES.put(msgId, new NTEntry(msgStr, msgId, value));
                 break;
             case kEntryUpdate:
                 this.msgId = extractUInt16(1);
                 this.seqNum = extractUInt16(3);
                 this.dataType = NTDataType.getFromFlag(data[5]);
                 this.value = extractValue(6);
-                NTStorage.NT_ENTRIES.get(msgId).setValue(value);
+                NTStorage.ENTRIES.get(msgId).setValue(value);
                 break;
             case kServerHello:
             case kExecuteRpc:

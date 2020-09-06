@@ -13,8 +13,8 @@ public class NTEntry {
         this.id = id;
         int ioSecSep = path.indexOf("/", path.indexOf("/") + 1);
         int ioThirdSep = path.indexOf("/", ioSecSep + 1);
-        this.key = path.substring(ioSecSep + 1, ioThirdSep - 1);
-        this.tabName = path.substring(ioThirdSep + 1);
+        this.key = path.substring(ioThirdSep + 1);
+        this.tabName = path.substring(ioSecSep + 1, ioThirdSep);
         if (!NTStorage.TABS.contains(tabName)) {
             NTStorage.TABS.add(tabName);
         }

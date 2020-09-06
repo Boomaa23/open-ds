@@ -5,7 +5,6 @@ import com.boomaa.opends.data.holders.Remote;
 import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.display.frames.ErrorBox;
-import com.boomaa.opends.networktables.NTConnection;
 
 import java.io.IOException;
 import java.net.InetAddress;

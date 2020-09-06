@@ -7,6 +7,6 @@ import java.util.Map;
 
 public interface NTStorage {
     List<NTPacketData> PACKET_DATA = new ArrayList<>();
-    Map<Integer, NTEntry> NT_ENTRIES = new HashMap<>();
+    Map<Integer, NTEntry> ENTRIES = new HashMap<>();
     List<String> TABS = new ArrayList<>();
 }
