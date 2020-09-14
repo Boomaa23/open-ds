@@ -10,6 +10,15 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+SYSTEM_POWER_STATUS CreatePowerStatus() {
+    SYSTEM_POWER_STATUS status;
+    if (!GetSystemPowerStatus(&status)) {
+        printf("Cannot get Win32 power status, error %lu", GetLastError());
+    }
+    return status;
+}
+
 /*
  * Class:     com_boomaa_opends_util_battery_Win32BatteryJNI
  * Method:    isAC
@@ -17,16 +26,12 @@ extern "C" {
  */
 JNIEXPORT jboolean JNICALL Java_com_boomaa_opends_util_battery_Win32BatteryJNI_isAC
   (JNIEnv *env, jclass clazz) {
-    SYSTEM_POWER_STATUS status;
-    if (GetSystemPowerStatus(&status)) {
-        unsigned char ac = status.ACLineStatus;
-        if (ac == 1) {
-            return JNI_TRUE;
-        } else if (ac == 0 || ac == 255) {
-            return JNI_FALSE;
-        }
-    } else {
-        printf("Cannot get Win32 power status, error %lu", GetLastError());
+    SYSTEM_POWER_STATUS status = CreatePowerStatus();
+    unsigned char ac = status.ACLineStatus;
+    if (ac == 1) {
+        return JNI_TRUE;
+    } else if (ac == 0 || ac == 255) {
+        return JNI_FALSE;
     }
   }
 
@@ -37,12 +42,7 @@ JNIEXPORT jboolean JNICALL Java_com_boomaa_opends_util_battery_Win32BatteryJNI_i
  */
 JNIEXPORT jint JNICALL Java_com_boomaa_opends_util_battery_Win32BatteryJNI_getFlag
   (JNIEnv *env, jclass clazz) {
-    SYSTEM_POWER_STATUS status;
-    if (GetSystemPowerStatus(&status)) {
-        return (jint) status.BatteryFlag;
-    } else {
-        printf("Cannot get Win32 power status, error %lu", GetLastError());
-    }
+    return (jint) CreatePowerStatus().BatteryFlag;
   }
 
 /*
@@ -53,11 +53,7 @@ JNIEXPORT jint JNICALL Java_com_boomaa_opends_util_battery_Win32BatteryJNI_getFl
 JNIEXPORT jint JNICALL Java_com_boomaa_opends_util_battery_Win32BatteryJNI_getPercent
   (JNIEnv *env, jclass clazz) {
     SYSTEM_POWER_STATUS status;
-    if (GetSystemPowerStatus(&status)) {
-        return (jint) status.BatteryLifePercent;
-    } else {
-        printf("Cannot get Win32 power status, error %lu", GetLastError());
-    }
+    return (jint) CreatePowerStatus().BatteryLifePercent;
   }
 
 /*
@@ -67,12 +63,7 @@ JNIEXPORT jint JNICALL Java_com_boomaa_opends_util_battery_Win32BatteryJNI_getPe
  */
 JNIEXPORT jint JNICALL Java_com_boomaa_opends_util_battery_Win32BatteryJNI_getLifeTime
   (JNIEnv *env, jclass clazz) {
-    SYSTEM_POWER_STATUS status;
-    if (GetSystemPowerStatus(&status)) {
-        return (jint) status.BatteryLifeTime;
-    } else {
-        printf("Cannot get Win32 power status, error %lu", GetLastError());
-    }
+    return (jint) CreatePowerStatus().BatteryLifeTime;
   }
 
 /*
@@ -82,12 +73,7 @@ JNIEXPORT jint JNICALL Java_com_boomaa_opends_util_battery_Win32BatteryJNI_getLi
  */
 JNIEXPORT jint JNICALL Java_com_boomaa_opends_util_battery_Win32BatteryJNI_getFullTime
   (JNIEnv *env, jclass clazz) {
-    SYSTEM_POWER_STATUS status;
-    if (GetSystemPowerStatus(&status)) {
-        return (jint) status.BatteryFullLifeTime;
-    } else {
-        printf("Cannot get Win32 power status, error %lu", GetLastError());
-    }
+    return (jint) CreatePowerStatus().BatteryFullLifeTime;
   }
 
 #ifdef __cplusplus

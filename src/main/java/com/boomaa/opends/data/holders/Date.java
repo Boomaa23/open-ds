@@ -63,7 +63,7 @@ public class Date {
 
     public byte[] toSendBytes() {
         PacketBuilder builder = new PacketBuilder();
-        builder.addBytes(NumberUtils.jIntToByteArr(microsecond));
+        builder.addBytes(NumberUtils.intToByteQuad(microsecond));
         builder.addInt(second);
         builder.addInt(minute);
         builder.addInt(hour);
@@ -75,12 +75,7 @@ public class Date {
 
     public static Date fromRecvBytes(byte[] bytes) {
         return new Date(
-                NumberUtils.getUInt8(bytes[9]) + 1900,
-                NumberUtils.getUInt8(bytes[8]),
-                NumberUtils.getUInt8(bytes[7]),
-                NumberUtils.getUInt8(bytes[6]),
-                NumberUtils.getUInt8(bytes[5]),
-                NumberUtils.getUInt8(bytes[4]),
+                bytes[9] + 1900, bytes[8], bytes[7], bytes[6], bytes[5], bytes[4],
                 NumberUtils.getUInt32(ArrayUtils.sliceArr(bytes, 0, 4))
         );
     }

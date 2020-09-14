@@ -78,7 +78,7 @@ public class NTFrame extends PopupBase {
         if (!name.isBlank()) {
             for (int i = 0; i < entries.size(); i++) {
                 NTEntry entry = entries.get(i);
-                if (entry.getTabName().equals(name) && entry.isInShuffleboard()) {
+                if (entry.getTabName().equals(name) && (entry.isInShuffleboard() || entry.isInSmartDashboard())) {
                     JPanel tempPanel = new JPanel() {
                         @Override
                         protected void paintComponent(Graphics g) {
@@ -122,6 +122,7 @@ public class NTFrame extends PopupBase {
         for (int i = tabStartIndex; i < tabWidth + tabStartIndex; i++) {
             JButton tabBtn = new JButton(i < tabs.size() ? truncate(tabs.get(i), 18, true) : "");
             tabBtn.addActionListener((e) -> populateTab(tabBtn.getText()));
+            tabBtn.setVisible(i < tabs.size());
             gbc.clone().setPos(i - tabStartIndex, 0, 1, 1).build(tabBtn);
         }
         base.clone().setPos(0, 0, 6, 1).build(tabsPanel);

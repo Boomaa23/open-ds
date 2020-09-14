@@ -28,7 +28,7 @@ public class NTPacketData {
                 this.msgId = extractUInt16(usedLength);
                 this.seqNum = extractUInt16(usedLength);
                 this.value = extractValue(usedLength);
-                //TODO differentiate path from name, add tables and nesting
+                //TODO add tables and nesting
                 NTStorage.ENTRIES.put(msgId, new NTEntry(msgStr, msgId, value));
                 break;
             case kEntryUpdate:

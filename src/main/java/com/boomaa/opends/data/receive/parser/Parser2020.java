@@ -115,8 +115,7 @@ public class Parser2020 {
         }
 
         public String getTournamentLevel() {
-            int val = NumberUtils.getUInt8(packet[6]);
-            switch (val) {
+            switch (packet[6]) {
                 case 0: return "Match Test";
                 case 1: return "Practice";
                 case 2: return "Qualification";
@@ -130,7 +129,7 @@ public class Parser2020 {
         }
 
         public int getPlayNumber() {
-            return NumberUtils.getUInt8(packet[9]);
+            return packet[9];
         }
 
         public Date getDate() {

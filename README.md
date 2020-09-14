@@ -52,10 +52,14 @@ rules R66 and R88. OpenDS is intended for testing use only.
     
 ## Setup
 Download the stable jar from [here](https://ncocdn.cf/software/open-ds.jar) and run. There are no prerequisites besides having a Java installation with [JDK 11](https://www.oracle.com/java/technologies/javase-downloads.html) or newer.
+### Troubleshooting
+If you run into issues, ensure that you are running a 64-bit installation of either Windows 7/8.1/10 or Linux kernel version 2.6.35 or greater.
 
-If you run into issues, ensure that you are running a 64-bit installation of either Windows 7/8.1/10 or UNIX (Linux) kernel version 2.6.35 or greater.
+For errors relating to JInput, natives, joysticks, or JNI, ensure the program has write access to the computer's temp folder. If not, download [this](https://ncocdn.cf/software/open-ds-natives.zip) set of natives and place the extracted contents in your temp folder.
 
-If there are still issues present, please report it on the "Issues" section of the GitHub [here](https://github.com/Boomaa23/open-ds/issues) and it will be resolved as soon as possible.
+If issues persist, please report them on the "Issues" section of the GitHub [here](https://github.com/Boomaa23/open-ds/issues) and they will be resolved as soon as possible.
+
+
 
 ## License
 OpenDS may be used without restriction for the purpose of testing robots by teams and individuals, but is copyrighted material and cannot be redistributed.

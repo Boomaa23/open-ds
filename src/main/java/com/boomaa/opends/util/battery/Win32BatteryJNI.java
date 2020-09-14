@@ -1,11 +1,11 @@
 package com.boomaa.opends.util.battery;
 
-import com.boomaa.opends.usb.USBInterface;
+import com.boomaa.opends.util.Libraries;
 
 public class Win32BatteryJNI {
     static {
-        //Ensure the JNI library (batteryjni-win32.dll) is loaded by the static initializer of USBInterface (win32 only)
-        USBInterface.initLibraries(false);
+        //Ensure the JNI library (batteryjni-win32.dll) is loaded by the library initializer (win32 only)
+        Libraries.init(false);
         System.loadLibrary("batteryjni-win32");
     }
 

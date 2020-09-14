@@ -6,6 +6,7 @@ public class NTEntry {
     private final String key;
     private final String tabName;
     private final boolean inShuffleboard;
+    private final boolean inSmartDashboard;
     private Object value;
 
     public NTEntry(String path, int id, Object value) {
@@ -19,6 +20,7 @@ public class NTEntry {
             NTStorage.TABS.add(tabName);
         }
         this.inShuffleboard = path.contains("Shuffleboard");
+        this.inSmartDashboard = path.contains("Smart Dashboard");
         this.value = value;
     }
 
@@ -44,6 +46,10 @@ public class NTEntry {
 
     public boolean isInShuffleboard() {
         return inShuffleboard;
+    }
+
+    public boolean isInSmartDashboard() {
+        return inSmartDashboard;
     }
 
     public String getTabName() {

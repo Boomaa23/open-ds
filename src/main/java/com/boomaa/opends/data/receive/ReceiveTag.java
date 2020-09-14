@@ -14,9 +14,12 @@ public enum ReceiveTag {
             .addTo("Left Rumble", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 4, 6)))
             .addTo("Right Rumble", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 6, 8)))
     ),
-    DISK_INFO(0x04, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS, (ReceiveTagBase<Integer>) (packet, size) ->
-            TagValueMap.singleton("Free Space", NumberUtils.getUInt32(ArrayUtils.sliceArr(packet, 0, 4)))
+    // Indices differ from documentation: Free Space (4, 8) instead of (0,4)
+    DISK_INFO(0x04, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS, (ReceiveTagBase<Integer>) (packet, size) -> new TagValueMap<Integer>()
+            .addTo("Block", NumberUtils.getUInt32(ArrayUtils.sliceArr(packet, 0, 4))) //inferred
+            .addTo("Free Space", NumberUtils.getUInt32(ArrayUtils.sliceArr(packet, 4, 8)))
     ),
+    //TODO field listing does not match data - fix
     CPU_INFO(0x05, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS, (ReceiveTagBase<Float>) (packet, size) -> {
         float numCpus = NumberUtils.getFloat(ArrayUtils.sliceArr(packet, 0, 4));
         TagValueMap<Float> map = new TagValueMap<Float>().addTo("Number of CPUs", numCpus);
@@ -30,23 +33,23 @@ public enum ReceiveTag {
         }
         return map;
     }),
-    RAM_INFO(0x06, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS, (ReceiveTagBase<Integer>) (packet, size) -> new TagValueMap<Integer>()
-            .addTo("Block", NumberUtils.getUInt32(ArrayUtils.sliceArr(packet, 0, 4)))
-            .addTo("Free Space", NumberUtils.getUInt32(ArrayUtils.sliceArr(packet, 4, 8)))
-    ),
+    RAM_INFO(0x06, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS, DISK_INFO.getAction()),
+    //TODO figure out the units for the PDP log (current, so amps? - values ~10-30)
     PDP_LOG(0x08, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS, (ReceiveTagBase<Integer>) (packet, size) -> {
-        int[] rawValues = new int[packet.length * 8];
-        for (int i = 0; i < packet.length; i++) {
-            char[] bin = NumberUtils.padByte(packet[i]).toCharArray();
-            for (int j = 0; j < 8; j++) {
-                rawValues[(i * 8) + j] = Character.getNumericValue(bin[j]);
-            }
-        }
         TagValueMap<Integer> map = new TagValueMap<>();
-        int ctr = 0;
-        for (int i = 0; i < 15; i++) {
-            ctr += (i == 5 || i == 10) ? 14 : 10;
-            map.addTo("PDP Port " + (i < 10 ? "0" : "") + i, NumberUtils.getUInt16(ArrayUtils.sliceArr(rawValues, ctr, ctr + 10)));
+        StringBuilder binaryBuilder = new StringBuilder();
+        for (int i = 1; i < packet.length - 3; i++) {
+            binaryBuilder.append(NumberUtils.padByte(packet[i]));
+        }
+        char[] binaryChars = binaryBuilder.toString().toCharArray();
+        int[] binary = new int[binaryChars.length];
+        for (int i = 0; i < binary.length; i++) {
+            binary[i] = Character.getNumericValue(binaryChars[i]);
+        }
+        int pdpNum = 0;
+        for (int bitCtr = 0; bitCtr <= binary.length - 10; bitCtr += 10) {
+            map.addTo("PDP Port " + ((pdpNum < 10) ? "0" : "") + pdpNum, NumberUtils.getUInt16(ArrayUtils.sliceArr(binary, bitCtr, bitCtr + 10)));
+            bitCtr += (++pdpNum == 6 || pdpNum == 12) ? 4 : 0;
         }
         return map;
     }),
@@ -55,8 +58,8 @@ public enum ReceiveTag {
             .addTo("Utilization %", NumberUtils.getFloat(ArrayUtils.sliceArr(packet, 0, 4)))
             .addTo("Bus Off", (float) NumberUtils.getUInt32(ArrayUtils.sliceArr(packet, 4, 8)))
             .addTo("TX Full", (float) NumberUtils.getUInt32(ArrayUtils.sliceArr(packet, 8, 12)))
-            .addTo("RX Errors", (float) NumberUtils.getUInt8(packet[12]))
-            .addTo("TX Errors", (float) NumberUtils.getUInt8(packet[13]))
+            .addTo("RX Errors", (float) packet[12])
+            .addTo("TX Errors", (float) packet[13])
     ),
     RADIO_EVENTS(0x00, Protocol.TCP, Remote.ROBO_RIO, InLog.ALWAYS, (ReceiveTagBase<String>) (packet, size) ->
             TagValueMap.singleton("Message", new String(packet))
@@ -74,7 +77,7 @@ public enum ReceiveTag {
     VERSION_INFO(0x0A, Protocol.TCP, Remote.ROBO_RIO, InLog.ALWAYS, (ReceiveTagBase<String>) (packet, size) -> {
         TagValueMap<String> map = new TagValueMap<>();
         String devType = "Unknown";
-        switch (NumberUtils.getUInt8(packet[0])) {
+        switch (packet[0]) {
             case 0: devType = "Software"; break;
             case 2: devType = "CAN Talon"; break;
             case 8: devType = "PDP"; break;
@@ -82,7 +85,7 @@ public enum ReceiveTag {
             case 21: devType = "Pigeon"; break;
         }
         map.put("Device Type", devType);
-        map.put("ID", String.valueOf(NumberUtils.getUInt8(packet[3])));
+        map.put("ID", String.valueOf(packet[3]));
         String[] nameAndVer = NumberUtils.getNLengthStrs(ArrayUtils.sliceArr(packet, 4), 1, true);
         map.put("Name", nameAndVer[0]);
         map.put("Version", nameAndVer[1]);
@@ -133,7 +136,7 @@ public enum ReceiveTag {
     ),
     STATION_INFO(0x19, Protocol.TCP, Remote.FMS, InLog.ALWAYS, (ReceiveTagBase<AllianceStation>) (packet, size) -> {
         AllianceStation.Status status = null;
-        switch (NumberUtils.getUInt8(packet[1])) {
+        switch (packet[1]) {
             case 0: status = AllianceStation.Status.GOOD; break;
             case 1: status = AllianceStation.Status.BAD; break;
             case 2: status = AllianceStation.Status.WAITING; break;

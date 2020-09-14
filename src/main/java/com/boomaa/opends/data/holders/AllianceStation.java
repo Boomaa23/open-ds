@@ -43,8 +43,7 @@ public class AllianceStation {
     }
 
     public static AllianceStation getFromByte(byte b) {
-        int num = NumberUtils.getUInt8(b);
-        return new AllianceStation(num, num >= 3);
+        return new AllianceStation(b, b >= 3);
     }
 
     public enum Status {

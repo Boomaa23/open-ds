@@ -29,21 +29,21 @@ public enum SendTag {
             builder.addInt(ctrl.numAxes()); //3 axes
             if (ctrl instanceof Joystick) {
                 Joystick js = (Joystick) ctrl;
-                builder.addInt(NumberUtils.dblToInt8(js.getX()));
-                builder.addInt(NumberUtils.dblToInt8(js.getY()));
-                builder.addInt(NumberUtils.dblToInt8(js.getZ()));
+                builder.addInt(NumberUtils.dblToInt8(js.getX()))
+                        .addInt(NumberUtils.dblToInt8(js.getY()))
+                        .addInt(NumberUtils.dblToInt8(js.getZ()));
             } else if (ctrl instanceof XboxController) {
                 XboxController xbox = (XboxController) ctrl;
-                builder.addInt(NumberUtils.dblToInt8(xbox.getX(true)));
-                builder.addInt(NumberUtils.dblToInt8(xbox.getY(true)));
-                builder.addInt(NumberUtils.dblToInt8(xbox.getTrigger(true)));
-                builder.addInt(NumberUtils.dblToInt8(xbox.getTrigger(false)));
-                builder.addInt(NumberUtils.dblToInt8(xbox.getX(false)));
-                builder.addInt(NumberUtils.dblToInt8(xbox.getY(false)));
+                builder.addInt(NumberUtils.dblToInt8(xbox.getX(true)))
+                        .addInt(NumberUtils.dblToInt8(xbox.getY(true)))
+                        .addInt(NumberUtils.dblToInt8(xbox.getTrigger(true)))
+                        .addInt(NumberUtils.dblToInt8(xbox.getTrigger(false)))
+                        .addInt(NumberUtils.dblToInt8(xbox.getX(false)))
+                        .addInt(NumberUtils.dblToInt8(xbox.getY(false)));
             }
-            builder.addInt(ctrl.numButtons());
-            builder.addBytes(NumberUtils.packBools(ctrl.getButtons()));
-            builder.addInt(0); //povCount
+            builder.addInt(ctrl.numButtons())
+                    .addBytes(NumberUtils.packBools(ctrl.getButtons()))
+                    .addInt(0); //povCount
         }
         return builder.build();
     }),
@@ -57,20 +57,20 @@ public enum SendTag {
         List<HIDDevice> ctrl = USBInterface.getControlDevices();
         for (int i = 0; i < ctrl.size() && i < HIDDevice.MAX_JS_NUM; i++) {
             HIDDevice cDev = ctrl.get(i);
-            builder.addInt(cDev.getIndex());
-            builder.addInt(cDev instanceof XboxController ? 1 : 0); //isXbox
-            builder.addInt((cDev instanceof XboxController ? JoystickType.XINPUT_GAMEPAD : JoystickType.HID_JOYSTICK).numAsInt());
+            builder.addInt(cDev.getIndex())
+                    .addInt(cDev instanceof XboxController ? 1 : 0) //isXbox
+                    .addInt((cDev instanceof XboxController ? JoystickType.XINPUT_GAMEPAD : JoystickType.HID_JOYSTICK).numAsInt());
             //TODO make sure this controller name-getting works VVV
             String name = cDev.getController().getName();
-            builder.addInt(name.length());
-            builder.addBytes(name.getBytes());
-            builder.addInt(cDev.numAxes()); //numAxes
+            builder.addInt(name.length())
+                    .addBytes(name.getBytes())
+                    .addInt(cDev.numAxes()); //numAxes
             HIDDevice.Axis[] axes = cDev instanceof XboxController ? XboxController.Axis.values() : Joystick.Axis.values();
             for (HIDDevice.Axis axis : axes) {
                 builder.addInt(axis.getInt());
             }
-            builder.addInt(cDev.numButtons());
-            builder.addInt(0); //povCount
+            builder.addInt(cDev.numButtons())
+                    .addInt(0); //povCount
         }
         return builder.build();
     }),
@@ -98,6 +98,7 @@ public enum SendTag {
     ),
     PD_INFO(0x04, Protocol.UDP, Remote.FMS, () -> new byte[0]),
 
+    //TODO software versions for FMS
     WPILIB_VER(0x00, Protocol.TCP, Remote.FMS, null),
     RIO_VER(0x01, Protocol.TCP, Remote.FMS, null),
     DS_VER(0x02, Protocol.TCP, Remote.FMS, null),
@@ -108,16 +109,16 @@ public enum SendTag {
     THIRD_PARTY_DEVICE_VER(0x07, Protocol.TCP, Remote.FMS, null),
     USAGE_REPORT(0x15, Protocol.TCP, Remote.FMS, () -> {
         PacketBuilder builder = new PacketBuilder();
-        builder.addBytes(NumberUtils.intToBytePair(Integer.parseInt(MainJDEC.TEAM_NUMBER.getText())));
-        builder.addInt(0x00); //Unknown
-        builder.addBytes(UsageReporting.RECEIVED_USAGE);
+        builder.addBytes(NumberUtils.intToBytePair(Integer.parseInt(MainJDEC.TEAM_NUMBER.getText())))
+                .addInt(0x00) //Unknown
+                .addBytes(UsageReporting.RECEIVED_USAGE);
         return builder.build();
     }),
     LOG_DATA(0x16, Protocol.TCP, Remote.FMS, () -> {
         PacketBuilder builder = new PacketBuilder();
         //TODO implement trip time, lost packets, CAN, signalDb, bandwidth, "Watchdog" on status
-        builder.addInt(0x01); //tripTime
-        builder.addInt(0x00); //lostPackets
+        builder.addInt(0x01) //tripTime
+               .addInt(0x00); //lostPackets
         builder.addBytes(NumberUtils.intToBytePair(Integer.parseInt(MainJDEC.TEAM_NUMBER.getText())));
         int status = 0;
         if (MainJDEC.BROWNOUT_STATUS.isDisplayed()) {
@@ -141,10 +142,10 @@ public enum SendTag {
         if (!MainJDEC.IS_ENABLED.isSelected()) {
             status += 0x08 + 0x01;
         }
-        builder.addInt(status);
-        builder.addInt(0x01); //CAN
-        builder.addInt(0x01); //SignalDb
-        builder.addBytes(NumberUtils.intToBytePair(0x01)); //bandwidth
+        builder.addInt(status)
+                .addInt(0x01) //CAN
+                .addInt(0x01) //SignalDb
+                .addBytes(NumberUtils.intToBytePair(0x01)); //bandwidth
         return builder.build();
     }),
     ERR_AND_EVENT_DATA(0x17, Protocol.TCP, Remote.FMS, null),
@@ -194,10 +195,8 @@ public enum SendTag {
         } else if (protocol == Protocol.TCP) {
             int lenAll = tagData.length + 1;
             byte[] b = NumberUtils.intToBytePair(lenAll);
-            //TODO test if this arraycopy works & delete commented portion
-            System.arraycopy(b, 0, out, 0, 2);
-//            out[0] = b[0];
-//            out[1] = b[1];
+            out[0] = b[0];
+            out[1] = b[1];
         }
         out[dataPos - 1] = (byte) flag;
         System.arraycopy(tagData, 0, out, dataPos, tagData.length);

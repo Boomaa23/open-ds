@@ -1,15 +1,11 @@
 package com.boomaa.opends.usb;
 
-import com.boomaa.opends.util.UnzipUtils;
+import com.boomaa.opends.util.Libraries;
 import net.java.games.input.Component;
 import net.java.games.input.Controller;
 import net.java.games.input.ControllerEnvironment;
 
-import java.io.File;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
 import java.lang.reflect.Constructor;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -17,30 +13,10 @@ import java.util.Set;
 public class USBInterface {
     private static List<HIDDevice> controlDevices = new ArrayList<>();
     private static Controller[] rawControllers;
-    private static boolean hasLibraryInit = false;
 
     static {
-        // Workaround to JInput natives not being bundled with jinput
-        //  extracts all natives to system temp folder from jar
-        //  throws an illegal reflection error (not exception)
-        initLibraries(false);
+        Libraries.init(false);
         refreshControllers();
-    }
-
-    public static void initLibraries(boolean force) {
-        if (!hasLibraryInit || force) {
-            String tmpPath = System.getProperty("java.io.tmpdir");
-            UnzipUtils.unzip(USBInterface.getJarPath(), tmpPath);
-            System.setProperty("java.library.path", tmpPath);
-            try {
-                MethodHandles.Lookup cl = MethodHandles.privateLookupIn(ClassLoader.class, MethodHandles.lookup());
-                VarHandle sys_paths = cl.findStaticVarHandle(ClassLoader.class, "sys_paths", String[].class);
-                sys_paths.set(null);
-            } catch (IllegalAccessException | NoSuchFieldException e) {
-                e.printStackTrace();
-            }
-            hasLibraryInit = true;
-        }
     }
 
     private static ControllerEnvironment createDefaultEnvironment() {
@@ -116,16 +92,6 @@ public class USBInterface {
                 }
             }
         }
-    }
-
-    public static String getJarPath() {
-        try {
-            return new File(USBInterface.class.getProtectionDomain()
-                    .getCodeSource().getLocation().toURI()).getPath();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     public static Controller[] getRawControllers() {

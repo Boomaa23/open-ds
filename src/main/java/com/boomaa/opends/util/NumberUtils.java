@@ -32,10 +32,6 @@ public class NumberUtils {
                 | ((bytes[0] & 0xFF) << 24);
     }
 
-    public static int getUInt8(byte num) {
-        return num & 0xFF;
-    }
-
     public static int getUInt16(byte[] nums) {
         return ((nums[0] & 0xFF) << 8) | (nums[1] & 0xFF);
     }
@@ -45,9 +41,6 @@ public class NumberUtils {
         for (int i = 0; i < nums.length; i++) {
             out += Math.pow(2, (nums.length - i - 1)) * nums[i];
         }
-        //TODO implement pdp log port status get
-        // make this work correctly
-        // ref https://frcture.readthedocs.io/en/latest/driverstation/rio_to_ds.html#pdp-log-0x08
         return out;
     }
 
@@ -58,7 +51,7 @@ public class NumberUtils {
         return out;
     }
 
-    public static byte[] jIntToByteArr(int in) {
+    public static byte[] intToByteQuad(int in) {
         return ByteBuffer.allocate(4).putInt(in).array();
     }
 
@@ -104,6 +97,10 @@ public class NumberUtils {
     }
 
     public static String padByte(byte b) {
+        return padByte(b, 8);
+    }
+
+    public static String padByte(byte b, int size) {
         return String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(' ', '0');
     }
     public static String padNumber(double value, int decimals) {
@@ -111,9 +108,7 @@ public class NumberUtils {
         StringBuilder sb = new StringBuilder(strVal);
         int indPDec = strVal.indexOf('.');
         if (indPDec != -1) {
-            for (int i = sb.length() - indPDec - 1; i < decimals; i++) {
-                sb.append('0');
-            }
+            sb.append("0".repeat(Math.max(0, decimals - (sb.length() - indPDec - 1))));
         }
         return sb.toString();
     }
@@ -127,14 +122,16 @@ public class NumberUtils {
     public static byte[] packBools(boolean[] bools) {
         int len = bools.length;
         int bytes = len >> 3;
-        if ((len & 0x07) != 0) ++bytes;
-        byte[] arr2 = new byte[bytes];
+        if ((len & 0x07) != 0) {
+            bytes++;
+        }
+        byte[] out = new byte[bytes];
         for (int i = 0; i < bools.length; i++) {
             if (bools[i]) {
-                arr2[i >> 3] |= (byte) reverseByte(1 << (i & 0x07));
+                out[i >> 3] |= (byte) reverseByte(1 << (i & 0x07));
             }
         }
-        return arr2;
+        return out;
     }
 
     // Reverses all the bits in a byte. Used to convert MSB 0 into LSB 0 for button encoding
