@@ -3,8 +3,7 @@ package com.boomaa.opends.util;
 import com.boomaa.opends.usb.USBInterface;
 
 import java.io.File;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
+import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 
 public class Libraries {
@@ -19,9 +18,9 @@ public class Libraries {
             UnzipUtils.unzip(getJarPath(), tmpPath);
             System.setProperty("java.library.path", tmpPath);
             try {
-                MethodHandles.Lookup cl = MethodHandles.privateLookupIn(ClassLoader.class, MethodHandles.lookup());
-                VarHandle sys_paths = cl.findStaticVarHandle(ClassLoader.class, "sys_paths", String[].class);
-                sys_paths.set(null);
+                Field fieldSysPath = ClassLoader.class.getDeclaredField("sys_paths");
+                fieldSysPath.setAccessible(true);
+                fieldSysPath.set(null, null);
             } catch (IllegalAccessException | NoSuchFieldException e) {
                 e.printStackTrace();
             }

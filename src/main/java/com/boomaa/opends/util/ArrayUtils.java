@@ -35,7 +35,7 @@ public class ArrayUtils {
     public static String[] removeBlanks(String[] in) {
         List<String> out = new ArrayList<>();
         for (String str : in) {
-            if (!str.isEmpty() && !str.isBlank()) {
+            if (!str.isEmpty()) {
                 out.add(str);
             }
         }

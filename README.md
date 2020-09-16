@@ -2,7 +2,7 @@
 
 A reverse-engineered lightweight FRC Driver Station alternative for Windows and Linux
 
-Download [here](https://ncocdn.cf/software/open-ds.jar) ([JDK 11+](https://www.oracle.com/java/technologies/javase-downloads.html) required)
+Download [here](https://ncocdn.cf/software/open-ds.jar) ([JDK 8+](https://www.oracle.com/java/technologies/javase-downloads.html) required)
 
 Copyright (C) 2020 Boomaa23
 
@@ -51,7 +51,7 @@ rules R66 and R88. OpenDS is intended for testing use only.
     * Easily modifiable for updated protocol years
     
 ## Setup
-Download the stable jar from [here](https://ncocdn.cf/software/open-ds.jar) and run. There are no prerequisites besides having a Java installation with [JDK 11](https://www.oracle.com/java/technologies/javase-downloads.html) or newer.
+Download the stable jar from [here](https://ncocdn.cf/software/open-ds.jar) and run. There are no prerequisites besides having a Java installation with [JDK 8](https://www.oracle.com/java/technologies/javase-downloads.html) or newer.
 ### Troubleshooting
 If you run into issues, ensure that you are running a 64-bit installation of either Windows 7/8.1/10 or Linux kernel version 2.6.35 or greater.
 

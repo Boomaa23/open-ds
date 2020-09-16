@@ -75,7 +75,7 @@ public class NTFrame extends PopupBase {
         entryDisplay.removeAll();
         GBCPanelBuilder gbcEntry = new GBCPanelBuilder(entryDisplay).setInsets(stdInsets);
         List<NTEntry> entries = new ArrayList<>(NTStorage.ENTRIES.values());
-        if (!name.isBlank()) {
+        if (!name.isEmpty()) {
             for (int i = 0; i < entries.size(); i++) {
                 NTEntry entry = entries.get(i);
                 if (entry.getTabName().equals(name) && (entry.isInShuffleboard() || entry.isInSmartDashboard())) {

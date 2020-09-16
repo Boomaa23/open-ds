@@ -107,7 +107,9 @@ public class NumberUtils {
         StringBuilder sb = new StringBuilder(strVal);
         int indPDec = strVal.indexOf('.');
         if (indPDec != -1) {
-            sb.append("0".repeat(Math.max(0, decimals - (sb.length() - indPDec - 1))));
+            for (int i = sb.length() - indPDec - 1; i < decimals; i++) {
+                sb.append('0');
+            }
         }
         return sb.toString();
     }
