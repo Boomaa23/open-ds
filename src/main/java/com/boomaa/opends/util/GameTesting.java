@@ -11,8 +11,8 @@ import java.util.Arrays;
 
 public class GameTesting {
     public static void main(String[] args) throws URISyntaxException, IOException {
-        byte[] data = decodeHexString("");
-        System.out.println();
+        byte[] data = decodeHexString("0e0300c0381103c0e00441203c180501100481405014ffac59");
+        System.out.println(ReceiveTag.PDP_LOG.getAction().getValue(data));
     }
 
     public static void printtcp(String str) {

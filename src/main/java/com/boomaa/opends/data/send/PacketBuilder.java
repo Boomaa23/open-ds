@@ -18,6 +18,13 @@ public class PacketBuilder {
         return this;
     }
 
+    public PacketBuilder addInts(int... ints) {
+        for (int i : ints) {
+            packet.add((byte) i);
+        }
+        return this;
+    }
+
     public PacketBuilder addByte(byte b) {
         packet.add(b);
         return this;

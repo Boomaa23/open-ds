@@ -8,6 +8,7 @@ import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+@Deprecated
 public abstract class TCPServer extends Thread {
     protected ServerSocket socket;
     protected boolean closed = false;

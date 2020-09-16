@@ -25,7 +25,6 @@ public class NumberUtils {
     }
 
     public static int getUInt32(byte[] bytes) {
-        //TODO make this work correctly, check byte ordering
         return (bytes[3] & 0xFF)
                 | ((bytes[2] & 0xFF) << 8)
                 | ((bytes[1] & 0xFF) << 16)
@@ -36,7 +35,7 @@ public class NumberUtils {
         return ((nums[0] & 0xFF) << 8) | (nums[1] & 0xFF);
     }
 
-    public static int getUInt16(int[] nums) {
+    public static int getUInt10(int[] nums) {
         int out = 0;
         for (int i = 0; i < nums.length; i++) {
             out += Math.pow(2, (nums.length - i - 1)) * nums[i];

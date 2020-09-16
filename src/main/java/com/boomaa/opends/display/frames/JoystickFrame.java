@@ -104,6 +104,7 @@ public class JoystickFrame extends PopupBase {
 
     private void refreshControllerDisplay() {
         EmbeddedJDEC.LIST_MODEL.clear();
+        USBInterface.findControllers(true);
         for (HIDDevice hid : USBInterface.getControlDevices()) {
             EmbeddedJDEC.LIST_MODEL.add(EmbeddedJDEC.LIST_MODEL.size(), hid);
         }

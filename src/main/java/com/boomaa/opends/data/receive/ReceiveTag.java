@@ -8,12 +8,25 @@ import com.boomaa.opends.display.InLog;
 import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.NumberUtils;
 
+import java.util.Arrays;
+
 public enum ReceiveTag {
-    //TODO joystick output parsing: "output" field
-    JOYSTICK_OUTPUT(0x01, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS, (ReceiveTagBase<Integer>) (packet, size) -> new TagValueMap<Integer>()
-            .addTo("Left Rumble", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 4, 6)))
-            .addTo("Right Rumble", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 6, 8)))
-    ),
+    JOYSTICK_OUTPUT(0x01, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS, (ReceiveTagBase<String>) (packet, size) -> {
+        TagValueMap<String> map = new TagValueMap<>();
+        if (size >= 6) {
+            byte[] outBytes = ArrayUtils.sliceArr(packet, 0, 4);
+            StringBuilder sb = new StringBuilder();
+            for (byte b : outBytes) {
+                sb.append(Integer.toBinaryString(b));
+            }
+            map.addTo("Output", sb.toString())
+                    .addTo("Left Rumble", String.valueOf(NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 4, 6))))
+                    .addTo("Right Rumble", String.valueOf(NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 6, 8))));
+        } else {
+            map.addTo("Output", "none").addTo("Left Rumble", "none").addTo("Right Rumble", "none");
+        }
+        return map;
+    }),
     // Indices differ from documentation: Free Space (4, 8) instead of (0,4)
     DISK_INFO(0x04, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS, (ReceiveTagBase<Integer>) (packet, size) -> new TagValueMap<Integer>()
             .addTo("Block", NumberUtils.getUInt32(ArrayUtils.sliceArr(packet, 0, 4))) //inferred
@@ -34,9 +47,8 @@ public enum ReceiveTag {
         return map;
     }),
     RAM_INFO(0x06, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS, DISK_INFO.getAction()),
-    //TODO figure out the units for the PDP log (current, so amps? - values ~10-30)
-    PDP_LOG(0x08, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS, (ReceiveTagBase<Integer>) (packet, size) -> {
-        TagValueMap<Integer> map = new TagValueMap<>();
+    PDP_LOG(0x08, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS, (ReceiveTagBase<Double>) (packet, size) -> {
+        TagValueMap<Double> map = new TagValueMap<>();
         StringBuilder binaryBuilder = new StringBuilder();
         for (int i = 1; i < packet.length - 3; i++) {
             binaryBuilder.append(NumberUtils.padByte(packet[i]));
@@ -48,7 +60,7 @@ public enum ReceiveTag {
         }
         int pdpNum = 0;
         for (int bitCtr = 0; bitCtr <= binary.length - 10; bitCtr += 10) {
-            map.addTo("PDP Port " + ((pdpNum < 10) ? "0" : "") + pdpNum, NumberUtils.getUInt16(ArrayUtils.sliceArr(binary, bitCtr, bitCtr + 10)));
+            map.addTo("PDP Port " + ((pdpNum < 10) ? "0" : "") + pdpNum, NumberUtils.getUInt10(ArrayUtils.sliceArr(binary, bitCtr, bitCtr + 10)) / 8.0);
             bitCtr += (++pdpNum == 6 || pdpNum == 12) ? 4 : 0;
         }
         return map;
@@ -135,7 +147,7 @@ public enum ReceiveTag {
             TagValueMap.singleton("Event Name", new String(ArrayUtils.sliceArr(packet, 1)))
     ),
     STATION_INFO(0x19, Protocol.TCP, Remote.FMS, InLog.ALWAYS, (ReceiveTagBase<AllianceStation>) (packet, size) -> {
-        AllianceStation.Status status = null;
+        AllianceStation.Status status = AllianceStation.Status.INVALID;
         switch (packet[1]) {
             case 0: status = AllianceStation.Status.GOOD; break;
             case 1: status = AllianceStation.Status.BAD; break;

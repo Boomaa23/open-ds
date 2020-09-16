@@ -47,6 +47,6 @@ public class AllianceStation {
     }
 
     public enum Status {
-        GOOD, BAD, WAITING
+        GOOD, BAD, WAITING, INVALID
     }
 }

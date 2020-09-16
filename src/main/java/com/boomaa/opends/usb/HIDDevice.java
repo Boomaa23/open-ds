@@ -3,6 +3,9 @@ package com.boomaa.opends.usb;
 import net.java.games.input.Component;
 import net.java.games.input.Controller;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 public abstract class HIDDevice {
     public static final int MAX_JS_NUM = 6; //max 6 joysticks
     protected final Controller controller;
@@ -46,6 +49,20 @@ public abstract class HIDDevice {
     }
 
     public abstract int numAxes();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        HIDDevice hidDevice = (HIDDevice) o;
+        return controller.getPortNumber() == hidDevice.controller.getPortNumber() &&
+                controller.getPortType() == hidDevice.controller.getPortType();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(controller.getPortNumber(), controller.getPortType());
+    }
 
     @Override
     public String toString() {

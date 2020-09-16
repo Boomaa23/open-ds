@@ -18,32 +18,46 @@ import com.boomaa.opends.util.battery.BatteryInfo;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public enum SendTag {
     COUNTDOWN(0x07, Protocol.UDP, Remote.ROBO_RIO, null),
     JOYSTICK(0x0C, Protocol.UDP, Remote.ROBO_RIO, () -> {
         PacketBuilder builder = new PacketBuilder();
+        USBInterface.findControllers(true);
         USBInterface.updateValues();
-        for (HIDDevice ctrl : USBInterface.getControlDevices()) {
-            builder.addInt(ctrl.numAxes()); //3 axes
-            if (ctrl instanceof Joystick) {
-                Joystick js = (Joystick) ctrl;
-                builder.addInt(NumberUtils.dblToInt8(js.getX()))
-                        .addInt(NumberUtils.dblToInt8(js.getY()))
-                        .addInt(NumberUtils.dblToInt8(js.getZ()));
-            } else if (ctrl instanceof XboxController) {
-                XboxController xbox = (XboxController) ctrl;
-                builder.addInt(NumberUtils.dblToInt8(xbox.getX(true)))
-                        .addInt(NumberUtils.dblToInt8(xbox.getY(true)))
-                        .addInt(NumberUtils.dblToInt8(xbox.getTrigger(true)))
-                        .addInt(NumberUtils.dblToInt8(xbox.getTrigger(false)))
-                        .addInt(NumberUtils.dblToInt8(xbox.getX(false)))
-                        .addInt(NumberUtils.dblToInt8(xbox.getY(false)));
+        List<HIDDevice> devices = USBInterface.getControlDevices();
+        Map<Integer, HIDDevice> deviceMap = new HashMap<>();
+        for (HIDDevice device : devices) {
+            deviceMap.put(device.getIndex(), device);
+        }
+        for (int i = 0; i < HIDDevice.MAX_JS_NUM; i++) {
+            HIDDevice ctrl = deviceMap.get(i);
+            if (ctrl != null) {
+                builder.addInt(ctrl.numAxes()); //3 axes
+                if (ctrl instanceof Joystick) {
+                    Joystick js = (Joystick) ctrl;
+                    builder.addInt(NumberUtils.dblToInt8(js.getX()))
+                            .addInt(NumberUtils.dblToInt8(js.getY()))
+                            .addInt(NumberUtils.dblToInt8(js.getZ()));
+                } else if (ctrl instanceof XboxController) {
+                    XboxController xbox = (XboxController) ctrl;
+                    builder.addInt(NumberUtils.dblToInt8(xbox.getX(true)))
+                            .addInt(NumberUtils.dblToInt8(xbox.getY(true)))
+                            .addInt(NumberUtils.dblToInt8(xbox.getTrigger(true)))
+                            .addInt(NumberUtils.dblToInt8(xbox.getTrigger(false)))
+                            .addInt(NumberUtils.dblToInt8(xbox.getX(false)))
+                            .addInt(NumberUtils.dblToInt8(xbox.getY(false)));
+                }
+                builder.addInt(ctrl.numButtons())
+                        .addBytes(NumberUtils.packBools(ctrl.getButtons()))
+                        .addInt(0); //povCount
+            } else {
+                // Placeholder values for js index padding
+                builder.addInt(0).addInt(0).addInt(0); //num axes, btns, povs
             }
-            builder.addInt(ctrl.numButtons())
-                    .addBytes(NumberUtils.packBools(ctrl.getButtons()))
-                    .addInt(0); //povCount
         }
         return builder.build();
     }),

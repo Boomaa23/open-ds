@@ -16,7 +16,7 @@ public class USBInterface {
 
     static {
         Libraries.init(false);
-        refreshControllers();
+        findControllers(false);
     }
 
     private static ControllerEnvironment createDefaultEnvironment() {
@@ -44,14 +44,22 @@ public class USBInterface {
         return null;
     }
 
-    public static void refreshControllers() {
+    public static void findControllers(boolean noRemove) {
         rawControllers = createDefaultEnvironment().getControllers();
-        controlDevices.clear();
+        List<HIDDevice> foundDevices = new ArrayList<>();
         for (int i = 0; i < rawControllers.length; i++) {
             if (rawControllers[i].getType() == Controller.Type.STICK) {
-                controlDevices.add(new Joystick(rawControllers[i], controlDevices.size()));
+                foundDevices.add(new Joystick(rawControllers[i], foundDevices.size()));
             } else if (rawControllers[i].getType() == Controller.Type.GAMEPAD) {
-                controlDevices.add(new XboxController(rawControllers[i], controlDevices.size()));
+                foundDevices.add(new XboxController(rawControllers[i], foundDevices.size()));
+            }
+        }
+        if (!noRemove) {
+            controlDevices.clear();
+        }
+        for (HIDDevice dev : foundDevices) {
+            if (!controlDevices.contains(dev)) {
+                controlDevices.add(dev);
             }
         }
     }

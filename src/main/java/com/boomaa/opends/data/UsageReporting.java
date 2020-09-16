@@ -42,6 +42,7 @@ public class UsageReporting {
                             case 3: concatStr = "Java"; break;
                             case 4: concatStr = "Python"; break;
                             case 5: concatStr = ".NET"; break;
+                            case 6: concatStr = "Kotlin"; break;
                         }
                         break;
                     case ADXL345:
