@@ -4,7 +4,7 @@ import com.boomaa.opends.data.holders.Protocol;
 import com.boomaa.opends.data.holders.Remote;
 import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.display.MainJDEC;
-import com.boomaa.opends.display.frames.ErrorBox;
+import com.boomaa.opends.display.frames.MessageBox;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -27,7 +27,7 @@ public class NetworkReloader extends DisplayEndpoint {
         } catch (UnknownHostException ignored) {
             unsetRio(protocol);
         } catch (IOException e) {
-            ErrorBox.show(e.getMessage());
+            MessageBox.show(e.getMessage(), MessageBox.Type.ERROR);
             unsetRio(protocol);
         }
     }
@@ -68,7 +68,7 @@ public class NetworkReloader extends DisplayEndpoint {
                 NET_IF_INIT.set(true, Remote.FMS, protocol);
             } catch (IOException e) {
                 MainJDEC.FMS_CONNECT.setSelected(false);
-                ErrorBox.show(e.getMessage());
+                MessageBox.show(e.getMessage(), MessageBox.Type.ERROR);
                 NET_IF_INIT.set(false, Remote.FMS, protocol);
             }
         } else {

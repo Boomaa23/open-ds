@@ -1,9 +1,6 @@
 package com.boomaa.opends.util;
 
-import com.boomaa.opends.data.holders.Protocol;
-import com.boomaa.opends.data.receive.ReceiveTag;
 import com.boomaa.opends.data.receive.parser.Parser2020;
-import com.boomaa.opends.util.battery.BatteryInfo;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -11,8 +8,17 @@ import java.util.Arrays;
 
 public class GameTesting {
     public static void main(String[] args) throws URISyntaxException, IOException {
-        byte[] data = decodeHexString("0e0300c0381103c0e00441203c180501100481405014ffac59");
-        System.out.println(ReceiveTag.PDP_LOG.getAction().getValue(data));
+//        byte[] data = decodeHexString("0e0300c0381103c0e00441203c180501100481405014ffac59");
+//        System.out.println(ReceiveTag.PDP_LOG.getAction().getValue(data));
+        long ct = System.currentTimeMillis() / 1000;
+        long val = -2_212_122_495L + ct;
+        byte[] data = NumberUtils.intToByteQuad((int) val);
+        System.out.println(NumberUtils.getUInt32(data));
+        System.out.println(val);
+        System.out.println(ct);
+        System.out.println(Arrays.toString(data));
+        System.out.println(NumberUtils.getUInt32(decodeHexString("dac124f3")));
+//        2_082_844_800L + 4_294_967_295L
     }
 
     public static void printtcp(String str) {

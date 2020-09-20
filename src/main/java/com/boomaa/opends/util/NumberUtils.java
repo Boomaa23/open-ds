@@ -102,7 +102,8 @@ public class NumberUtils {
     public static String padByte(byte b, int size) {
         return String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(' ', '0');
     }
-    public static String padNumber(double value, int decimals) {
+
+    public static String padDouble(double value, int decimals) {
         String strVal = String.valueOf(value);
         StringBuilder sb = new StringBuilder(strVal);
         int indPDec = strVal.indexOf('.');
@@ -111,6 +112,19 @@ public class NumberUtils {
                 sb.append('0');
             }
         }
+        return sb.toString();
+    }
+
+    public static String padInt(int value, int digits) {
+        String strVal = String.valueOf(value);
+        StringBuilder sb = new StringBuilder();
+        int len = digits - strVal.length();
+        if (len > 0) {
+            for (int i = 0; i < len; i++) {
+                sb.append('0');
+            }
+        }
+        sb.append(strVal);
         return sb.toString();
     }
 

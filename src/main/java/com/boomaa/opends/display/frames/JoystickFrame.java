@@ -153,9 +153,10 @@ public class JoystickFrame extends PopupBase {
                     if (cIndex != nIndex) {
                         for (HIDDevice dev : USBInterface.getControlDevices()) {
                             if (dev.getIndex() == nIndex) {
-                                ErrorBox.show("Duplicate index \"" + nIndex + "\" for controller \"" + dev.toString()
+                                MessageBox.show("Duplicate index \"" + nIndex + "\" for controller \"" + dev.toString()
                                         + "\"\nSetting controller \"" + dev.toString() + "\" on index \"" + dev.getIndex()
-                                        + "\"\n to new index \"" + cIndex + "\" and making requested index change");
+                                        + "\"\n to new index \"" + cIndex + "\" and making requested index change",
+                                        MessageBox.Type.WARNING);
                                 dev.setIndex(cIndex);
                             }
                         }

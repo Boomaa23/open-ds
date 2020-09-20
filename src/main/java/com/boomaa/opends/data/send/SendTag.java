@@ -99,7 +99,8 @@ public enum SendTag {
     LAPTOP_METRICS(0x02, Protocol.UDP, Remote.FMS, () -> {
         PacketBuilder builder = new PacketBuilder().addInt(BatteryInfo.getPercent());
         double load = -1;
-        while (load == -1) {
+        int iterations = 0;
+        while (load == -1 && ++iterations < 2000) {
             load = ManagementFactory.getPlatformMXBean(com.sun.management.OperatingSystemMXBean.class).getSystemCpuLoad();
         }
         builder.addInt((int) (load * 100));

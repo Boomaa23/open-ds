@@ -3,7 +3,6 @@ package com.boomaa.opends.usb;
 import net.java.games.input.Component;
 import net.java.games.input.Controller;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 public abstract class HIDDevice {

@@ -92,4 +92,18 @@ public class Date {
                 cal.get(Calendar.MILLISECOND) * 1000
         );
     }
+
+    public enum DayMap {
+        SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY;
+
+        public static DayMap getFromInt(int flag, boolean zeroed) {
+            int add = zeroed ? 0 : 1;
+            for (DayMap day : DayMap.values()) {
+                if (day.ordinal() + add == flag) {
+                    return day;
+                }
+            }
+            return null;
+        }
+    }
 }

@@ -37,6 +37,13 @@ public class PacketBuilder {
         return this;
     }
 
+    public PacketBuilder pad(int value, int num) {
+        for (int i = 0; i < num; i++) {
+            addInt(value);
+        }
+        return this;
+    }
+
     public int size() {
         return packet.size();
     }

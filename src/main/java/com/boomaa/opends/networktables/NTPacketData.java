@@ -3,6 +3,8 @@ package com.boomaa.opends.networktables;
 import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.NumberUtils;
 
+import java.util.Objects;
+
 public class NTPacketData {
     private final byte[] data;
     private final NTMessageType messageType;
@@ -107,5 +109,20 @@ public class NTPacketData {
     @SuppressWarnings("unchecked")
     public <T> T getValue() {
         return (T) value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NTPacketData that = (NTPacketData) o;
+        return msgId == that.msgId &&
+                messageType == that.messageType &&
+                dataType == that.dataType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(messageType, msgId, dataType);
     }
 }

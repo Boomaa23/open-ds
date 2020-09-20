@@ -6,9 +6,8 @@ import com.boomaa.opends.data.holders.Protocol;
 import com.boomaa.opends.data.holders.Remote;
 import com.boomaa.opends.display.InLog;
 import com.boomaa.opends.util.ArrayUtils;
+import com.boomaa.opends.util.DSLog;
 import com.boomaa.opends.util.NumberUtils;
-
-import java.util.Arrays;
 
 public enum ReceiveTag {
     JOYSTICK_OUTPUT(0x01, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS, (ReceiveTagBase<String>) (packet, size) -> {
@@ -48,6 +47,7 @@ public enum ReceiveTag {
     }),
     RAM_INFO(0x06, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS, DISK_INFO.getAction()),
     PDP_LOG(0x08, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS, (ReceiveTagBase<Double>) (packet, size) -> {
+        DSLog.PDP_STATS = packet;
         TagValueMap<Double> map = new TagValueMap<>();
         StringBuilder binaryBuilder = new StringBuilder();
         for (int i = 1; i < packet.length - 3; i++) {

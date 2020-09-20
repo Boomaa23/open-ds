@@ -8,6 +8,7 @@ import com.boomaa.opends.display.frames.LogFrame;
 import com.boomaa.opends.display.frames.MainFrame;
 import com.boomaa.opends.display.frames.NTFrame;
 import com.boomaa.opends.display.frames.StatsFrame;
+import com.boomaa.opends.networktables.NTStorage;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -39,11 +40,7 @@ public class Layout2020 extends LayoutPlacer {
                 new StatsFrame();
             }
         });
-        NT_BTN.addActionListener((e) -> {
-            if (!PopupBase.isAlive(NTFrame.class)) {
-                new NTFrame();
-            }
-        });
+        NT_BTN.addActionListener((e) -> new NTFrame("Shuffleboard", NTStorage.TABS));
         TEAM_NUMBER.getDocument().addDocumentListener(new TeamNumListener());
         TEAM_NUMBER.setText("5818"); //TODO remove after testing
         IS_ENABLED.setEnabled(false);

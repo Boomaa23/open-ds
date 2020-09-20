@@ -29,7 +29,7 @@ public class Updater2020 extends ElementUpdater {
         boolean robotConn = rioUdp.getTrace().contains(Trace.ISROBORIO);
         ROBOT_CONNECTION_STATUS.setDisplay(robotConn);
         IS_ENABLED.setEnabled(robotConn);
-        BAT_VOLTAGE.setText(NumberUtils.padNumber(NumberUtils.roundTo(rioUdp.getBatteryVoltage(), 2), 2) + " V");
+        BAT_VOLTAGE.setText(NumberUtils.padDouble(NumberUtils.roundTo(rioUdp.getBatteryVoltage(), 2), 2) + " V");
 
         if (tagMap.size() > 0) {
             TVMList dinf = tagMap.getMatching(ReceiveTag.DISK_INFO);
