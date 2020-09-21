@@ -59,10 +59,19 @@ public enum ReceiveTag {
             binary[i] = Character.getNumericValue(binaryChars[i]);
         }
         int pdpNum = 0;
+        double totalCurrent = 0;
         for (int bitCtr = 0; bitCtr <= binary.length - 10; bitCtr += 10) {
-            map.addTo("PDP Port " + ((pdpNum < 10) ? "0" : "") + pdpNum, NumberUtils.getUInt10(ArrayUtils.sliceArr(binary, bitCtr, bitCtr + 10)) / 8.0);
+            double portCurrent = NumberUtils.getUInt10(ArrayUtils.sliceArr(binary, bitCtr, bitCtr + 10)) / 8.0;
+            totalCurrent += portCurrent;
+            map.addTo("Port " + ((pdpNum < 10) ? "0" : "") + pdpNum + " Current", portCurrent);
             bitCtr += (++pdpNum == 6 || pdpNum == 12) ? 4 : 0;
         }
+        map.addTo("Total Current", totalCurrent);
+        // added, not in documentation
+        // https://github.com/ligerbots/dslogparser/blob/master/dslogparser/dslogparser.py#L166-L168
+        map.addTo("Resistance", (double) packet[packet.length - 3]);
+        map.addTo("Voltage", (double) packet[packet.length - 2]);
+        map.addTo("Temperature", (double) packet[packet.length - 1]);
         return map;
     }),
     UDP_R2D_UNKNOWN(0x09, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS, (ReceiveTagBase<Byte>) TagValueMap::passPackets),

@@ -15,7 +15,7 @@ import java.util.Calendar;
 
 public class DSLog extends Clock {
     private final String filepath;
-    public static byte[] PDP_STATS = new byte[21];
+    public static byte[] PDP_STATS = new byte[24];
 
     public DSLog() {
         super(1000);
@@ -68,7 +68,6 @@ public class DSLog extends Clock {
                         0x00) //wifiMb
                 .pad(0x00, 2)
                 .addBytes(PDP_STATS)
-                .pad(0x00, 3)
                 .build()
         );
     }

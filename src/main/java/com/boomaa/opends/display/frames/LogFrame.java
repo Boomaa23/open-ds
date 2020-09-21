@@ -7,6 +7,7 @@ public class LogFrame extends PopupBase {
     @Override
     public void config() {
         super.config();
+        super.setTitle("Log");
         content.add(Logger.PANE);
     }
 }

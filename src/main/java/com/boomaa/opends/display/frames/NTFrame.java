@@ -3,7 +3,6 @@ package com.boomaa.opends.display.frames;
 import com.boomaa.opends.display.PopupBase;
 import com.boomaa.opends.display.elements.GBCPanelBuilder;
 import com.boomaa.opends.networktables.NTEntry;
-import com.boomaa.opends.networktables.NTNestedTab;
 import com.boomaa.opends.networktables.NTStorage;
 
 import javax.swing.JButton;
@@ -24,16 +23,14 @@ public class NTFrame extends PopupBase {
     private static final int borderRadius = 5;
     private static final int tabWidth = 6;
     private static final int lineWidth = 8;
-    private final NTNestedTab tab;
     private JScrollPane entryDisplayWrapper;
     private GBCPanelBuilder base;
     private JPanel entryDisplay;
     private int tabStartIndex = 0;
     private JPanel tabsPanel;
 
-    public NTFrame(String baseTabName, NTNestedTab tab) {
-        super(baseTabName, new Dimension(800, 450));
-        this.tab = tab;
+    public NTFrame() {
+        super("Shuffleboard", new Dimension(800, 450));
     }
 
     @Override
@@ -51,7 +48,7 @@ public class NTFrame extends PopupBase {
             populateTabsBar();
         });
         rightMenubar.addActionListener((e) -> {
-            tabStartIndex = Math.min(tabStartIndex + 1, tab.size() - tabWidth);
+            tabStartIndex = Math.min(tabStartIndex + 1, NTStorage.TABS.size() - tabWidth);
             populateTabsBar();
         });
 
@@ -68,7 +65,7 @@ public class NTFrame extends PopupBase {
         entryDisplay.setLayout(new GridBagLayout());
 
         populateTabsBar();
-        boolean enableArrows = tab.size() > tabWidth;
+        boolean enableArrows = NTStorage.TABS.size() > tabWidth;
         leftMenubar.setEnabled(enableArrows);
         rightMenubar.setEnabled(enableArrows);
         populateTab("");
@@ -85,7 +82,7 @@ public class NTFrame extends PopupBase {
         if (!name.isEmpty()) {
             for (int i = 0; i < entries.size(); i++) {
                 NTEntry entry = entries.get(i);
-                if (entry.getTabName().equals(name) && (entry.isInShuffleboard() || entry.isInSmartDashboard())) {
+                if (entry.getTabName().equals(name) && (entry.isInShuffleboard() || entry.isInSmartDashboard()) && !entry.isInMetadata()) {
                     JPanel tempPanel = new JPanel() {
                         @Override
                         protected void paintComponent(Graphics g) {
@@ -126,9 +123,9 @@ public class NTFrame extends PopupBase {
         tabsPanel.removeAll();
         GBCPanelBuilder gbc = new GBCPanelBuilder(tabsPanel).setInsets(stdInsets);
         for (int i = tabStartIndex; i < tabWidth + tabStartIndex; i++) {
-            JButton tabBtn = new JButton(i < tab.size() ? truncate(tab.get(i), 18, true) : "");
+            JButton tabBtn = new JButton(i < NTStorage.TABS.size() ? truncate(NTStorage.TABS.get(i), 18, true) : "");
             tabBtn.addActionListener((e) -> populateTab(tabBtn.getText()));
-            tabBtn.setVisible(i < tab.size());
+            tabBtn.setVisible(i < NTStorage.TABS.size());
             gbc.clone().setPos(i - tabStartIndex, 0, 1, 1).build(tabBtn);
         }
         base.clone().setPos(0, 0, 6, 1).build(tabsPanel);

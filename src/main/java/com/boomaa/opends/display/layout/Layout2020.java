@@ -40,7 +40,11 @@ public class Layout2020 extends LayoutPlacer {
                 new StatsFrame();
             }
         });
-        NT_BTN.addActionListener((e) -> new NTFrame("Shuffleboard", NTStorage.TABS));
+        NT_BTN.addActionListener((e) -> {
+            if (!PopupBase.isAlive(NTFrame.class)) {
+                new NTFrame();
+            }
+        });
         TEAM_NUMBER.getDocument().addDocumentListener(new TeamNumListener());
         TEAM_NUMBER.setText("5818"); //TODO remove after testing
         IS_ENABLED.setEnabled(false);

@@ -7,20 +7,22 @@ public class NTEntry {
     private final String tabName;
     private final boolean inShuffleboard;
     private final boolean inSmartDashboard;
+    private final boolean inMetadata;
     private Object value;
 
     public NTEntry(String path, int id, Object value) {
         this.path = path;
         this.id = id;
         int ioSecSep = path.indexOf("/", path.indexOf("/") + 1);
-        int ioThirdSep = path.indexOf("/", ioSecSep + 1);
-        this.key = path.substring(ioThirdSep + 1);
-        this.tabName = path.substring(ioSecSep + 1, ioThirdSep);
+        int ioLastSep = path.indexOf("/", ioSecSep + 1);
+        this.key = path.substring(ioLastSep + 1);
+        this.tabName = path.substring(ioSecSep + 1, ioLastSep);
         if (!NTStorage.TABS.contains(tabName)) {
             NTStorage.TABS.add(tabName);
         }
         this.inShuffleboard = path.contains("Shuffleboard");
         this.inSmartDashboard = path.contains("Smart Dashboard");
+        this.inMetadata = path.contains(".metadata") || path.contains(".type");
         this.value = value;
     }
 
@@ -50,6 +52,10 @@ public class NTEntry {
 
     public boolean isInSmartDashboard() {
         return inSmartDashboard;
+    }
+
+    public boolean isInMetadata() {
+        return inMetadata;
     }
 
     public String getTabName() {

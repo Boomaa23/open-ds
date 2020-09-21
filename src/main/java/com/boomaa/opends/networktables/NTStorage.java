@@ -8,5 +8,5 @@ import java.util.Map;
 public interface NTStorage {
     List<NTPacketData> PACKET_DATA = new ArrayList<>();
     Map<Integer, NTEntry> ENTRIES = new HashMap<>();
-    NTNestedTab TABS = new NTNestedTab();
+    List<String> TABS = new ArrayList<>();
 }
