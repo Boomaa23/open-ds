@@ -1,5 +1,6 @@
 package com.boomaa.opends.util;
 
+import com.boomaa.opends.data.StatsFields;
 import com.boomaa.opends.data.holders.Date;
 import com.boomaa.opends.data.send.PacketBuilder;
 import com.boomaa.opends.display.MainJDEC;
@@ -56,8 +57,8 @@ public class DSLog extends Clock {
                 + (MainJDEC.ROBOT_DRIVE_MODE.getSelectedItem() == RobotMode.AUTONOMOUS ? Trace.ROBOT_AUTO.flag : 0)
                 + (!MainJDEC.IS_ENABLED.isSelected() ? Trace.DS_DISABLED.flag + Trace.ROBOT_DISABLED.flag : 0);
         double bat = checkedNumParse(MainJDEC.BAT_VOLTAGE.getText().replaceAll(" V", ""));
-        int rioCPU = (int) checkedNumParse(StatsFrame.EmbeddedJDEC.CPU_PERCENT.getText());
-        int canUsage = (int) checkedNumParse(StatsFrame.EmbeddedJDEC.CPU_PERCENT.getText());
+        int rioCPU = (int) checkedNumParse(StatsFields.CPU_PERCENT.getValue());
+        int canUsage = (int) checkedNumParse(StatsFields.CAN_UTILIZATION.getValue());
         int teamNum = (int) checkedNumParse(MainJDEC.TEAM_NUMBER.getText());
         WlanConnection wifi = WlanConnection.getRadio(teamNum);
         writeData(new PacketBuilder()

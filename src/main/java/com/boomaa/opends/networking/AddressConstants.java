@@ -20,7 +20,7 @@ public class AddressConstants {
         return (String) getProtoYearValue("FMS_IP");
     }
 
-    public static String getRioAddress() {
+    public static String getRioAddress() throws NumberFormatException {
         return "roboRIO-" + Integer.parseInt(MainJDEC.TEAM_NUMBER.getText()) + "-FRC.local";
     }
 

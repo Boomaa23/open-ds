@@ -34,11 +34,11 @@ public class NTConnection extends Clock {
         if (connection != null && !connection.isClosed()) {
             connection.close();
         }
-        String rioIp = AddressConstants.getRioAddress();
         try {
+            String rioIp = AddressConstants.getRioAddress();
             InetAddress.getByName(rioIp);
             this.connection = new TCPInterface(rioIp, AddressConstants.getRioPorts().getShuffleboard());
-        } catch (UnknownHostException ignored) {
+        } catch (UnknownHostException | NumberFormatException ignored) {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {

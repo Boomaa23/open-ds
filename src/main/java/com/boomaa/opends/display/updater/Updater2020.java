@@ -1,6 +1,7 @@
 package com.boomaa.opends.display.updater;
 
 import com.boomaa.opends.data.Challenge;
+import com.boomaa.opends.data.StatsFields;
 import com.boomaa.opends.data.holders.AllianceStation;
 import com.boomaa.opends.data.holders.Status;
 import com.boomaa.opends.data.holders.Trace;
@@ -35,12 +36,12 @@ public class Updater2020 extends ElementUpdater {
             TVMList dinf = tagMap.getMatching(ReceiveTag.DISK_INFO);
             if (!dinf.isEmpty()) {
                 TagValueMap<?> diskInfo = dinf.first();
-                StatsFrame.EmbeddedJDEC.DISK_SPACE.setText(NumberUtils.bytesHumanReadable((Integer) diskInfo.get("Free Space")));
+                StatsFields.DISK_SPACE.updateTableValue(NumberUtils.bytesHumanReadable((Integer) diskInfo.get("Free Space")));
             }
             TVMList rinf = tagMap.getMatching(ReceiveTag.RAM_INFO);
             if (!rinf.isEmpty()) {
                 TagValueMap<?> ramInfo = rinf.first();
-                StatsFrame.EmbeddedJDEC.RAM_SPACE.setText(NumberUtils.bytesHumanReadable((Integer) ramInfo.get("Free Space")));
+                StatsFields.RAM_SPACE.updateTableValue(NumberUtils.bytesHumanReadable((Integer) ramInfo.get("Free Space")));
             }
             TVMList cif = tagMap.getMatching(ReceiveTag.CPU_INFO);
             if (!cif.isEmpty()) {
@@ -57,17 +58,17 @@ public class Updater2020 extends ElementUpdater {
                             / (tCrit + tAbove + tNorm + tLow);
                 }
                 cpuPercent /= numCpus;
-                StatsFrame.EmbeddedJDEC.CPU_PERCENT.setText(cpuPercent);
+                StatsFields.CPU_PERCENT.updateTableValue(cpuPercent);
             }
 
             TVMList canm = tagMap.getMatching(ReceiveTag.CAN_METRICS);
             if (!canm.isEmpty()) {
                 TagValueMap<?> canMetrics = canm.first();
-                StatsFrame.EmbeddedJDEC.CAN_UTILIZATION.setText(canMetrics.get("Utilization %"));
-                StatsFrame.EmbeddedJDEC.CAN_BUS_OFF.setText(canMetrics.get("Bus Off"));
-                StatsFrame.EmbeddedJDEC.CAN_TX_FULL.setText(canMetrics.get("TX Full"));
-                StatsFrame.EmbeddedJDEC.CAN_RX_ERR.setText(canMetrics.get("RX Errors"));
-                StatsFrame.EmbeddedJDEC.CAN_TX_ERR.setText(canMetrics.get("TX Errors"));
+                StatsFields.CAN_UTILIZATION.updateTableValue(canMetrics.get("Utilization %"));
+                StatsFields.CAN_BUS_OFF.updateTableValue(canMetrics.get("Bus Off"));
+                StatsFields.CAN_TX_FULL.updateTableValue(canMetrics.get("TX Full"));
+                StatsFields.CAN_RX_ERR.updateTableValue(canMetrics.get("RX Errors"));
+                StatsFields.CAN_TX_ERR.updateTableValue(canMetrics.get("TX Errors"));
             }
             //TODO add rumbler capability (JInput != XInput compatible)
         }
@@ -79,15 +80,15 @@ public class Updater2020 extends ElementUpdater {
             TVMList dfm = tagMap.getMatching(ReceiveTag.DISABLE_FAULTS);
             if (!dfm.isEmpty()) {
                 TagValueMap<?> disableFaults = dfm.first();
-                StatsFrame.EmbeddedJDEC.DISABLE_FAULTS_COMMS.setText(disableFaults.get("Comms"));
-                StatsFrame.EmbeddedJDEC.DISABLE_FAULTS_12V.setText(disableFaults.get("12V"));
+                StatsFields.DISABLE_FAULTS_COMMS.updateTableValue(disableFaults.get("Comms"));
+                StatsFields.DISABLE_FAULTS_12V.updateTableValue(disableFaults.get("12V"));
             }
             TVMList rf = tagMap.getMatching(ReceiveTag.RAIL_FAULTS);
             if (!rf.isEmpty()) {
                 TagValueMap<?> railFaults = rf.first();
-                StatsFrame.EmbeddedJDEC.RAIL_FAULTS_6V.setText(railFaults.get("6V"));
-                StatsFrame.EmbeddedJDEC.RAIL_FAULTS_5V.setText(railFaults.get("5V"));
-                StatsFrame.EmbeddedJDEC.RAIL_FAULTS_3P3V.setText(railFaults.get("3.3V"));
+                StatsFields.RAIL_FAULTS_6V.updateTableValue(railFaults.get("6V"));
+                StatsFields.RAIL_FAULTS_5V.updateTableValue(railFaults.get("5V"));
+                StatsFields.RAIL_FAULTS_3P3V.updateTableValue(railFaults.get("3.3V"));
             }
 
             TVMList versionInfo = tagMap.getMatching(ReceiveTag.VERSION_INFO);
@@ -97,10 +98,10 @@ public class Updater2020 extends ElementUpdater {
                 for (TagValueMap<?> tvm : versionInfo) {
                     String name = (String) tvm.get("Name");
                     if (name.equals("roboRIO Image")) {
-                        StatsFrame.EmbeddedJDEC.ROBORIO_VERSION.setText(tvm.get("Version"));
+                        StatsFields.ROBORIO_VERSION.updateTableValue(tvm.get("Version"));
                         rioSet = true;
                     } else if (name.equals("FRC_Lib_Version")) {
-                        StatsFrame.EmbeddedJDEC.WPILIB_VERSION.setText(tvm.get("Version"));
+                        StatsFields.WPILIB_VERSION.updateTableValue(tvm.get("Version"));
                         wpiLibSet = true;
                     }
                     if (rioSet && wpiLibSet) {
@@ -145,26 +146,10 @@ public class Updater2020 extends ElementUpdater {
         ROBOT_CONNECTION_STATUS.forceHide();
         ROBOT_CODE_STATUS.forceHide();
         BROWNOUT_STATUS.forceHide();
-
-        StatsFrame.EmbeddedJDEC.DISK_SPACE.forceHide();
-        StatsFrame.EmbeddedJDEC.RAM_SPACE.forceHide();
-        StatsFrame.EmbeddedJDEC.CPU_PERCENT.forceHide();
-        StatsFrame.EmbeddedJDEC.CAN_UTILIZATION.forceHide();
-        StatsFrame.EmbeddedJDEC.CAN_BUS_OFF.forceHide();
-        StatsFrame.EmbeddedJDEC.CAN_TX_FULL.forceHide();
-        StatsFrame.EmbeddedJDEC.CAN_RX_ERR.forceHide();
-        StatsFrame.EmbeddedJDEC.CAN_TX_ERR.forceHide();
     }
 
     @Override
     protected void resetDataRioTcp() {
-        StatsFrame.EmbeddedJDEC.DISABLE_FAULTS_COMMS.forceHide();
-        StatsFrame.EmbeddedJDEC.DISABLE_FAULTS_12V.forceHide();
-        StatsFrame.EmbeddedJDEC.RAIL_FAULTS_6V.forceHide();
-        StatsFrame.EmbeddedJDEC.RAIL_FAULTS_5V.forceHide();
-        StatsFrame.EmbeddedJDEC.RAIL_FAULTS_3P3V.forceHide();
-        StatsFrame.EmbeddedJDEC.ROBORIO_VERSION.forceHide();
-        StatsFrame.EmbeddedJDEC.WPILIB_VERSION.forceHide();
         PacketCreator.SEQUENCE_COUNTER_RIO.reset();
     }
 

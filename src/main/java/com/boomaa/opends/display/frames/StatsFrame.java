@@ -1,90 +1,70 @@
 package com.boomaa.opends.display.frames;
 
+import com.boomaa.opends.data.StatsFields;
 import com.boomaa.opends.display.PopupBase;
-import com.boomaa.opends.display.elements.GBCPanelBuilder;
-import com.boomaa.opends.display.elements.HideableLabel;
+import com.boomaa.opends.display.elements.ColorCellRenderer;
 
+import javax.swing.BoxLayout;
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
+import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 
 public class StatsFrame extends PopupBase {
+    public static final DefaultTableModel TABLE_MODEL = new DefaultTableModel(new String[0][], new String[] { "", "Key", "Value" });
+
     public StatsFrame() {
-        super("Statistics", new Dimension(540, 250));
+        super("Statistics", new Dimension(395, 250));
     }
 
     @Override
     public void config() {
         super.config();
-        content.setLayout(new GridBagLayout());
-        Insets defInsets = new Insets(5, 5, 5, 5);
-        GBCPanelBuilder labelBase = new GBCPanelBuilder(content).setFill(GridBagConstraints.NONE).setAnchor(GridBagConstraints.LINE_END).setInsets(defInsets);
-        GBCPanelBuilder itemsBase = labelBase.clone().setAnchor(GridBagConstraints.LINE_START);
 
-        labelBase.clone().setPos(0, 0, 2, 1).setAnchor(GridBagConstraints.CENTER).build(new JLabel("RoboRIO"));
-        labelBase.clone().setPos(0, 1, 1, 1).build(new JLabel("Disk Space: "));
-        itemsBase.clone().setPos(1, 1, 1, 1).build(EmbeddedJDEC.DISK_SPACE);
-        labelBase.clone().setPos(0, 2, 1, 1).build(new JLabel("RAM Space: "));
-        itemsBase.clone().setPos(1, 2, 1, 1).build(EmbeddedJDEC.RAM_SPACE);
-        labelBase.clone().setPos(0, 3, 1, 1).build(new JLabel("CPU Percent: "));
-        itemsBase.clone().setPos(1, 3, 1, 1).build(EmbeddedJDEC.CPU_PERCENT);
-        labelBase.clone().setPos(0, 4, 1, 1).build(new JLabel("RIO Version: "));
-        itemsBase.clone().setPos(1, 4, 1, 1).build(EmbeddedJDEC.ROBORIO_VERSION);
-        labelBase.clone().setPos(0, 5, 1, 1).build(new JLabel("WPILib Version: "));
-        itemsBase.clone().setPos(1, 5, 1, 1).build(EmbeddedJDEC.WPILIB_VERSION);
+        StatsFields[] allFields = StatsFields.values();
+        for (StatsFields field : allFields) {
+            TABLE_MODEL.addRow(new Object[] { field.getSection(), field.getKey(), field.getValue() });
+        }
 
-        labelBase.clone().setPos(2, 0, 2, 1).setAnchor(GridBagConstraints.CENTER).build(new JLabel("CAN Bus"));
-        labelBase.clone().setPos(2, 1, 1, 1).build(new JLabel("Utilization: "));
-        itemsBase.clone().setPos(3, 1, 1, 1).build(EmbeddedJDEC.CAN_UTILIZATION);
-        labelBase.clone().setPos(2, 2, 1, 1).build(new JLabel("Bus Off: "));
-        itemsBase.clone().setPos(3, 2, 1, 1).build(EmbeddedJDEC.CAN_BUS_OFF);
-        labelBase.clone().setPos(2, 3, 1, 1).build(new JLabel("TX Full: "));
-        itemsBase.clone().setPos(3, 3, 1, 1).build(EmbeddedJDEC.CAN_TX_FULL);
-        labelBase.clone().setPos(2, 4, 1, 1).build(new JLabel("RX Error: "));
-        itemsBase.clone().setPos(3, 4, 1, 1).build(EmbeddedJDEC.CAN_RX_ERR);
-        labelBase.clone().setPos(2, 5, 1, 1).build(new JLabel("TX Error: "));
-        itemsBase.clone().setPos(3, 5, 1, 1).build(EmbeddedJDEC.CAN_TX_ERR);
+        JTable table = new JTable(TABLE_MODEL) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        table.setDefaultRenderer(Object.class, new ColorCellRenderer());
+        TableRowSorter<TableModel> sorter = new TableRowSorter<>(table.getModel());
+        table.setRowSorter(sorter);
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        setWidths(table, 0, 10, 50, 10);
+        setWidths(table, 1, 100, -1, 150);
+        setWidths(table, 2, 100, -1, 200);
+        JScrollPane scroll = new JScrollPane(table);
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        content.add(scroll);
 
-        labelBase.clone().setPos(4, 0, 2, 1).setAnchor(GridBagConstraints.CENTER).build(new JLabel("Disable Faults"));
-        labelBase.clone().setPos(4, 1, 1, 1).build(new JLabel("Comms: "));
-        itemsBase.clone().setPos(5, 1, 1, 1).build(EmbeddedJDEC.DISABLE_FAULTS_COMMS);
-        labelBase.clone().setPos(4, 2, 1, 1).build(new JLabel("12V: "));
-        itemsBase.clone().setPos(5, 2, 1, 1).build(EmbeddedJDEC.DISABLE_FAULTS_12V);
-
-        labelBase.clone().setPos(4, 3, 2, 1).setAnchor(GridBagConstraints.CENTER).build(new JLabel("Rail Faults"));
-        labelBase.clone().setPos(4, 4, 1, 1).build(new JLabel("6V: "));
-        itemsBase.clone().setPos(5, 4, 1, 1).build(EmbeddedJDEC.RAIL_FAULTS_6V);
-        labelBase.clone().setPos(4, 5, 1, 1).build(new JLabel("5V: "));
-        itemsBase.clone().setPos(5, 5, 1, 1).build(EmbeddedJDEC.RAIL_FAULTS_5V);
-        labelBase.clone().setPos(4, 6, 1, 1).build(new JLabel("3.3V: "));
-        itemsBase.clone().setPos(5, 6, 1, 1).build(EmbeddedJDEC.RAIL_FAULTS_3P3V);
-
-        Dimension outWidth = new Dimension(75, 16);
-        EmbeddedJDEC.DISK_SPACE.setPreferredSize(outWidth);
-        EmbeddedJDEC.CAN_UTILIZATION.setPreferredSize(outWidth);
-        EmbeddedJDEC.DISABLE_FAULTS_COMMS.setPreferredSize(outWidth);
-        super.setResizable(false);
+        content.repaint();
+        content.revalidate();
+        super.repaint();
+        super.revalidate();
     }
 
-    public interface EmbeddedJDEC {
-        HideableLabel DISK_SPACE = new HideableLabel(false);
-        HideableLabel RAM_SPACE = new HideableLabel(false);
-        HideableLabel CPU_PERCENT = new HideableLabel(false);
-        HideableLabel ROBORIO_VERSION = new HideableLabel(false);
-        HideableLabel WPILIB_VERSION = new HideableLabel(false);
-
-        HideableLabel CAN_UTILIZATION = new HideableLabel(false);
-        HideableLabel CAN_BUS_OFF = new HideableLabel(false);
-        HideableLabel CAN_TX_FULL = new HideableLabel(false);
-        HideableLabel CAN_RX_ERR = new HideableLabel(false);
-        HideableLabel CAN_TX_ERR = new HideableLabel(false);
-        
-        HideableLabel DISABLE_FAULTS_COMMS = new HideableLabel(false);
-        HideableLabel DISABLE_FAULTS_12V = new HideableLabel(false);
-        HideableLabel RAIL_FAULTS_6V = new HideableLabel(false);
-        HideableLabel RAIL_FAULTS_5V = new HideableLabel(false);
-        HideableLabel RAIL_FAULTS_3P3V = new HideableLabel(false);
+    private void setWidths(JTable table, int index, int min, int max, int preferred) {
+        TableColumn col = table.getColumnModel().getColumn(index);
+        if (min != -1) {
+            col.setMinWidth(min);
+        }
+        if (max != -1) {
+            col.setMaxWidth(max);
+        }
+        if (preferred != -1) {
+            col.setPreferredWidth(preferred);
+        }
     }
 }

@@ -31,9 +31,16 @@ public class MainFrame implements MainJDEC {
         FRAME.setResizable(true);
         FRAME.pack();
         FRAME.setLocationRelativeTo(null);
+        try {
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
+        SwingUtilities.updateComponentTreeUI(FRAME);
         FRAME.setVisible(true);
     }
 
+    @Deprecated
     public static ButtonGroup createButtonGroup(JRadioButton... buttons) {
         ButtonGroup temp = new ButtonGroup();
         for (JRadioButton button : buttons) {
@@ -42,6 +49,7 @@ public class MainFrame implements MainJDEC {
         return temp;
     }
 
+    @Deprecated
     public static void setButtonCenteredAbove(JRadioButton... buttons) {
         for (JRadioButton button : buttons) {
             button.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -49,6 +57,7 @@ public class MainFrame implements MainJDEC {
         }
     }
 
+    @Deprecated
     public static void setSelected(JToggleButton... buttons) {
         for (JToggleButton button : buttons) {
             button.setSelected(true);
