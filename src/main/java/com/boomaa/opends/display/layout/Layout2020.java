@@ -8,7 +8,6 @@ import com.boomaa.opends.display.frames.LogFrame;
 import com.boomaa.opends.display.frames.MainFrame;
 import com.boomaa.opends.display.frames.NTFrame;
 import com.boomaa.opends.display.frames.StatsFrame;
-import com.boomaa.opends.networktables.NTStorage;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;

@@ -37,7 +37,7 @@ rules R66 and R88. OpenDS is intended for testing use only.
     * CAN Bus
     * RoboRIO disk/RAM/CPU/version
     * Disable/Rail faults
-    * Packet logging
+    * Logging to `.dslog` files
 * NetworkTables
     * Read Shuffleboard and SmartDashboard packets
     * Display NetworkTables passed data

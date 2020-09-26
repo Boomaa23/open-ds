@@ -6,7 +6,6 @@ import com.boomaa.opends.data.send.PacketBuilder;
 import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.display.RobotMode;
 import com.boomaa.opends.display.frames.MessageBox;
-import com.boomaa.opends.display.frames.StatsFrame;
 import com.boomaa.opends.networking.WlanConnection;
 
 import java.io.File;
@@ -21,7 +20,7 @@ public class DSLog extends Clock {
     public DSLog() {
         super(1000);
         Calendar date = Calendar.getInstance();
-        String weekday = Date.DayMap.getFromInt(date.get(Calendar.DAY_OF_WEEK), false).name();
+        String weekday = Date.DayMap.getFromInt(date.get(Calendar.DAY_OF_WEEK) - 1).name();
         String folderName = OperatingSystem.getCurrent() == OperatingSystem.WINDOWS ? "C:\\Users\\Public\\Documents\\FRC\\Log Files\\" : "/var/log/opends/";
         File folder = new File(folderName);
         if (!folder.isDirectory()) {
@@ -56,17 +55,14 @@ public class DSLog extends Clock {
                 + (MainJDEC.ROBOT_DRIVE_MODE.getSelectedItem() == RobotMode.TELEOPERATED ? Trace.DS_TELEOP.flag + Trace.ROBOT_TELEOP.flag : 0)
                 + (MainJDEC.ROBOT_DRIVE_MODE.getSelectedItem() == RobotMode.AUTONOMOUS ? Trace.ROBOT_AUTO.flag : 0)
                 + (!MainJDEC.IS_ENABLED.isSelected() ? Trace.DS_DISABLED.flag + Trace.ROBOT_DISABLED.flag : 0);
-        double bat = checkedNumParse(MainJDEC.BAT_VOLTAGE.getText().replaceAll(" V", ""));
-        int rioCPU = (int) checkedNumParse(StatsFields.CPU_PERCENT.getValue());
-        int canUsage = (int) checkedNumParse(StatsFields.CAN_UTILIZATION.getValue());
-        int teamNum = (int) checkedNumParse(MainJDEC.TEAM_NUMBER.getText());
-        WlanConnection wifi = WlanConnection.getRadio(teamNum);
+        WlanConnection wifi = WlanConnection.getRadio(MainJDEC.TEAM_NUMBER.checkedIntParse());
         writeData(new PacketBuilder()
                 .addInts(getTripTime(0x00), trace, getPacketLoss(0x00))
-                .addBytes(getBattery(bat))
-                .addInts(getRioCPU(rioCPU), getCAN(canUsage),
+                .addBytes(getBattery(checkedNumParse(MainJDEC.BAT_VOLTAGE.getText().replaceAll(" V", ""))))
+                .addInts(getRioCPU((int) checkedNumParse(StatsFields.CPU_PERCENT.getValue())),
+                        getCAN((int) checkedNumParse(StatsFields.CAN_UTILIZATION.getValue())),
                         getWifiDb(wifi != null ? wifi.getSignal() : 0x00),
-                        0x00) //wifiMb
+                        getWifiMb(0x00)) //wifiMb
                 .pad(0x00, 2)
                 .addBytes(PDP_STATS)
                 .build()
@@ -89,34 +85,38 @@ public class DSLog extends Clock {
         }
     }
 
-    public int getTripTime(int tripTime) {
+    private int getTripTime(int tripTime) {
         return tripTime * 15;
     }
 
-    public int getPacketLoss(int packetLoss) {
+    private int getPacketLoss(int packetLoss) {
         return packetLoss / 4;
     }
 
-    public byte[] getBattery(double bat) {
+    private byte[] getBattery(double bat) {
         byte[] out = new byte[2];
         out[0] = (byte) ((int) bat);
         out[1] = (byte) ((int) ((bat - out[0]) * 256));
         return out;
     }
 
-    public int getRioCPU(int rioCPU) {
+    private int getRioCPU(int rioCPU) {
         return rioCPU * 2;
     }
 
-    public int getCAN(int can) {
+    private int getCAN(int can) {
         return can * 2;
     }
 
-    public int getWifiDb(int wifiDb) {
+    private int getWifiDb(int wifiDb) {
         return wifiDb * 2;
     }
 
-    public enum Trace {
+    private int getWifiMb(int wifiMb) {
+        return wifiMb * 2;
+    }
+
+    private enum Trace {
         BROWNOUT(0x80),
         WATCHDOG(0x40),
         DS_TELEOP(0x20),

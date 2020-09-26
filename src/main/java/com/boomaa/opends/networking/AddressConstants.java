@@ -21,7 +21,7 @@ public class AddressConstants {
     }
 
     public static String getRioAddress() throws NumberFormatException {
-        return "roboRIO-" + Integer.parseInt(MainJDEC.TEAM_NUMBER.getText()) + "-FRC.local";
+        return "roboRIO-" + MainJDEC.TEAM_NUMBER.checkedIntParse() + "-FRC.local";
     }
 
     private static Object getProtoYearValue(String base) {

@@ -12,7 +12,6 @@ import com.boomaa.opends.data.receive.parser.PacketParser;
 import com.boomaa.opends.data.receive.parser.Parser2020;
 import com.boomaa.opends.data.send.creator.PacketCreator;
 import com.boomaa.opends.display.Logger;
-import com.boomaa.opends.display.frames.StatsFrame;
 import com.boomaa.opends.util.NumberUtils;
 
 public class Updater2020 extends ElementUpdater {

@@ -11,26 +11,20 @@ import java.util.zip.ZipInputStream;
 public class UnzipUtils {
     public static void unzip(String zipLoc, String unzipDir) {
         File destDir = new File(unzipDir);
-        try {
+        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipLoc))) {
             byte[] buffer = new byte[1024];
-            ZipInputStream zis = new ZipInputStream(new FileInputStream(zipLoc));
             ZipEntry zipEntry = zis.getNextEntry();
             while (zipEntry != null) {
-                File newFile = newFile(destDir, zipEntry);
-                FileOutputStream fos;
-                try {
-                     fos = new FileOutputStream(newFile);
+                try (FileOutputStream fos = new FileOutputStream(newFile(destDir, zipEntry))) {
                     int len;
                     while ((len = zis.read(buffer)) > 0) {
                         fos.write(buffer, 0, len);
                     }
-                    fos.close();
                 } catch (FileNotFoundException ignored) {
                 }
                 zipEntry = zis.getNextEntry();
             }
             zis.closeEntry();
-            zis.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -155,15 +155,10 @@ public enum ReceiveTag {
     EVENT_CODE(0x14, Protocol.TCP, Remote.FMS, InLog.ALWAYS, (ReceiveTagBase<String>) (packet, size) ->
             TagValueMap.singleton("Event Name", new String(ArrayUtils.sliceArr(packet, 1)))
     ),
-    STATION_INFO(0x19, Protocol.TCP, Remote.FMS, InLog.ALWAYS, (ReceiveTagBase<AllianceStation>) (packet, size) -> {
-        AllianceStation.Status status = AllianceStation.Status.INVALID;
-        switch (packet[1]) {
-            case 0: status = AllianceStation.Status.GOOD; break;
-            case 1: status = AllianceStation.Status.BAD; break;
-            case 2: status = AllianceStation.Status.WAITING; break;
-        }
-        return TagValueMap.singleton("Alliance Station", AllianceStation.getFromByte(packet[0]).setStatus(status));
-    }),
+    STATION_INFO(0x19, Protocol.TCP, Remote.FMS, InLog.ALWAYS, (ReceiveTagBase<AllianceStation>) (packet, size) ->
+            TagValueMap.singleton("Alliance Station", AllianceStation.getFromByte(packet[0])
+                    .setStatus(packet[1] <= 2 ? AllianceStation.Status.values()[packet[1]] : AllianceStation.Status.INVALID))
+    ),
     CHALLENGE_QUESTION(0x1A, Protocol.TCP, Remote.FMS, InLog.ALWAYS, (ReceiveTagBase<Integer>) (packet, size) ->
             TagValueMap.singleton("Challenge Value", NumberUtils.getUInt16(
                     ArrayUtils.sliceArr(packet, packet.length - 2, packet.length)))

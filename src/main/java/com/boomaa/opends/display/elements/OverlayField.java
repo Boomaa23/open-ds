@@ -52,4 +52,16 @@ public class OverlayField extends JTextField implements FocusListener {
         showingHint = false;
         super.setText(t);
     }
+
+    public int checkedIntParse() {
+        return checkedIntParse(-1);
+    }
+
+    public int checkedIntParse(int defRtn) {
+        try {
+            return Integer.parseInt(this.getText());
+        } catch (NumberFormatException ignored) {
+        }
+        return defRtn;
+    }
 }

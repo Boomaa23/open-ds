@@ -4,15 +4,12 @@ import com.boomaa.opends.data.StatsFields;
 import com.boomaa.opends.display.PopupBase;
 import com.boomaa.opends.display.elements.ColorCellRenderer;
 
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 
 public class StatsFrame extends PopupBase {

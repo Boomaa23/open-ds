@@ -107,7 +107,7 @@ public enum SendTag {
         return builder.build();
     }),
     ROBOT_RADIO_METRICS(0x03, Protocol.UDP, Remote.FMS, () ->
-            new PacketBuilder().addInt(WlanConnection.getRadio(Integer.parseInt(MainJDEC.TEAM_NUMBER.getText())).getSignal())
+            new PacketBuilder().addInt(WlanConnection.getRadio(MainJDEC.TEAM_NUMBER.checkedIntParse()).getSignal())
                     .addInt(0x00).addInt(0x00).build()
             //TODO bandwidth utilization (uint16)
     ),
@@ -124,7 +124,7 @@ public enum SendTag {
     THIRD_PARTY_DEVICE_VER(0x07, Protocol.TCP, Remote.FMS, null),
     USAGE_REPORT(0x15, Protocol.TCP, Remote.FMS, () -> {
         PacketBuilder builder = new PacketBuilder();
-        builder.addBytes(NumberUtils.intToBytePair(Integer.parseInt(MainJDEC.TEAM_NUMBER.getText())))
+        builder.addBytes(NumberUtils.intToBytePair(MainJDEC.TEAM_NUMBER.checkedIntParse()))
                 .addInt(0x00) //Unknown
                 .addBytes(UsageReporting.RECEIVED_USAGE);
         return builder.build();
@@ -134,7 +134,7 @@ public enum SendTag {
         //TODO implement trip time, lost packets, CAN, signalDb, bandwidth, "Watchdog" on status
         builder.addInt(0x01) //tripTime
                .addInt(0x00); //lostPackets
-        builder.addBytes(NumberUtils.intToBytePair(Integer.parseInt(MainJDEC.TEAM_NUMBER.getText())));
+        builder.addBytes(NumberUtils.intToBytePair(MainJDEC.TEAM_NUMBER.checkedIntParse()));
         int status = 0;
         if (MainJDEC.BROWNOUT_STATUS.isDisplayed()) {
             status += 0x80;
@@ -165,7 +165,7 @@ public enum SendTag {
     }),
     ERR_AND_EVENT_DATA(0x17, Protocol.TCP, Remote.FMS, null),
     TEAM_NUMBER(0x18, Protocol.TCP, Remote.FMS, () ->
-            NumberUtils.intToBytePair(Integer.parseInt(MainJDEC.TEAM_NUMBER.getText()))
+            NumberUtils.intToBytePair(MainJDEC.TEAM_NUMBER.checkedIntParse())
     ),
     CHALLENGE_RESPONSE(0x1B, Protocol.TCP, Remote.FMS, () ->
             MainJDEC.CHALLENGE_RESPONSE.getText().getBytes()

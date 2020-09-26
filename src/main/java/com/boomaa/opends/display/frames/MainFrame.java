@@ -1,5 +1,6 @@
 package com.boomaa.opends.display.frames;
 
+import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.display.ProtocolClass;
 import com.boomaa.opends.display.layout.LayoutPlacer;
@@ -19,6 +20,8 @@ public class MainFrame implements MainJDEC {
     public static void display() {
         FRAME.setIconImage(FIRST_LOGO);
         CONTENT.setLayout(new GridBagLayout());
+
+        TITLE.setText(TITLE.getText() + " " + DisplayEndpoint.CURRENT_VERSION_TAG);
 
         ProtocolClass layout = new ProtocolClass("com.boomaa.opends.display.layout.Layout");
         try {
