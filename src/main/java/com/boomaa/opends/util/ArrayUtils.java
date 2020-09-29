@@ -1,13 +1,18 @@
 package com.boomaa.opends.util;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ArrayUtils {
     public static byte[] sliceArr(byte[] array, int start, int end) {
-        byte[] out = new byte[end - start];
-        System.arraycopy(array, start, out, 0, out.length);
-        return out;
+        try {
+            byte[] out = new byte[end - start];
+            System.arraycopy(array, start, out, 0, out.length);
+            return out;
+        } catch (ArrayIndexOutOfBoundsException | NegativeArraySizeException ignored) {
+        }
+        return new byte[0];
     }
 
     public static byte[] sliceArr(byte[] array, int start) {

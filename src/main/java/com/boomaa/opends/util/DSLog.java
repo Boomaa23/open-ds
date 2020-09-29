@@ -21,7 +21,7 @@ public class DSLog extends Clock {
         super(1000);
         Calendar date = Calendar.getInstance();
         String weekday = Date.DayMap.getFromInt(date.get(Calendar.DAY_OF_WEEK) - 1).name();
-        String folderName = OperatingSystem.getCurrent() == OperatingSystem.WINDOWS ? "C:\\Users\\Public\\Documents\\FRC\\Log Files\\" : "/var/log/opends/";
+        String folderName = OperatingSystem.isWindows() ? "C:\\Users\\Public\\Documents\\FRC\\Log Files\\" : "/var/log/opends/";
         File folder = new File(folderName);
         if (!folder.isDirectory()) {
             folder.mkdirs();
@@ -35,7 +35,8 @@ public class DSLog extends Clock {
                 logFile.createNewFile();
             } catch (IOException e) {
                 MessageBox.show("Could not create log file", MessageBox.Type.ERROR);
-                e.printStackTrace();
+                this.interrupt();
+                return;
             }
         }
         writeData(new PacketBuilder()

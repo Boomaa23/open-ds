@@ -21,4 +21,8 @@ public enum OperatingSystem {
         }
         return OperatingSystem.UNSUPPORTED;
     }
+
+    public static boolean isWindows() {
+        return getCurrent() == WINDOWS;
+    }
 }

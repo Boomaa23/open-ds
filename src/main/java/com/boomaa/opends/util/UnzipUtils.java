@@ -1,5 +1,7 @@
 package com.boomaa.opends.util;
 
+import com.boomaa.opends.display.frames.MessageBox;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -26,6 +28,7 @@ public class UnzipUtils {
             }
             zis.closeEntry();
         } catch (IOException e) {
+            MessageBox.show("Cannot unzip libraries", MessageBox.Type.ERROR);
             e.printStackTrace();
         }
     }

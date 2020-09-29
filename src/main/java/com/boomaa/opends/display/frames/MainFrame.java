@@ -4,6 +4,7 @@ import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.display.ProtocolClass;
 import com.boomaa.opends.display.layout.LayoutPlacer;
+import com.boomaa.opends.util.OperatingSystem;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,10 +35,12 @@ public class MainFrame implements MainJDEC {
         FRAME.setResizable(true);
         FRAME.pack();
         FRAME.setLocationRelativeTo(null);
-        try {
-            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
-            e.printStackTrace();
+        if (OperatingSystem.isWindows()) {
+            try {
+                UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+                e.printStackTrace();
+            }
         }
         SwingUtilities.updateComponentTreeUI(FRAME);
         FRAME.setVisible(true);

@@ -46,7 +46,7 @@ public class Updater2020 extends ElementUpdater {
             if (!cif.isEmpty()) {
                 TagValueMap<?> cpuInfo = cif.first();
                 double cpuPercent = 0;
-                int numCpus = (Integer) cpuInfo.get("Number of CPUs");
+                float numCpus = (Float) cpuInfo.get("Number of CPUs");
                 for (int i = 1; i <= numCpus; i++) {
                     //TODO test if this cpu percentage algorithm works
                     float tCrit = (Float) cpuInfo.get("CPU " + i + " Time Critical %");

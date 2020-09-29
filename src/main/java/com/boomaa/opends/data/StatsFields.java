@@ -31,8 +31,10 @@ public enum StatsFields {
     }
 
     public void updateTableValue(Object value) {
-        this.value = (String) value;
-        StatsFrame.TABLE_MODEL.setValueAt(value, this.ordinal(), 2);
+        this.value = String.valueOf(value);
+        if (this.ordinal() < StatsFrame.TABLE_MODEL.getRowCount()) {
+            StatsFrame.TABLE_MODEL.setValueAt(value, this.ordinal(), 2);
+        }
     }
 
     public String getKey() {

@@ -24,6 +24,7 @@ public class NetworkReloader extends DisplayEndpoint {
                 RIO_TCP_INTERFACE = new TCPInterface(rioIp, rioPorts.getTcp());
             }
             NET_IF_INIT.set(true, Remote.ROBO_RIO, protocol);
+            MainJDEC.IS_ENABLED.setEnabled(true);
         } catch (UnknownHostException | NumberFormatException ignored) {
             unsetRio(protocol);
         } catch (IOException e) {
