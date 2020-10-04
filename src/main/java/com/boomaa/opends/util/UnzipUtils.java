@@ -13,7 +13,21 @@ import java.util.zip.ZipInputStream;
 public class UnzipUtils {
     public static void unzip(String zipLoc, String unzipDir) {
         File destDir = new File(unzipDir);
-        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipLoc))) {
+        FileInputStream fis;
+        try {
+            fis = new FileInputStream(zipLoc);
+        } catch (FileNotFoundException e0) {
+            String tmpDir = System.getProperty("java.io.tmpdir");
+            try {
+                Libraries.download(tmpDir + "/open-ds-natives.zip");
+                unzip(tmpDir + "/open-ds-natives.zip", tmpDir);
+                return;
+            } catch (IOException e1) {
+                MessageBox.show("Cannot unzip libraries", MessageBox.Type.ERROR);
+                return;
+            }
+        }
+        try (ZipInputStream zis = new ZipInputStream(fis)) {
             byte[] buffer = new byte[1024];
             ZipEntry zipEntry = zis.getNextEntry();
             while (zipEntry != null) {
@@ -45,5 +59,4 @@ public class UnzipUtils {
 
         return destFile;
     }
-
 }

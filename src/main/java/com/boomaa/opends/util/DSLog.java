@@ -9,6 +9,7 @@ import com.boomaa.opends.display.frames.MessageBox;
 import com.boomaa.opends.networking.WlanConnection;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Calendar;
@@ -73,8 +74,10 @@ public class DSLog extends Clock {
     private void writeData(byte[] data) {
         try (FileOutputStream output = new FileOutputStream(filepath, true)) {
             output.write(data);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (FileNotFoundException e0) {
+            this.interrupt();
+        } catch (IOException e1) {
+            e1.printStackTrace();
         }
     }
 
