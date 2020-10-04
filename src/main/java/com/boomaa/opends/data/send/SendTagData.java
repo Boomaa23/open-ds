@@ -1,5 +1,5 @@
 package com.boomaa.opends.data.send;
 
-public interface SendTagBase {
+public interface SendTagData {
     byte[] getTagData();
 }

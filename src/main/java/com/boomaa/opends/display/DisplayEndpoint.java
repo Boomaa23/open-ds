@@ -14,6 +14,7 @@ import com.boomaa.opends.networking.TCPInterface;
 import com.boomaa.opends.networking.UDPInterface;
 import com.boomaa.opends.networking.UDPTransform;
 import com.boomaa.opends.networktables.NTConnection;
+import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.Clock;
 import com.boomaa.opends.util.DSLog;
 import com.boomaa.opends.util.InitChecker;
@@ -142,6 +143,8 @@ public class DisplayEndpoint implements MainJDEC {
         // checkForUpdates();
     }
 
+
+
     public static void doProtocolUpdate() {
         parserClass.update();
         creatorClass.update();
@@ -151,7 +154,7 @@ public class DisplayEndpoint implements MainJDEC {
             creator = (PacketCreator) Class.forName(creatorClass.toString()).getConstructor().newInstance();
         } catch (NoSuchMethodException | ClassNotFoundException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
             e.printStackTrace();
-            MessageBox.show(e.getMessage(), MessageBox.Type.ERROR);
+            MessageBox.show(ArrayUtils.printStackTrace(e, 10), MessageBox.Type.ERROR);
             System.exit(1);
         }
     }

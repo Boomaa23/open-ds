@@ -4,6 +4,7 @@ import com.boomaa.opends.data.holders.Protocol;
 import com.boomaa.opends.data.holders.Remote;
 import com.boomaa.opends.data.receive.ReceiveTag;
 import com.boomaa.opends.data.receive.TVMList;
+import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.PacketCounters;
 import com.boomaa.opends.util.SequenceCounter;
@@ -50,7 +51,8 @@ public abstract class PacketParser {
                 size = getTagSize(c + tagStartIndex);
                 for (ReceiveTag tag : ReceiveTag.values()) {
                     if (tag.getRemote() == remote && tag.getProtocol() == protocol && tag.getFlag() == tagPacket[c + 1]) {
-                        this.tagValues.add(tag.getAction().getValue(ArrayUtils.sliceArr(tagPacket, c + 2, c + size + 1), size).setBaseTag(tag));
+                        this.tagValues.add(tag.getActions()[MainJDEC.PROTOCOL_YEAR.getSelectedIndex()]
+                                .getValue(ArrayUtils.sliceArr(tagPacket, c + 2, c + size + 1), size).setBaseTag(tag));
                     }
                 }
                 c += size + 1;

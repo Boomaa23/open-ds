@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 public enum SendTag {
-    COUNTDOWN(0x07, Protocol.UDP, Remote.ROBO_RIO, null),
+    COUNTDOWN(0x07, Protocol.UDP, Remote.ROBO_RIO, NullSendTag.get()),
     JOYSTICK(0x0C, Protocol.UDP, Remote.ROBO_RIO, () -> {
         PacketBuilder builder = new PacketBuilder();
         USBInterface.findControllers(true);
@@ -89,13 +89,13 @@ public enum SendTag {
         return builder.build();
     }),
     //TODO match info
-    MATCH_INFO(0x07, Protocol.TCP, Remote.ROBO_RIO, null),
+    MATCH_INFO(0x07, Protocol.TCP, Remote.ROBO_RIO, NullSendTag.get()),
     GAME_DATA(0x0E, Protocol.TCP, Remote.ROBO_RIO, () ->
             MainJDEC.GAME_DATA.getText().getBytes()
     ),
 
-    FIELD_RADIO_METRICS(0x00, Protocol.UDP, Remote.FMS, null),
-    COMMS_METRICS(0x01, Protocol.UDP, Remote.FMS, null),
+    FIELD_RADIO_METRICS(0x00, Protocol.UDP, Remote.FMS, NullSendTag.get()),
+    COMMS_METRICS(0x01, Protocol.UDP, Remote.FMS, NullSendTag.get()),
     LAPTOP_METRICS(0x02, Protocol.UDP, Remote.FMS, () -> {
         PacketBuilder builder = new PacketBuilder().addInt(BatteryInfo.getPercent());
         double load = -1;
@@ -114,14 +114,14 @@ public enum SendTag {
     PD_INFO(0x04, Protocol.UDP, Remote.FMS, () -> new byte[0]),
 
     //TODO software versions for FMS
-    WPILIB_VER(0x00, Protocol.TCP, Remote.FMS, null),
-    RIO_VER(0x01, Protocol.TCP, Remote.FMS, null),
-    DS_VER(0x02, Protocol.TCP, Remote.FMS, null),
-    PDP_VER(0x03, Protocol.TCP, Remote.FMS, null),
-    PCM_VER(0x04, Protocol.TCP, Remote.FMS, null),
-    CANJAG_VER(0x05, Protocol.TCP, Remote.FMS, null),
-    CANTALON_VER(0x06, Protocol.TCP, Remote.FMS, null),
-    THIRD_PARTY_DEVICE_VER(0x07, Protocol.TCP, Remote.FMS, null),
+    WPILIB_VER(0x00, Protocol.TCP, Remote.FMS, NullSendTag.get()),
+    RIO_VER(0x01, Protocol.TCP, Remote.FMS, NullSendTag.get()),
+    DS_VER(0x02, Protocol.TCP, Remote.FMS, NullSendTag.get()),
+    PDP_VER(0x03, Protocol.TCP, Remote.FMS, NullSendTag.get()),
+    PCM_VER(0x04, Protocol.TCP, Remote.FMS, NullSendTag.get()),
+    CANJAG_VER(0x05, Protocol.TCP, Remote.FMS, NullSendTag.get()),
+    CANTALON_VER(0x06, Protocol.TCP, Remote.FMS, NullSendTag.get()),
+    THIRD_PARTY_DEVICE_VER(0x07, Protocol.TCP, Remote.FMS, NullSendTag.get()),
     USAGE_REPORT(0x15, Protocol.TCP, Remote.FMS, () -> {
         PacketBuilder builder = new PacketBuilder();
         builder.addBytes(NumberUtils.intToBytePair(MainJDEC.TEAM_NUMBER.checkedIntParse()))
@@ -163,7 +163,7 @@ public enum SendTag {
                 .addBytes(NumberUtils.intToBytePair(0x01)); //bandwidth
         return builder.build();
     }),
-    ERR_AND_EVENT_DATA(0x17, Protocol.TCP, Remote.FMS, null),
+    ERR_AND_EVENT_DATA(0x17, Protocol.TCP, Remote.FMS, NullSendTag.get()),
     TEAM_NUMBER(0x18, Protocol.TCP, Remote.FMS, () ->
             NumberUtils.intToBytePair(MainJDEC.TEAM_NUMBER.checkedIntParse())
     ),
@@ -175,13 +175,13 @@ public enum SendTag {
     private final int flag;
     private final Protocol protocol;
     private final Remote remote;
-    private final SendTagBase value;
+    private final SendTagData[] values;
 
-    SendTag(int flag, Protocol protocol, Remote remote, SendTagBase value) {
+    SendTag(int flag, Protocol protocol, Remote remote, SendTagData... values) {
         this.flag = flag;
         this.protocol = protocol;
         this.remote = remote;
-        this.value = value;
+        this.values = values;
     }
 
     public int getFlag() {
@@ -196,12 +196,12 @@ public enum SendTag {
         return remote;
     }
 
-    public SendTagBase getValue() {
-        return value;
+    public SendTagData[] getValues() {
+        return values;
     }
 
     public byte[] getBytes() {
-        byte[] tagData = value.getTagData();
+        byte[] tagData = values[MainJDEC.PROTOCOL_YEAR.getSelectedIndex()].getTagData();
         int dataPos = protocol == Protocol.TCP ? 3 : 2;
 
         byte[] out = new byte[dataPos + tagData.length];
