@@ -1,0 +1,24 @@
+package com.boomaa.opends.usb.input;
+
+public interface DIFlags {
+    int DI_OK = 0x00000000;
+    int DI_NOEFFECT = 0x00000001;
+    int DI_PROPNOEFFECT = 0x00000001;
+    int DI_POLLEDDEVICE = 0x00000002;
+
+    int DI_BUFFEROVERFLOW = 0x00000001;
+    int DIERR_NOTACQUIRED = 0x8007001C;
+    int DIERR_OTHERAPPHASPRIO	= 0x80070005;
+
+    int DIDFT_AXIS = 0x00000003;
+    int DIDFT_BUTTON = 0x0000000C;
+
+    int DI8DEVTYPE_JOYSTICK = 0x14;
+    int DI8DEVTYPE_GAMEPAD = 0x15;
+
+    int DIDF_ABSAXIS			= 0x00000001;
+    int DISCL_NONEXCLUSIVE  = 0x00000002;
+    int DISCL_BACKGROUND	= 0x00000008;
+
+    int BUTTON_GUID = 8;
+}
