@@ -2,11 +2,11 @@ package com.boomaa.opends.usb;
 
 import org.lwjgl.glfw.GLFW;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class USBInterface {
-    private static List<HIDDevice> controlDevices = new ArrayList<>();
+    private static Map<Integer, HIDDevice> controlDevices = new HashMap<>();
 
     static {
         GLFW.glfwInit();
@@ -18,24 +18,27 @@ public class USBInterface {
         GLFW.glfwPollEvents();
         for (int idx = 0; idx < GLFW.GLFW_JOYSTICK_LAST; idx++) {
             if (GLFW.glfwJoystickPresent(idx)) {
-                HIDDevice dev = GLFW.glfwJoystickIsGamepad(idx) ? new XboxController(idx) : new Joystick(idx);
-                if (idx >= controlDevices.size()) {
-                    controlDevices.add(idx, dev);
+                controlDevices.put(idx, GLFW.glfwJoystickIsGamepad(idx) ? new XboxController(idx) : new Joystick(idx));
+            }
+        }
+    }
+
+    public static synchronized void updateValues() {
+        GLFW.glfwPollEvents();
+        int size = controlDevices.size();
+        for (int i = 0; i < size; i++) {
+            HIDDevice ctrl = controlDevices.get(i);
+            if (ctrl != null) {
+                if (ctrl.needsRemove()) {
+                    controlDevices.remove(ctrl.getHardwareIndex());
                 } else {
-                    controlDevices.set(idx, dev);
+                    ctrl.update();
                 }
             }
         }
     }
 
-    public static void updateValues() {
-        GLFW.glfwPollEvents();
-        for (HIDDevice ctrl : controlDevices) {
-            ctrl.update();
-        }
-    }
-
-    public static List<HIDDevice> getControlDevices() {
+    public static Map<Integer, HIDDevice> getControlDevices() {
         return controlDevices;
     }
 }

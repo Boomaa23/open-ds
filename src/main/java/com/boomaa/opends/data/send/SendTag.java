@@ -27,14 +27,10 @@ public enum SendTag {
         PacketBuilder builder = new PacketBuilder();
         USBInterface.findControllers();
         USBInterface.updateValues();
-        List<HIDDevice> devices = USBInterface.getControlDevices();
-        Map<Integer, HIDDevice> deviceMap = new HashMap<>();
-        for (HIDDevice device : devices) {
-            deviceMap.put(device.getIndex(), device);
-        }
+        Map<Integer, HIDDevice> deviceMap = USBInterface.getControlDevices();
         for (int i = 0; i < HIDDevice.MAX_JS_NUM; i++) {
             HIDDevice ctrl = deviceMap.get(i);
-            if (ctrl != null) {
+            if (ctrl != null && !ctrl.isDisabled()) {
                 builder.addInt(ctrl.numAxes()); //3 axes
                 if (ctrl instanceof Joystick) {
                     Joystick js = (Joystick) ctrl;
@@ -67,23 +63,29 @@ public enum SendTag {
 
     JOYSTICK_DESC(0x02, Protocol.TCP, Remote.ROBO_RIO, () -> {
         PacketBuilder builder = new PacketBuilder();
-        List<HIDDevice> ctrl = USBInterface.getControlDevices();
-        for (int i = 0; i < ctrl.size() && i < HIDDevice.MAX_JS_NUM; i++) {
-            HIDDevice cDev = ctrl.get(i);
-            builder.addInt(cDev.getIndex())
-                    .addInt(cDev instanceof XboxController ? 1 : 0) //isXbox
-                    .addInt((cDev instanceof XboxController ? JoystickType.XINPUT_GAMEPAD : JoystickType.HID_JOYSTICK).numAsInt());
-            //TODO make sure this controller name-getting works VVV
-            String name = cDev.getName();
-            builder.addInt(name.length())
-                    .addBytes(name.getBytes())
-                    .addInt(cDev.numAxes()); //numAxes
-            HIDDevice.Axis[] axes = cDev instanceof XboxController ? XboxController.Axis.values() : Joystick.Axis.values();
-            for (HIDDevice.Axis axis : axes) {
-                builder.addInt(axis.getInt());
+        USBInterface.findControllers();
+        USBInterface.updateValues();
+        Map<Integer, HIDDevice> deviceMap = USBInterface.getControlDevices();
+        for (int i = 0; i < HIDDevice.MAX_JS_NUM; i++) {
+            HIDDevice ctrl = deviceMap.get(i);
+            if (ctrl != null && !ctrl.isDisabled()) {
+                builder.addInt(ctrl.getIndex())
+                        .addInt(ctrl instanceof XboxController ? 1 : 0) //isXbox
+                        .addInt((ctrl instanceof XboxController ? JoystickType.XINPUT_GAMEPAD : JoystickType.HID_JOYSTICK).numAsInt());
+                //TODO make sure this controller name-getting works VVV
+                String name = ctrl.getName();
+                builder.addInt(name.length())
+                        .addBytes(name.getBytes())
+                        .addInt(ctrl.numAxes()); //numAxes
+                HIDDevice.Axis[] axes = ctrl instanceof XboxController ? XboxController.Axis.values() : Joystick.Axis.values();
+                for (HIDDevice.Axis axis : axes) {
+                    builder.addInt(axis.getInt());
+                }
+                builder.addInt(ctrl.numButtons())
+                        .addInt(0); //povCount
+            } else {
+                builder.addInt(i).pad(0, 6);
             }
-            builder.addInt(cDev.numButtons())
-                    .addInt(0); //povCount
         }
         return builder.build();
     }),

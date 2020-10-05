@@ -31,6 +31,9 @@ public class JoystickFrame extends PopupBase {
         super.config();
         super.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
+        EmbeddedJDEC.DISABLE_BTN.setVerticalTextPosition(SwingConstants.TOP);
+        EmbeddedJDEC.DISABLE_BTN.setHorizontalTextPosition(SwingConstants.CENTER);
+
         EmbeddedJDEC.LIST.setVisibleRowCount(-1);
         EmbeddedJDEC.LIST.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         EmbeddedJDEC.LIST.setLayoutOrientation(JList.VERTICAL);
@@ -39,6 +42,7 @@ public class JoystickFrame extends PopupBase {
         EmbeddedJDEC.LIST_SCR.setPreferredSize(new Dimension(200, 100));
         refreshControllerDisplay();
 
+        EmbeddedJDEC.DISABLE_BTN.setEnabled(false);
         EmbeddedJDEC.INDEX_SET.setEnabled(false);
         EmbeddedJDEC.INDEX_SET.setColumns(4);
 
@@ -47,6 +51,8 @@ public class JoystickFrame extends PopupBase {
             if (device != null) {
                 EmbeddedJDEC.INDEX_SET.setEnabled(true);
                 EmbeddedJDEC.INDEX_SET.setText(String.valueOf(device.getIndex()));
+
+                EmbeddedJDEC.DISABLE_BTN.setEnabled(true);
 
                 EmbeddedJDEC.BUTTONS.clear();
                 EmbeddedJDEC.BUTTON_GRID.removeAll();
@@ -69,6 +75,8 @@ public class JoystickFrame extends PopupBase {
                 EmbeddedJDEC.INDEX_SET.setText("");
             }
         });
+        EmbeddedJDEC.DISABLE_BTN.addActionListener(e -> EmbeddedJDEC.LIST.getSelectedValue()
+                .setDisabled(EmbeddedJDEC.DISABLE_BTN.isSelected()));
         EmbeddedJDEC.RELOAD_BTN.addActionListener(e -> refreshControllerDisplay());
         EmbeddedJDEC.CLOSE_BTN.addActionListener(e -> this.dispose());
 
@@ -94,6 +102,8 @@ public class JoystickFrame extends PopupBase {
         base.clone().setPos(6, 0, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.VAL_RX);
         base.clone().setPos(6, 1, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.VAL_RY);
 
+        base.clone().setPos(5, 2, 2, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.DISABLE_BTN);
+
         base.clone().setPos(0, 3, 7, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.BUTTON_GRID);
 
         base.clone().setPos(0, 4, 7, 1).build(EmbeddedJDEC.CLOSE_BTN);
@@ -109,7 +119,7 @@ public class JoystickFrame extends PopupBase {
     private void refreshControllerDisplay() {
         EmbeddedJDEC.LIST_MODEL.clear();
         USBInterface.findControllers();
-        for (HIDDevice hid : USBInterface.getControlDevices()) {
+        for (HIDDevice hid : USBInterface.getControlDevices().values()) {
             EmbeddedJDEC.LIST_MODEL.add(EmbeddedJDEC.LIST_MODEL.size(), hid);
         }
     }
@@ -139,6 +149,8 @@ public class JoystickFrame extends PopupBase {
 
         JPanel BUTTON_GRID = new JPanel();
         List<JCheckBox> BUTTONS = new ArrayList<>();
+
+        JCheckBox DISABLE_BTN = new JCheckBox("Disable");
     }
 
     public static class ValUpdater extends Clock {
@@ -155,7 +167,7 @@ public class JoystickFrame extends PopupBase {
                     int cIndex = current.getIndex();
                     int nIndex = Integer.parseInt(EmbeddedJDEC.INDEX_SET.getText());
                     if (cIndex != nIndex) {
-                        for (HIDDevice dev : USBInterface.getControlDevices()) {
+                        for (HIDDevice dev : USBInterface.getControlDevices().values()) {
                             if (dev.getIndex() == nIndex) {
                                 MessageBox.show("Duplicate index \"" + nIndex + "\" for controller \"" + dev.toString()
                                         + "\"\nSetting controller \"" + dev.toString() + "\" on index \"" + dev.getIndex()

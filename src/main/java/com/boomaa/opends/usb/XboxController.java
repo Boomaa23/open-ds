@@ -3,7 +3,6 @@ package com.boomaa.opends.usb;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWGamepadState;
 
-import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
 public class XboxController extends HIDDevice {
@@ -56,17 +55,21 @@ public class XboxController extends HIDDevice {
 
     @Override
     public void update() {
-        GLFWGamepadState state = GLFWGamepadState.create();
-        GLFW.glfwGetGamepadState(hwIdx, state);
-        updateButtons(state.buttons());
-
-        FloatBuffer axes = state.axes();
-        setX(axes.get(GLFW.GLFW_GAMEPAD_AXIS_LEFT_X), true);
-        setX(axes.get(GLFW.GLFW_GAMEPAD_AXIS_RIGHT_X), false);
-        setY(axes.get(GLFW.GLFW_GAMEPAD_AXIS_LEFT_Y), true);
-        setY(axes.get(GLFW.GLFW_GAMEPAD_AXIS_RIGHT_Y), false);
-        setTrigger(axes.get(GLFW.GLFW_GAMEPAD_AXIS_LEFT_TRIGGER), true);
-        setTrigger(axes.get(GLFW.GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER), false);
+        if (!queueRemove) {
+            GLFWGamepadState state = GLFWGamepadState.create();
+            if (GLFW.glfwGetGamepadState(hwIdx, state)) {
+                updateButtons(state.buttons());
+                FloatBuffer axes = state.axes();
+                setX(axes.get(GLFW.GLFW_GAMEPAD_AXIS_LEFT_X), true);
+                setX(axes.get(GLFW.GLFW_GAMEPAD_AXIS_RIGHT_X), false);
+                setY(axes.get(GLFW.GLFW_GAMEPAD_AXIS_LEFT_Y), true);
+                setY(axes.get(GLFW.GLFW_GAMEPAD_AXIS_RIGHT_Y), false);
+                setTrigger(axes.get(GLFW.GLFW_GAMEPAD_AXIS_LEFT_TRIGGER), true);
+                setTrigger(axes.get(GLFW.GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER), false);
+            } else {
+                remove();
+            }
+        }
     }
 
     @Override

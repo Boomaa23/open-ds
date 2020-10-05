@@ -2,6 +2,7 @@ package com.boomaa.opends.usb;
 
 import org.lwjgl.glfw.GLFW;
 
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
 public class Joystick extends HIDDevice {
@@ -39,11 +40,23 @@ public class Joystick extends HIDDevice {
 
     @Override
     public void update() {
-        updateButtons(GLFW.glfwGetJoystickButtons(hwIdx));
-        FloatBuffer axes = GLFW.glfwGetJoystickAxes(hwIdx);
-        setX(axes.get(0));
-        setY(axes.get(1));
-        setZ(axes.get(2));
+        if (!queueRemove) {
+            ByteBuffer btns = GLFW.glfwGetJoystickButtons(hwIdx);
+            if (btns != null) {
+                updateButtons(btns);
+            } else {
+                remove();
+            }
+
+            FloatBuffer axes = GLFW.glfwGetJoystickAxes(hwIdx);
+            if (axes != null) {
+                setX(axes.get(0));
+                setY(axes.get(1));
+                setZ(axes.get(2));
+            } else {
+                remove();
+            }
+        }
     }
 
     @Override

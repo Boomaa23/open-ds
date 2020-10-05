@@ -11,6 +11,8 @@ public abstract class HIDDevice {
     protected int hwIdx;
     protected int swIdx;
     protected final String name;
+    protected boolean disabled;
+    protected boolean queueRemove;
 
     public HIDDevice(int index, int numButtons, String name) {
         this.buttons = new boolean[numButtons];
@@ -59,6 +61,22 @@ public abstract class HIDDevice {
 
     public String getName() {
         return name;
+    }
+
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
+    }
+
+    public boolean isDisabled() {
+        return disabled;
+    }
+
+    public void remove() {
+        this.queueRemove = true;
+    }
+
+    public boolean needsRemove() {
+        return queueRemove;
     }
 
     @Override
