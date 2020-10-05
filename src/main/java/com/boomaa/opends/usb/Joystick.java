@@ -1,14 +1,16 @@
 package com.boomaa.opends.usb;
 
-import net.java.games.input.Controller;
+import org.lwjgl.glfw.GLFW;
+
+import java.nio.FloatBuffer;
 
 public class Joystick extends HIDDevice {
     protected double x = 0.0;
     protected double y = 0.0;
     protected double z = 0.0;
 
-    public Joystick(Controller controller, int index) {
-        super(controller, index);
+    public Joystick(int index) {
+        super(index, GLFW.glfwGetJoystickButtons(index).limit(), GLFW.glfwGetJoystickName(index));
     }
 
     public double getX() {
@@ -33,6 +35,15 @@ public class Joystick extends HIDDevice {
 
     public void setZ(double z) {
         this.z = z;
+    }
+
+    @Override
+    public void update() {
+        updateButtons(GLFW.glfwGetJoystickButtons(hwIdx));
+        FloatBuffer axes = GLFW.glfwGetJoystickAxes(hwIdx);
+        setX(axes.get(0));
+        setY(axes.get(1));
+        setZ(axes.get(2));
     }
 
     @Override

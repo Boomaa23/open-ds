@@ -13,7 +13,6 @@ import com.boomaa.opends.usb.JoystickType;
 import com.boomaa.opends.usb.USBInterface;
 import com.boomaa.opends.usb.XboxController;
 import com.boomaa.opends.util.NumberUtils;
-import com.boomaa.opends.util.battery.BatteryInfo;
 
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
@@ -26,7 +25,7 @@ public enum SendTag {
     COUNTDOWN(0x07, Protocol.UDP, Remote.ROBO_RIO, NullSendTag.get()),
     JOYSTICK(0x0C, Protocol.UDP, Remote.ROBO_RIO, () -> {
         PacketBuilder builder = new PacketBuilder();
-        USBInterface.findControllers(true);
+        USBInterface.findControllers();
         USBInterface.updateValues();
         List<HIDDevice> devices = USBInterface.getControlDevices();
         Map<Integer, HIDDevice> deviceMap = new HashMap<>();
@@ -75,7 +74,7 @@ public enum SendTag {
                     .addInt(cDev instanceof XboxController ? 1 : 0) //isXbox
                     .addInt((cDev instanceof XboxController ? JoystickType.XINPUT_GAMEPAD : JoystickType.HID_JOYSTICK).numAsInt());
             //TODO make sure this controller name-getting works VVV
-            String name = cDev.getController().getName();
+            String name = cDev.getName();
             builder.addInt(name.length())
                     .addBytes(name.getBytes())
                     .addInt(cDev.numAxes()); //numAxes
@@ -97,7 +96,7 @@ public enum SendTag {
     FIELD_RADIO_METRICS(0x00, Protocol.UDP, Remote.FMS, NullSendTag.get()),
     COMMS_METRICS(0x01, Protocol.UDP, Remote.FMS, NullSendTag.get()),
     LAPTOP_METRICS(0x02, Protocol.UDP, Remote.FMS, () -> {
-        PacketBuilder builder = new PacketBuilder().addInt(BatteryInfo.getPercent());
+        PacketBuilder builder = new PacketBuilder().addInt(0x00); //TODO battery percent (not JNI)
         double load = -1;
         int iterations = 0;
         while (load == -1 && ++iterations < 2000) {

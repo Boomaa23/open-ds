@@ -52,13 +52,17 @@ public class JoystickFrame extends PopupBase {
                 EmbeddedJDEC.BUTTON_GRID.removeAll();
                 GBCPanelBuilder gbcButton = new GBCPanelBuilder(EmbeddedJDEC.BUTTON_GRID);
                 boolean[] buttons = device.getButtons();
+                int row = 0;
                 for (int i = 0; i < buttons.length; i++) {
                     JCheckBox cb = new JCheckBox();
                     cb.setEnabled(false);
                     cb.setSelected(buttons[i]);
                     EmbeddedJDEC.BUTTONS.add(i, cb);
-                    gbcButton.clone().setX(i % 12).setY(i / 12).build(new JLabel(String.valueOf(i + 1)));
-                    gbcButton.clone().setX(i % 12).setY((i / 12) + 1).build(cb);
+                    if (i != 0 && i % 12 == 0) {
+                        row += 2;
+                    }
+                    gbcButton.clone().setX(i % 12).setY(row).build(new JLabel(String.valueOf(i + 1)));
+                    gbcButton.clone().setX(i % 12).setY(row + 1).build(cb);
                 }
             } else {
                 EmbeddedJDEC.INDEX_SET.setEnabled(false);
@@ -104,7 +108,7 @@ public class JoystickFrame extends PopupBase {
 
     private void refreshControllerDisplay() {
         EmbeddedJDEC.LIST_MODEL.clear();
-        USBInterface.findControllers(true);
+        USBInterface.findControllers();
         for (HIDDevice hid : USBInterface.getControlDevices()) {
             EmbeddedJDEC.LIST_MODEL.add(EmbeddedJDEC.LIST_MODEL.size(), hid);
         }

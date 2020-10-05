@@ -13,7 +13,7 @@ All the features of the official Driver Station are implemented in OpenDS,
 meaning teams can use it in the place of the official Driver Station 
 when testing robot features away from the competition.
 
-OpenDS is extremely lightweight (about 1MB) and does not require an 
+OpenDS is extremely lightweight (about 2MB) and does not require an 
 installation of any kind, unlike the official Driver Station which 
 has a lengthy installation process and heavy install footprint.
 

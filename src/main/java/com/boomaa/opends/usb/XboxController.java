@@ -1,6 +1,10 @@
 package com.boomaa.opends.usb;
 
-import net.java.games.input.Controller;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWGamepadState;
+
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 
 public class XboxController extends HIDDevice {
     protected double leftX = 0.0;
@@ -10,8 +14,8 @@ public class XboxController extends HIDDevice {
     protected double leftTrigger = 0.0;
     protected double rightTrigger = 0.0;
 
-    public XboxController(Controller controller, int index) {
-        super(controller, index);
+    public XboxController(int index) {
+        super(index, 15, GLFW.glfwGetGamepadName(index));
     }
 
     public double getX(boolean isLeft) {
@@ -48,6 +52,21 @@ public class XboxController extends HIDDevice {
         } else {
             this.rightTrigger = trigger;
         }
+    }
+
+    @Override
+    public void update() {
+        GLFWGamepadState state = GLFWGamepadState.create();
+        GLFW.glfwGetGamepadState(hwIdx, state);
+        updateButtons(state.buttons());
+
+        FloatBuffer axes = state.axes();
+        setX(axes.get(GLFW.GLFW_GAMEPAD_AXIS_LEFT_X), true);
+        setX(axes.get(GLFW.GLFW_GAMEPAD_AXIS_RIGHT_X), false);
+        setY(axes.get(GLFW.GLFW_GAMEPAD_AXIS_LEFT_Y), true);
+        setY(axes.get(GLFW.GLFW_GAMEPAD_AXIS_RIGHT_Y), false);
+        setTrigger(axes.get(GLFW.GLFW_GAMEPAD_AXIS_LEFT_TRIGGER), true);
+        setTrigger(axes.get(GLFW.GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER), false);
     }
 
     @Override
