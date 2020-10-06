@@ -10,6 +10,7 @@ import com.boomaa.opends.usb.USBInterface;
 import com.boomaa.opends.usb.XboxController;
 import com.boomaa.opends.util.Clock;
 import com.boomaa.opends.util.NumberUtils;
+import com.boomaa.opends.util.OperatingSystem;
 
 import javax.swing.*;
 import java.awt.Dimension;
@@ -20,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JoystickFrame extends PopupBase {
-    private ValUpdater valUpdater;
+    private ValueUpdater valueUpdater;
 
     public JoystickFrame() {
         super("Joysticks", new Dimension(450, 265));
@@ -78,7 +79,15 @@ public class JoystickFrame extends PopupBase {
         EmbeddedJDEC.DISABLE_BTN.addActionListener(e -> EmbeddedJDEC.LIST.getSelectedValue()
                 .setDisabled(EmbeddedJDEC.DISABLE_BTN.isSelected()));
         EmbeddedJDEC.RELOAD_BTN.addActionListener(e -> refreshControllerDisplay());
-        EmbeddedJDEC.CLOSE_BTN.addActionListener(e -> this.dispose());
+        EmbeddedJDEC.CLOSE_BTN.addActionListener(e -> {
+            if (OperatingSystem.isWindows()) {
+                valueUpdater.interrupt();
+                this.dispose();
+            } else {
+                this.setVisible(false);
+                PopupBase.removeAlive(JoystickFrame.class);
+            }
+        });
 
         content.setLayout(new GridBagLayout());
         GBCPanelBuilder base = new GBCPanelBuilder(content).setFill(GridBagConstraints.BOTH).setAnchor(GridBagConstraints.CENTER).setInsets(new Insets(5, 5, 5, 5));
@@ -110,10 +119,10 @@ public class JoystickFrame extends PopupBase {
 
         EmbeddedJDEC.BUTTON_GRID.setLayout(new GridBagLayout());
 
-        if (valUpdater == null || !valUpdater.isAlive()) {
-            valUpdater = new ValUpdater();
+        if (valueUpdater == null || !valueUpdater.isAlive()) {
+            valueUpdater = new ValueUpdater();
         }
-        valUpdater.start();
+        valueUpdater.start();
     }
 
     private void refreshControllerDisplay() {
@@ -126,8 +135,8 @@ public class JoystickFrame extends PopupBase {
 
     @Override
     public void dispose() {
-        if (valUpdater != null) {
-            valUpdater.interrupt();
+        if (valueUpdater != null) {
+            valueUpdater.interrupt();
         }
         super.dispose();
     }
@@ -153,8 +162,8 @@ public class JoystickFrame extends PopupBase {
         JCheckBox DISABLE_BTN = new JCheckBox("Disable");
     }
 
-    public static class ValUpdater extends Clock {
-        public ValUpdater() {
+    public static class ValueUpdater extends Clock {
+        public ValueUpdater() {
             super(100);
         }
 

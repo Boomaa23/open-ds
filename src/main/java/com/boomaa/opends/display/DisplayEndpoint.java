@@ -14,6 +14,7 @@ import com.boomaa.opends.networking.TCPInterface;
 import com.boomaa.opends.networking.UDPInterface;
 import com.boomaa.opends.networking.UDPTransform;
 import com.boomaa.opends.networktables.NTConnection;
+import com.boomaa.opends.usb.USBInterface;
 import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.Clock;
 import com.boomaa.opends.util.DSLog;
@@ -130,6 +131,7 @@ public class DisplayEndpoint implements MainJDEC {
     };
 
     public static void main(String[] args) {
+        USBInterface.init();
         MainFrame.display();
         doProtocolUpdate();
         PROTOCOL_YEAR.addActionListener((e) -> doProtocolUpdate());

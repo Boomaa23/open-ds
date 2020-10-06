@@ -8,7 +8,7 @@ import java.util.Map;
 public class USBInterface {
     private static Map<Integer, HIDDevice> controlDevices = new HashMap<>();
 
-    static {
+    public static void init() {
         GLFW.glfwInit();
         findControllers();
         updateValues();
