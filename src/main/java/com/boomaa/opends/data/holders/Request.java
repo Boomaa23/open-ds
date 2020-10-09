@@ -1,22 +1,19 @@
 package com.boomaa.opends.data.holders;
 
-public enum Request {
-    REBOOT_ROBO_RIO(0x08, 4),
-    RESTART_CODE(0x04, 5);
+import com.boomaa.opends.display.MainJDEC;
 
-    private final byte flag;
-    private final int bitmaskPos;
+public enum Request implements DataBase {
+    REBOOT_ROBO_RIO(0x08, -1, -1, 0x80),
+    RESTART_CODE(0x04, -1, -1, -1);
 
-    Request(int flag, int bitmaskPos) {
-        this.flag = (byte) flag;
-        this.bitmaskPos = bitmaskPos;
+    private final int[] flags;
+
+    Request(int... flags) {
+        this.flags = flags;
     }
 
-    public byte getFlag() {
-        return flag;
-    }
-
-    public int getBitmaskPos() {
-        return bitmaskPos;
+    @Override
+    public int getFlag() {
+        return flags[MainJDEC.getProtocolIndex()];
     }
 }

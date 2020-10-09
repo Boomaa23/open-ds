@@ -44,6 +44,15 @@ public class PacketBuilder {
         return this;
     }
 
+    public PacketBuilder setInt(int index, int value) {
+        if (index < packet.size()) {
+            packet.set(index, (byte) value);
+        } else {
+            packet.add(index, (byte) value);
+        }
+        return this;
+    }
+
     public int size() {
         return packet.size();
     }

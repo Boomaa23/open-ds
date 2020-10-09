@@ -45,9 +45,21 @@ public interface MainJDEC {
      JLabel BAT_VOLTAGE = new JLabel("0.00 V");
      HideableLabel ROBOT_CONNECTION_STATUS = new HideableLabel(false, "Connected");
      HideableLabel FMS_CONNECTION_STATUS = new HideableLabel(false, "Connected");
-     HideableLabel BROWNOUT_STATUS = new HideableLabel(false, "Voltage");
+     HideableLabel ESTOP_STATUS = new HideableLabel(false, "ESTOP");
      HideableLabel MATCH_TIME = new HideableLabel(false, "0");
      MultiValueLabel ROBOT_CODE_STATUS = new MultiValueLabel(false, "Running", "Initializing");
 
      JLabel CHALLENGE_RESPONSE = new JLabel("");
+
+     static int getProtocolYear() {
+          try {
+               return Integer.parseInt(String.valueOf(PROTOCOL_YEAR.getSelectedItem()));
+          } catch (NumberFormatException ignored) {
+          }
+          return DisplayEndpoint.VALID_PROTOCOL_YEARS[0];
+     }
+
+     static int getProtocolIndex() {
+          return PROTOCOL_YEAR.getSelectedIndex();
+     }
 }

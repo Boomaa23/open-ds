@@ -7,6 +7,7 @@ import java.util.Map;
 
 public class USBInterface {
     private static Map<Integer, HIDDevice> controlDevices = new HashMap<>();
+    private static int sendIterator = 0;
 
     public static void init() {
         GLFW.glfwInit();
@@ -36,6 +37,13 @@ public class USBInterface {
                 }
             }
         }
+    }
+
+    public static int iterateSend() {
+        int out = sendIterator;
+        sendIterator++;
+        sendIterator %= HIDDevice.MAX_JS_NUM;
+        return out;
     }
 
     public static Map<Integer, HIDDevice> getControlDevices() {
