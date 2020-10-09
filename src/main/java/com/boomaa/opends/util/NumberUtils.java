@@ -72,23 +72,8 @@ public class NumberUtils {
         return result;
     }
 
-    public static boolean hasMaskMatch(byte data, byte flag, int... bitmaskPos) {
-        char[] bin = padByte(data).toCharArray();
-        StringBuilder maskedStr = new StringBuilder();
-        boolean putMask = false;
-        for (int i = 0; i < bin.length; i++) {
-            for (int mask : bitmaskPos) {
-                if (!putMask && i == mask) {
-                    maskedStr.append(bin[i]);
-                    putMask = true;
-                }
-            }
-            if (!putMask) {
-                maskedStr.append('0');
-            }
-            putMask = false;
-        }
-        return maskedStr.toString().equals(padByte(flag));
+    public static boolean hasMaskMatch(byte b1, int i2) {
+        return (b1 & i2) == i2;
     }
 
     public static boolean hasPlacedBit(byte b, int bitmaskPos) {

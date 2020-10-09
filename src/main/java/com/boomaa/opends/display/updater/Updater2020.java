@@ -18,7 +18,7 @@ public class Updater2020 extends ElementUpdater {
     @Override
     protected void doUpdateFromRioUdp(PacketParser data, TVMList tagMap) {
         Parser2020.RioToDsUdp rioUdp = (Parser2020.RioToDsUdp) data;
-        BROWNOUT_STATUS.setDisplay(rioUdp.getStatus().contains(Status.ESTOP));
+        ESTOP_STATUS.setDisplay(rioUdp.getStatus().contains(Status.ESTOP));
         if (rioUdp.getTrace().contains(Trace.ROBOTCODE)) {
             ROBOT_CODE_STATUS.changeToDisplay(0, true);
         } else if (rioUdp.getStatus().contains(Status.CODE_INIT)) {
@@ -28,7 +28,6 @@ public class Updater2020 extends ElementUpdater {
         }
         boolean robotConn = rioUdp.getTrace().contains(Trace.ISROBORIO);
         ROBOT_CONNECTION_STATUS.setDisplay(robotConn);
-        IS_ENABLED.setEnabled(robotConn);
         BAT_VOLTAGE.setText(NumberUtils.padDouble(NumberUtils.roundTo(rioUdp.getBatteryVoltage(), 2), 2) + " V");
 
         if (tagMap.size() > 0) {
@@ -144,7 +143,7 @@ public class Updater2020 extends ElementUpdater {
         BAT_VOLTAGE.setText("0.00 V");
         ROBOT_CONNECTION_STATUS.forceHide();
         ROBOT_CODE_STATUS.forceHide();
-        BROWNOUT_STATUS.forceHide();
+        ESTOP_STATUS.forceHide();
     }
 
     @Override

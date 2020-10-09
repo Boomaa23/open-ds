@@ -53,7 +53,7 @@ public class DSLog extends Clock {
 
     @Override
     public void onCycle() {
-        int trace = (MainJDEC.BROWNOUT_STATUS.isDisplayed() ? Trace.BROWNOUT.flag : 0)
+        int trace = (MainJDEC.ESTOP_STATUS.isDisplayed() ? Trace.BROWNOUT.flag : 0)
                 + (MainJDEC.ROBOT_DRIVE_MODE.getSelectedItem() == RobotMode.TELEOPERATED ? Trace.DS_TELEOP.flag + Trace.ROBOT_TELEOP.flag : 0)
                 + (MainJDEC.ROBOT_DRIVE_MODE.getSelectedItem() == RobotMode.AUTONOMOUS ? Trace.ROBOT_AUTO.flag : 0)
                 + (!MainJDEC.IS_ENABLED.isSelected() ? Trace.DS_DISABLED.flag + Trace.ROBOT_DISABLED.flag : 0);

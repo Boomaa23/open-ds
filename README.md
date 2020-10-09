@@ -100,6 +100,11 @@ See [LICENSE.txt](https://github.com/Boomaa23/open-ds/LICENSE.txt) for more deta
 If you find a bug or issue with OpenDS, please report it on the "Issues" section of the GitHub [here](https://github.com/Boomaa23/open-ds/issues).
 
 For protocol changes in future years, OpenDS is easily modifiable. Ports, IP addresses, display layouts, and packet creation/parsing are all re-formattable.
+
+## Acknowledgements
+A big thank you to Jessica Creighton for the FRCture documentation and to Alex Spataru for his work on LibDS (now LibDS-Legacy).
+
+
 <!-- There are four main classes that need to be implemented for a new protocol year:
 * `PacketParser`
     * Package: `com.boomaa.opends.data.receive.parser`

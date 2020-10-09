@@ -1,43 +1,50 @@
 package com.boomaa.opends.data.send.creator;
 
-import com.boomaa.opends.data.UsageReporting;
 import com.boomaa.opends.data.holders.AllianceStation;
 import com.boomaa.opends.data.holders.Control;
-import com.boomaa.opends.data.holders.Protocol;
 import com.boomaa.opends.data.holders.Remote;
 import com.boomaa.opends.data.holders.Request;
 import com.boomaa.opends.data.send.PacketBuilder;
 import com.boomaa.opends.data.send.SendTag;
 import com.boomaa.opends.display.DisplayEndpoint;
+import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.display.RobotMode;
 import com.boomaa.opends.usb.Joystick;
 import com.boomaa.opends.usb.USBInterface;
 import com.boomaa.opends.util.NumberUtils;
-import com.boomaa.opends.util.PacketCounters;
 
-public class Creator2020 extends PacketCreator {
+public class Creator2015 extends NoTCPCreator {
     @Override
     public byte[] dsToRioUdp() {
         PacketBuilder builder = getSequenced(Remote.ROBO_RIO);
         builder.addInt(0x01);
-        int control = (ESTOP_BTN.wasPressed() ? Control.ESTOP.getFlag() : 0)
-                + (DisplayEndpoint.NET_IF_INIT.isOrInit(Remote.FMS) ? Control.FMS_CONNECTED.getFlag() : 0)
-                + (IS_ENABLED.isSelected() ? Control.ENABLED.getFlag() : 0)
-                + ((RobotMode) ROBOT_DRIVE_MODE.getSelectedItem()).getControlFlag().getFlag();
+
+        int control = ((RobotMode) MainJDEC.ROBOT_DRIVE_MODE.getSelectedItem()).getControlFlag().getFlag();
+        if (MainJDEC.FMS_CONNECTION_STATUS.isDisplayed()) {
+            control |= Control.FMS_CONNECTED.getFlag();
+        }
+        if (MainJDEC.ESTOP_BTN.wasPressed()) {
+            control |= Control.ESTOP.getFlag();
+        }
+        if (MainJDEC.IS_ENABLED.isSelected()) {
+            control |= Control.ENABLED.getFlag();
+        }
         builder.addInt(control);
-        int request = 0x00;
-        if (RESTART_ROBO_RIO_BTN.wasPressed()) {
-            request += Request.REBOOT_ROBO_RIO.getFlag();
-        }
-        if (RESTART_CODE_BTN.wasPressed()) {
-            request += Request.RESTART_CODE.getFlag();
-        }
-        builder.addInt(request);
+
+        builder.addInt((MainJDEC.RESTART_ROBO_RIO_BTN.wasPressed() ? Request.REBOOT_ROBO_RIO.getFlag() : 0) +
+                (MainJDEC.RESTART_CODE_BTN.wasPressed() ? Request.RESTART_CODE.getFlag() : 0));
         builder.addInt(new AllianceStation(ALLIANCE_NUM.getSelectedIndex(), ALLIANCE_COLOR.getSelectedItem().equals("Blue")).getGlobalNum());
 
+        //TODO add proper timezone data request-passing
         if (SEQUENCE_COUNTER_RIO.getCounter() <= 10) {
-            builder.addBytes(SendTag.DATE.getBytes());
-            builder.addBytes(SendTag.TIMEZONE.getBytes());
+            byte[] tzIn = SendTag.TIMEZONE.getBytes();
+            byte[] tzOut = new byte[tzIn.length - 1];
+            tzOut[0] = tzIn[0];
+            tzOut[1] = tzIn[1];
+            System.arraycopy(tzIn, 3, tzOut, 0, tzIn.length - 3);
+            builder.addBytes(SendTag.DATE.getBytes())
+                    .addInt(tzIn.length)
+                    .addBytes(tzOut);
         }
         if (IS_ENABLED.isSelected()) {
             USBInterface.findControllers();
@@ -45,20 +52,6 @@ public class Creator2020 extends PacketCreator {
             for (int i = 0; i < Joystick.MAX_JS_NUM; i++) {
                 builder.addBytes(SendTag.JOYSTICK.getBytes());
             }
-        }
-
-        return builder.build();
-    }
-
-    @Override
-    public byte[] dsToRioTcp() {
-        PacketBuilder builder = new PacketBuilder();
-        builder.addBytes(SendTag.JOYSTICK_DESC.getBytes());
-        if (FMS_CONNECT.isSelected()) {
-            builder.addBytes(SendTag.MATCH_INFO.getBytes());
-        }
-        if (!GAME_DATA.getText().isEmpty()) {
-            builder.addBytes(SendTag.GAME_DATA.getBytes());
         }
         return builder.build();
     }
@@ -104,23 +97,5 @@ public class Creator2020 extends PacketCreator {
         }
         //TODO add FMS tags (not needed?)
         return builder.build();
-    }
-
-    @Override
-    public byte[] dsToFmsTcp() {
-        //TODO add fms content (versions not needed?)
-        PacketBuilder builder = new PacketBuilder();
-        if (PacketCounters.get(Remote.FMS, Protocol.TCP).getCounter() < 5) {
-            builder.addBytes(SendTag.TEAM_NUMBER.getBytes());
-        }
-        if (!CHALLENGE_RESPONSE.getText().isEmpty()) {
-            builder.addBytes(SendTag.CHALLENGE_RESPONSE.getBytes());
-            CHALLENGE_RESPONSE.setText("");
-        }
-        if (UsageReporting.RECEIVED_USAGE != null) {
-            builder.addBytes(SendTag.USAGE_REPORT.getBytes());
-            UsageReporting.RECEIVED_USAGE = null;
-        }
-        return builder.size() != 0 ? builder.build() : SendTag.DS_PING.getBytes();
     }
 }

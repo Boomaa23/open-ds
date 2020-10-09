@@ -6,11 +6,11 @@ public class ProtocolClass {
 
     public ProtocolClass(String baseClass) {
         this.baseClass = baseClass;
-        this.year = (Integer) MainJDEC.PROTOCOL_YEAR.getSelectedItem();
+        this.year = MainJDEC.getProtocolYear();
     }
 
     public ProtocolClass update() {
-        this.year = (Integer) MainJDEC.PROTOCOL_YEAR.getSelectedItem();
+        this.year = MainJDEC.getProtocolYear();
         return this;
     }
 

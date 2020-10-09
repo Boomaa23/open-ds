@@ -1,26 +1,23 @@
 package com.boomaa.opends.data.holders;
 
-public enum Trace {
-    ROBOTCODE(0x20, 2),
-    ISROBORIO(0x10, 3),
-    TESTMODE(0x08, 4),
-    AUTOMODE(0x04, 5),
-    TELEOPCODE(0x02, 6),
-    DISABLED(0x01, 7);
+import com.boomaa.opends.display.MainJDEC;
 
-    private final byte flag;
-    private final int bitmaskPos;
+public enum Trace implements DataBase {
+    ROBOTCODE(0x20),
+    ISROBORIO(0x10),
+    TESTMODE(0x08),
+    AUTOMODE(0x04),
+    TELEOPCODE(0x02),
+    DISABLED(0x01);
 
-    Trace(int flag, int bitmaskPos) {
-        this.flag = (byte) flag;
-        this.bitmaskPos = bitmaskPos;
+    private final int[] flags;
+
+    Trace(int... flags) {
+        this.flags = flags;
     }
 
-    public byte getFlag() {
-        return flag;
-    }
-
-    public int getBitmaskPos() {
-        return bitmaskPos;
+    @Override
+    public int getFlag() {
+        return flags[MainJDEC.getProtocolIndex()];
     }
 }
