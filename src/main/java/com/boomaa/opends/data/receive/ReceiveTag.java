@@ -128,9 +128,9 @@ public enum ReceiveTag {
             NullReceiveTag.getInstance()
     ),
     DISABLE_FAULTS(0x04, Protocol.TCP, Remote.ROBO_RIO, InLog.ALWAYS, 
-            (ReceiveTagAction<Integer>) (packet, size) -> new TagValueMap<Integer>()
-                .addTo("Comms", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 0, 2)))
-                .addTo("12V", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 2, 4))),
+            (ReceiveTagAction<Integer>) (packet, size) -> new TagValueMap<Integer>(),
+//                .addTo("Comms", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 0, 2)))
+//                .addTo("12V", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 2, 4))),
             NullReceiveTag.getInstance(),
             NullReceiveTag.getInstance(),
             NullReceiveTag.getInstance()

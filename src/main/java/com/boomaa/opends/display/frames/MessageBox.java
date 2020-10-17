@@ -1,10 +1,14 @@
 package com.boomaa.opends.display.frames;
 
+import com.boomaa.opends.util.OperatingSystem;
+
 import javax.swing.JOptionPane;
 
 public class MessageBox {
     public static void show(String message, Type type) {
-        JOptionPane.showMessageDialog(null, message, type.title, type.optionFlag);
+        if (OperatingSystem.isWindows()) {
+            JOptionPane.showMessageDialog(null, message, type.title, type.optionFlag);
+        }
     }
 
     public enum Type {

@@ -7,7 +7,8 @@ import java.util.Map;
 
 public class USBInterface {
     private static Map<Integer, HIDDevice> controlDevices = new HashMap<>();
-    private static int sendIterator = 0;
+    private static int sendDataIterator = 0;
+    private static int sendDescIterator = 0;
 
     public static void init() {
         GLFW.glfwInit();
@@ -39,11 +40,30 @@ public class USBInterface {
         }
     }
 
-    public static int iterateSend() {
-        int out = sendIterator;
-        sendIterator++;
-        sendIterator %= HIDDevice.MAX_JS_NUM;
+    public static synchronized void reindexControllers() {
+        Map<Integer, HIDDevice> deviceMapTemp = new HashMap<>(controlDevices);
+        controlDevices.clear();
+        for (HIDDevice device : deviceMapTemp.values()) {
+            controlDevices.put(device.getIndex(), device);
+        }
+    }
+
+    public static int iterateSend(boolean isData) {
+        int out;
+        if (isData) {
+            out = sendDataIterator;
+            sendDataIterator++;
+            sendDataIterator %= HIDDevice.MAX_JS_NUM;
+        } else {
+            out = sendDescIterator;
+            sendDescIterator++;
+            sendDescIterator %= HIDDevice.MAX_JS_NUM;
+        }
         return out;
+    }
+
+    public static int getDescIndex() {
+        return sendDescIterator;
     }
 
     public static Map<Integer, HIDDevice> getControlDevices() {

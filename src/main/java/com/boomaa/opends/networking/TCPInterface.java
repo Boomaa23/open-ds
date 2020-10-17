@@ -15,7 +15,9 @@ public class TCPInterface {
 
     public TCPInterface(String ip, int port) {
         try {
-            this.socket = new Socket(ip, port);
+            while (this.socket == null) {
+                this.socket = new Socket(ip, port);
+            }
             this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             socket.setSoTimeout(100);
         } catch (ConnectException e) {

@@ -97,11 +97,11 @@ public class Parser2020 {
         }
 
         public Date getDate() {
-            return Date.fromRecvBytes(ArrayUtils.sliceArr(packet, 10, 21));
+            return Date.fromRecvBytes(ArrayUtils.sliceArr(packet, 10, 20));
         }
 
         public int getRemainingTime() {
-            return NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 21, 23));
+            return NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 20, 22));
         }
 
         @Override
