@@ -1,26 +1,23 @@
 package com.boomaa.opends.data.holders;
 
-public enum Control {
-    ESTOP(0x80, 0),
-    FMS_CONNECTED(0x08, 4),
-    ENABLED(0x04, 5),
-    TELEOP_MODE(0x00, 6, 7),
-    TEST_MODE(0x01, 6, 7),
-    AUTO_MODE(0x02, 6, 7);
+import com.boomaa.opends.display.MainJDEC;
 
-    private final byte flag;
-    private final int[] bitmaskPos;
+public enum Control implements DataBase {
+    ESTOP(0x80, 0x80, 0x80, 0x00),
+    FMS_CONNECTED(0x08, 0x08, 0x08, 0x08),
+    ENABLED(0x04, 0x04, 0x04, 0x20),
+    TELEOP_MODE(0x00, 0x00, 0x00, 0x00),
+    TEST_MODE(0x01, 0x01, 0x01, 0x02),
+    AUTO_MODE(0x02, 0x02, 0x02, 0x10);
 
-    Control(int flag, int... bitmaskPos) {
-        this.flag = (byte) flag;
-        this.bitmaskPos = bitmaskPos;
+    private final int[] flags;
+
+    Control(int... flags) {
+        this.flags = flags;
     }
 
-    public byte getFlag() {
-        return flag;
-    }
-
-    public int[] getBitmaskPos() {
-        return bitmaskPos;
+    @Override
+    public int getFlag() {
+        return flags[MainJDEC.getProtocolIndex()];
     }
 }

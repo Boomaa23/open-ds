@@ -1,26 +1,32 @@
 package com.boomaa.opends.usb;
 
-import net.java.games.input.Component;
-import net.java.games.input.Controller;
+import org.lwjgl.glfw.GLFW;
 
+import java.nio.ByteBuffer;
 import java.util.Objects;
 
 public abstract class HIDDevice {
     public static final int MAX_JS_NUM = 6; //max 6 joysticks
-    protected final Controller controller;
-    protected final int numButtons;
     protected boolean[] buttons;
-    protected int index;
+    protected int hwIdx;
+    protected int swIdx;
+    protected final String name;
+    protected boolean disabled;
+    protected boolean queueRemove;
 
-    public HIDDevice(Controller controller, int index) {
-        this.controller = controller;
-        this.numButtons = countButtons(controller);
-        this.index = index;
+    public HIDDevice(int index, int numButtons, String name) {
         this.buttons = new boolean[numButtons];
+        this.hwIdx = index;
+        this.swIdx = index;
+        this.name = name;
     }
 
-    public Controller getController() {
-        return controller;
+    public abstract void update();
+
+    public void updateButtons(ByteBuffer btns) {
+        for (int i = 0; i < btns.limit(); i++) {
+            setButton(i, btns.get(i) == GLFW.GLFW_PRESS);
+        }
     }
 
     public void setButton(int index, boolean value) {
@@ -36,46 +42,60 @@ public abstract class HIDDevice {
     }
 
     public void setIndex(int index) {
-        this.index = index;
+        this.swIdx = index;
     }
 
     public int getIndex() {
-        return index;
+        return swIdx;
+    }
+
+    public int getHardwareIndex() {
+        return hwIdx;
     }
 
     public int numButtons() {
-        return numButtons;
+        return buttons.length;
     }
 
     public abstract int numAxes();
+
+    public String getName() {
+        return name;
+    }
+
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
+    }
+
+    public boolean isDisabled() {
+        return disabled;
+    }
+
+    public void remove() {
+        this.queueRemove = true;
+    }
+
+    public boolean needsRemove() {
+        return queueRemove;
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         HIDDevice hidDevice = (HIDDevice) o;
-        return controller.getPortNumber() == hidDevice.controller.getPortNumber() &&
-                controller.getPortType() == hidDevice.controller.getPortType();
+        return hwIdx == hidDevice.hwIdx &&
+                name.equals(hidDevice.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(controller.getPortNumber(), controller.getPortType());
+        return Objects.hash(hwIdx, name);
     }
 
     @Override
     public String toString() {
-        return controller.getName();
-    }
-
-    private static int countButtons(Controller controller) {
-        int btnCtr = 0;
-        for (Component comp : controller.getComponents()) {
-            if (comp.getIdentifier() instanceof Component.Identifier.Button) {
-                btnCtr++;
-            }
-        }
-        return btnCtr;
+        return name;
     }
 
     public interface Axis {

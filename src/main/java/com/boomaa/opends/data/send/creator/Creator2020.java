@@ -10,6 +10,8 @@ import com.boomaa.opends.data.send.PacketBuilder;
 import com.boomaa.opends.data.send.SendTag;
 import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.display.RobotMode;
+import com.boomaa.opends.usb.Joystick;
+import com.boomaa.opends.usb.USBInterface;
 import com.boomaa.opends.util.NumberUtils;
 import com.boomaa.opends.util.PacketCounters;
 
@@ -38,7 +40,10 @@ public class Creator2020 extends PacketCreator {
             builder.addBytes(SendTag.TIMEZONE.getBytes());
         }
         if (IS_ENABLED.isSelected()) {
-            builder.addBytes(SendTag.JOYSTICK.getBytes());
+            USBInterface.updateValues();
+            for (int i = 0; i < Joystick.MAX_JS_NUM; i++) {
+                builder.addBytes(SendTag.JOYSTICK.getBytes());
+            }
         }
 
         return builder.build();
@@ -47,19 +52,22 @@ public class Creator2020 extends PacketCreator {
     @Override
     public byte[] dsToRioTcp() {
         PacketBuilder builder = new PacketBuilder();
-        builder.addBytes(SendTag.JOYSTICK_DESC.getBytes());
+        for (int i = 0; i < Joystick.MAX_JS_NUM; i++) {
+            builder.addBytes(SendTag.JOYSTICK_DESC.getBytes());
+        }
         if (FMS_CONNECT.isSelected()) {
             builder.addBytes(SendTag.MATCH_INFO.getBytes());
         }
         if (!GAME_DATA.getText().isEmpty()) {
             builder.addBytes(SendTag.GAME_DATA.getBytes());
         }
+        builder.addBytes(SendTag.DS_PING.getBytes());
         return builder.build();
     }
 
     @Override
     public byte[] dsToFmsUdp() {
-        PacketBuilder builder = getSequenced(Remote.ROBO_RIO);
+        PacketBuilder builder = getSequenced(Remote.FMS);
         builder.addInt(0x00);
         int status = 0;
         if (ESTOP_BTN.wasPressed()) {
@@ -88,14 +96,12 @@ public class Creator2020 extends PacketCreator {
         if (teamStr != null && !teamStr.isEmpty()) {
             builder.addBytes(NumberUtils.intToBytePair(Integer.parseInt(teamStr)));
         }
-        if (DisplayEndpoint.NET_IF_INIT.isOrInit(Remote.ROBO_RIO)) {
-            double bat = Double.parseDouble(BAT_VOLTAGE.getText().replaceAll(" V", ""));
-            //TODO test if this battery re-encoder works
-            int b1 = (int) bat;
-            int b2 = (int) ((bat - b1) * 256);
-            builder.addInt(b1);
-            builder.addInt(b2);
-        }
+        double bat = Double.parseDouble(BAT_VOLTAGE.getText().replaceAll(" V", ""));
+        //TODO test if this battery re-encoder works
+        int b1 = (int) bat;
+        int b2 = (int) ((bat - b1) * 256);
+        builder.addInt(b1);
+        builder.addInt(b2);
         //TODO add FMS tags (not needed?)
         return builder.build();
     }

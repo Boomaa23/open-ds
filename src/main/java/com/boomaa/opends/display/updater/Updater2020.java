@@ -11,14 +11,13 @@ import com.boomaa.opends.data.receive.TagValueMap;
 import com.boomaa.opends.data.receive.parser.PacketParser;
 import com.boomaa.opends.data.receive.parser.Parser2020;
 import com.boomaa.opends.data.send.creator.PacketCreator;
-import com.boomaa.opends.display.Logger;
 import com.boomaa.opends.util.NumberUtils;
 
 public class Updater2020 extends ElementUpdater {
     @Override
     protected void doUpdateFromRioUdp(PacketParser data, TVMList tagMap) {
         Parser2020.RioToDsUdp rioUdp = (Parser2020.RioToDsUdp) data;
-        BROWNOUT_STATUS.setDisplay(rioUdp.getStatus().contains(Status.ESTOP));
+        ESTOP_STATUS.setDisplay(rioUdp.getStatus().contains(Status.ESTOP));
         if (rioUdp.getTrace().contains(Trace.ROBOTCODE)) {
             ROBOT_CODE_STATUS.changeToDisplay(0, true);
         } else if (rioUdp.getStatus().contains(Status.CODE_INIT)) {
@@ -28,7 +27,6 @@ public class Updater2020 extends ElementUpdater {
         }
         boolean robotConn = rioUdp.getTrace().contains(Trace.ISROBORIO);
         ROBOT_CONNECTION_STATUS.setDisplay(robotConn);
-        IS_ENABLED.setEnabled(robotConn);
         BAT_VOLTAGE.setText(NumberUtils.padDouble(NumberUtils.roundTo(rioUdp.getBatteryVoltage(), 2), 2) + " V");
 
         if (tagMap.size() > 0) {
@@ -115,17 +113,15 @@ public class Updater2020 extends ElementUpdater {
     protected void doUpdateFromFmsUdp(PacketParser data, TVMList tagMap) {
         Parser2020.FmsToDsUdp fmsUdp = (Parser2020.FmsToDsUdp) data;
         AllianceStation station = fmsUdp.getAllianceStation();
-        if (station != null) {
-            ALLIANCE_COLOR.setEnabled(false);
+        if (!station.equals(new AllianceStation(ALLIANCE_NUM.getSelectedIndex() - 1,
+                ALLIANCE_COLOR.getSelectedItem().equals("Blue")))) {
+            ALLIANCE_COLOR.setEnabled(true);
             ALLIANCE_COLOR.setSelectedItem(station.isBlue() ? "Blue" : "Red");
-            ALLIANCE_NUM.setEnabled(false);
+            ALLIANCE_COLOR.setEnabled(false);
+            ALLIANCE_NUM.setEnabled(true);
             ALLIANCE_NUM.setSelectedItem(station.getSidedNum());
+            ALLIANCE_NUM.setEnabled(false);
         }
-        Logger.OUT.println(fmsUdp.getAllianceStation());
-        Logger.OUT.println(fmsUdp.getTournamentLevel());
-        Logger.OUT.println(fmsUdp.getMatchNumber());
-        Logger.OUT.println(fmsUdp.getPlayNumber());
-        MATCH_TIME.setText(fmsUdp.getRemainingTime());
     }
 
     @Override
@@ -144,7 +140,7 @@ public class Updater2020 extends ElementUpdater {
         BAT_VOLTAGE.setText("0.00 V");
         ROBOT_CONNECTION_STATUS.forceHide();
         ROBOT_CODE_STATUS.forceHide();
-        BROWNOUT_STATUS.forceHide();
+        ESTOP_STATUS.forceHide();
     }
 
     @Override

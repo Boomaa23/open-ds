@@ -26,7 +26,7 @@ public class AddressConstants {
 
     private static Object getProtoYearValue(String base) {
         try {
-            return AddressConstants.class.getDeclaredField(base + "_" + MainJDEC.PROTOCOL_YEAR.getSelectedItem()).get(null);
+            return AddressConstants.class.getDeclaredField(base + "_" + MainJDEC.getProtocolYear()).get(null);
         } catch (NoSuchFieldException e0) {
             try {
                 return AddressConstants.class.getDeclaredField(base + "_2020").get(null);

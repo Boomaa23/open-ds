@@ -44,6 +44,10 @@ public abstract class PopupBase extends JFrame {
         return alive.contains(clazz);
     }
 
+    public static void removeAlive(Class<?> clazz) {
+        alive.remove(clazz);
+    }
+
     @Override
     public void dispose() {
         alive.remove(this.getClass());

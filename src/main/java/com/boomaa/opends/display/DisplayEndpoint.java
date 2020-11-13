@@ -14,10 +14,12 @@ import com.boomaa.opends.networking.TCPInterface;
 import com.boomaa.opends.networking.UDPInterface;
 import com.boomaa.opends.networking.UDPTransform;
 import com.boomaa.opends.networktables.NTConnection;
+import com.boomaa.opends.usb.USBInterface;
 import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.Clock;
 import com.boomaa.opends.util.DSLog;
 import com.boomaa.opends.util.InitChecker;
+import com.boomaa.opends.util.PacketCounters;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -34,7 +36,7 @@ public class DisplayEndpoint implements MainJDEC {
     public static UDPInterface FMS_UDP_INTERFACE;
     public static TCPInterface FMS_TCP_INTERFACE;
     public static InitChecker NET_IF_INIT = new InitChecker();
-    public static Integer[] VALID_PROTOCOL_YEARS = { 2020 };
+    public static Integer[] VALID_PROTOCOL_YEARS = { 2020, 2016, 2015, 2014 };
 
     private static ElementUpdater updater;
     private static PacketCreator creator;
@@ -84,7 +86,7 @@ public class DisplayEndpoint implements MainJDEC {
     };
 
     //TODO see if FMS clock can be 500ms as per specification
-    private static final Clock fmsTcpClock = new Clock(20) {
+    private static final Clock fmsTcpClock = new Clock(500) {
         @Override
         public void onCycle() {
             if (updater != null && creator != null && MainJDEC.FMS_CONNECT.isSelected()) {
@@ -106,7 +108,7 @@ public class DisplayEndpoint implements MainJDEC {
         }
     };
 
-    private static final Clock fmsUdpClock = new Clock(20) {
+    private static final Clock fmsUdpClock = new Clock(500) {
         @Override
         public void onCycle() {
             if (updater != null && creator != null && MainJDEC.FMS_CONNECT.isSelected()) {
@@ -130,6 +132,7 @@ public class DisplayEndpoint implements MainJDEC {
     };
 
     public static void main(String[] args) {
+        USBInterface.init();
         MainFrame.display();
         doProtocolUpdate();
         PROTOCOL_YEAR.addActionListener((e) -> doProtocolUpdate());
@@ -142,8 +145,6 @@ public class DisplayEndpoint implements MainJDEC {
         // TODO remove after testing
         // checkForUpdates();
     }
-
-
 
     public static void doProtocolUpdate() {
         parserClass.update();

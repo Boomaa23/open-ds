@@ -4,14 +4,10 @@ import com.boomaa.opends.data.holders.*;
 import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.NumberUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Parser2020 {
     public static class RioToDsUdp extends PacketParser {
-        private List<Status> statusListGlobal;
-        private List<Trace> traceListGlobal;
-
         public RioToDsUdp(byte[] packet) {
             super(packet, Protocol.UDP, Remote.ROBO_RIO, 8);
         }
@@ -25,31 +21,11 @@ public class Parser2020 {
         }
 
         public List<Status> getStatus() {
-            if (statusListGlobal != null) {
-                return statusListGlobal;
-            }
-            List<Status> statusList = new ArrayList<>();
-            for (Status status : Status.values()) {
-                if (NumberUtils.hasMaskMatch(packet[3], status.getFlag(), status.getBitmaskPos())) {
-                    statusList.add(status);
-                }
-            }
-            this.statusListGlobal = statusList;
-            return statusList;
+            return super.getFlagDataAt(Status.values(), 3);
         }
 
         public List<Trace> getTrace() {
-            if (traceListGlobal != null) {
-                return traceListGlobal;
-            }
-            List<Trace> traceList = new ArrayList<>();
-            for (Trace trace : Trace.values()) {
-                if (NumberUtils.hasMaskMatch(packet[4], trace.getFlag(), trace.getBitmaskPos())) {
-                    traceList.add(trace);
-                }
-            }
-            this.traceListGlobal = traceList;
-            return traceList;
+            return super.getFlagDataAt(Trace.values(), 4);
         }
 
         public double getBatteryVoltage() {
@@ -78,8 +54,6 @@ public class Parser2020 {
     }
 
     public static class FmsToDsUdp extends PacketParser {
-        private List<Control> controlListGlobal;
-
         public FmsToDsUdp(byte[] packet) {
             super(packet, Protocol.UDP, Remote.FMS, 23);
         }
@@ -93,17 +67,7 @@ public class Parser2020 {
         }
 
         public List<Control> getControl() {
-            if (controlListGlobal != null) {
-                return controlListGlobal;
-            }
-            List<Control> controlList = new ArrayList<>();
-            for (Control control : Control.values()) {
-                if (NumberUtils.hasMaskMatch(packet[4], control.getFlag(), control.getBitmaskPos())) {
-                    controlList.add(control);
-                }
-            }
-            this.controlListGlobal = controlList;
-            return controlList;
+            return super.getFlagDataAt(Control.values(), 4);
         }
 
         public int getRequest() {
@@ -133,11 +97,11 @@ public class Parser2020 {
         }
 
         public Date getDate() {
-            return Date.fromRecvBytes(ArrayUtils.sliceArr(packet, 10, 21));
+            return Date.fromRecvBytes(ArrayUtils.sliceArr(packet, 10, 20));
         }
 
         public int getRemainingTime() {
-            return NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 21, 23));
+            return NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 20, 22));
         }
 
         @Override
