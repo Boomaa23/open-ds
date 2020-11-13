@@ -32,7 +32,7 @@ public class USBInterface {
             HIDDevice ctrl = controlDevices.get(i);
             if (ctrl != null) {
                 if (ctrl.needsRemove()) {
-                    controlDevices.remove(ctrl.getHardwareIndex());
+                    controlDevices.remove(ctrl.getIndex());
                 } else {
                     ctrl.update();
                 }

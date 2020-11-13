@@ -136,10 +136,10 @@ public enum ReceiveTag {
             NullReceiveTag.getInstance()
     ),
     RAIL_FAULTS(0x05, Protocol.TCP, Remote.ROBO_RIO, InLog.ALWAYS, 
-            (ReceiveTagAction<Integer>) (packet, size) -> new TagValueMap<Integer>()
-                .addTo("6V", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 0, 2)))
-                .addTo("5V", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 2, 4)))
-                .addTo("3.3V", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 4, 6))),
+            (ReceiveTagAction<Integer>) (packet, size) -> new TagValueMap<Integer>(),
+//                .addTo("6V", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 0, 2)))
+//                .addTo("5V", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 2, 4)))
+//                .addTo("3.3V", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 4, 6))),
             NullReceiveTag.getInstance(),
             NullReceiveTag.getInstance(),
             NullReceiveTag.getInstance()

@@ -30,7 +30,7 @@ public class DisplayEndpoint implements MainJDEC {
     public static final String CURRENT_VERSION_TAG = "v1.0.0";
 
     public static DSLog FILE_LOGGER = new DSLog();
-//    public static NTConnection NETWORK_TABLES = new NTConnection();
+    public static NTConnection NETWORK_TABLES = new NTConnection();
     public static UDPInterface RIO_UDP_INTERFACE;
     public static TCPInterface RIO_TCP_INTERFACE;
     public static UDPInterface FMS_UDP_INTERFACE;
@@ -140,7 +140,7 @@ public class DisplayEndpoint implements MainJDEC {
         rioUdpClock.start();
         fmsTcpClock.start();
         fmsUdpClock.start();
-//        NETWORK_TABLES.start();
+        NETWORK_TABLES.start();
         FILE_LOGGER.start();
         // TODO remove after testing
         // checkForUpdates();

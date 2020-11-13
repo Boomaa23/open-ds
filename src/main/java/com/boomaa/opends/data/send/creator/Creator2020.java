@@ -40,9 +40,7 @@ public class Creator2020 extends PacketCreator {
             builder.addBytes(SendTag.TIMEZONE.getBytes());
         }
         if (IS_ENABLED.isSelected()) {
-            USBInterface.findControllers();
             USBInterface.updateValues();
-            USBInterface.reindexControllers();
             for (int i = 0; i < Joystick.MAX_JS_NUM; i++) {
                 builder.addBytes(SendTag.JOYSTICK.getBytes());
             }

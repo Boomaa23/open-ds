@@ -54,6 +54,7 @@ public class JoystickFrame extends PopupBase {
                 EmbeddedJDEC.INDEX_SET.setText(String.valueOf(device.getIndex()));
 
                 EmbeddedJDEC.DISABLE_BTN.setEnabled(true);
+                EmbeddedJDEC.DISABLE_BTN.setSelected(device.isDisabled());
 
                 EmbeddedJDEC.BUTTONS.clear();
                 EmbeddedJDEC.BUTTON_GRID.removeAll();
@@ -127,7 +128,6 @@ public class JoystickFrame extends PopupBase {
 
     private void refreshControllerDisplay() {
         EmbeddedJDEC.LIST_MODEL.clear();
-        USBInterface.findControllers();
         for (HIDDevice hid : USBInterface.getControlDevices().values()) {
             EmbeddedJDEC.LIST_MODEL.add(EmbeddedJDEC.LIST_MODEL.size(), hid);
         }
@@ -187,6 +187,7 @@ public class JoystickFrame extends PopupBase {
                         }
                     }
                     current.setIndex(nIndex);
+                    USBInterface.reindexControllers();
                 } catch (NumberFormatException ignored) {
                 }
                 if (current instanceof Joystick) {
