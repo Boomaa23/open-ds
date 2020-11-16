@@ -4,6 +4,7 @@ import com.boomaa.opends.display.PopupBase;
 import com.boomaa.opends.display.elements.GBCPanelBuilder;
 import com.boomaa.opends.networktables.NTEntry;
 import com.boomaa.opends.networktables.NTStorage;
+import com.boomaa.opends.util.Clock;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -28,9 +29,19 @@ public class NTFrame extends PopupBase {
     private JPanel entryDisplay;
     private int tabStartIndex = 0;
     private JPanel tabsPanel;
+    private String currentTab;
 
     public NTFrame() {
         super("Shuffleboard", new Dimension(800, 450));
+        new Clock(100) {
+            @Override
+            public void onCycle() {
+                if (NTEntry.getShouldUpdate().contains(currentTab)) {
+                    populateTab(currentTab);
+                    NTEntry.getShouldUpdate().remove(currentTab);
+                }
+            }
+        }.start();
     }
 
     @Override
@@ -76,6 +87,7 @@ public class NTFrame extends PopupBase {
     }
 
     private void populateTab(String name) {
+        currentTab = name;
         entryDisplay.removeAll();
         GBCPanelBuilder gbcEntry = new GBCPanelBuilder(entryDisplay).setInsets(stdInsets);
         List<NTEntry> entries = new ArrayList<>(NTStorage.ENTRIES.values());

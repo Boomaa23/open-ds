@@ -1,14 +1,17 @@
 package com.boomaa.opends.networktables;
 
+import com.boomaa.opends.display.frames.NTFrame;
 import com.boomaa.opends.networking.AddressConstants;
 import com.boomaa.opends.networking.TCPInterface;
 import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.Clock;
+import com.boomaa.opends.util.NumberUtils;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 public class NTConnection extends Clock {
+    private static byte[] clientHello = { 0x01, 0x00, 0x03 };
     private TCPInterface connection;
 
     public NTConnection() {
@@ -18,11 +21,11 @@ public class NTConnection extends Clock {
     @Override
     public void onCycle() {
         if (connection != null && !connection.isClosed()) {
-            byte[] data = connection.doInteract(new byte[0]);
+            byte[] data = connection.doInteract(clientHello);
             if (data != null && data.length != 0) {
                 int i = 0;
                 while (i < data.length) {
-                    i += new NTPacketData(ArrayUtils.sliceArr(data, i)).usedLength() + 5; // 5x 0x00 of padding
+                    i += new NTPacketData(ArrayUtils.sliceArr(data, i)).usedLength();
                 }
             }
         } else {

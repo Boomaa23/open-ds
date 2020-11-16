@@ -58,18 +58,46 @@ public class NumberUtils {
         return (int) (in * 127);
     }
 
-    //TODO test to make sure this works
+    @Deprecated
     public static int readULEB128(byte[] data) {
-        int result = 0;
-        int shift = 0;
-        int b;
-        int ctr = 0;
+//        int result = 0;
+//        int shift = 0;
+//        int b;
+//        int ctr = 0;
+//        do {
+//            b = data[ctr++];
+//            result |= (b & 0x7F) << shift;
+//            shift += 7;
+//        } while ((b & 0x80) != 0);
+//        return result;
+        int value = 0;
+        int bytesRead = 0;
+        boolean continueReading;
         do {
-            b = data[ctr++];
-            result |= (b & 0x7F) << shift;
-            shift += 7;
-        } while ((b & 0x80) != 0);
-        return result;
+            final byte rawByteValue = data[bytesRead];
+            if (bytesRead == 9 && (rawByteValue & ~0x1) != 0) {
+                // "long" can only fit 64bits, so check that the top 7 MSB bits
+                // in the 10th byte are all zeroes (9 bytes provide 63 bits of info).
+                throw new IllegalStateException("ULEB128 sequence exceeds 64bits");
+            }
+
+            value |= (rawByteValue & 0x7FL) << (bytesRead * 7);
+
+            bytesRead++;
+            continueReading = ((rawByteValue & 0x80) != 0);
+        } while (continueReading);
+
+        return value;
+    }
+
+    @Deprecated
+    public static int sizeULEB128(int size) {
+        int groupCount = 0;
+        do {
+            groupCount++;
+            size >>>= 7;
+        } while (size != 0);
+        return groupCount;
     }
 
     public static boolean hasMaskMatch(byte b1, int i2) {
