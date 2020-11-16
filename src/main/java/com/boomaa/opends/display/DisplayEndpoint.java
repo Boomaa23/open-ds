@@ -18,6 +18,7 @@ import com.boomaa.opends.usb.USBInterface;
 import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.Clock;
 import com.boomaa.opends.util.DSLog;
+import com.boomaa.opends.util.GameTesting;
 import com.boomaa.opends.util.InitChecker;
 import com.boomaa.opends.util.PacketCounters;
 
@@ -142,8 +143,8 @@ public class DisplayEndpoint implements MainJDEC {
         fmsUdpClock.start();
         NETWORK_TABLES.start();
         FILE_LOGGER.start();
-        // TODO remove after testing
-        // checkForUpdates();
+        //TODO remove after testing
+        //checkForUpdates();
     }
 
     public static void doProtocolUpdate() {

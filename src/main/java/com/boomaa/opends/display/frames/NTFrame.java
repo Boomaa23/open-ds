@@ -4,7 +4,6 @@ import com.boomaa.opends.display.PopupBase;
 import com.boomaa.opends.display.elements.GBCPanelBuilder;
 import com.boomaa.opends.networktables.NTEntry;
 import com.boomaa.opends.networktables.NTStorage;
-import com.boomaa.opends.util.Clock;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -16,14 +15,17 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicArrowButton;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class NTFrame extends PopupBase {
     private static final Insets stdInsets = new Insets(5, 5, 5, 5);
     private static final Border emptyBorder = new EmptyBorder(5, 5, 5, 5);
     private static final int borderRadius = 5;
     private static final int tabWidth = 6;
-    private static final int lineWidth = 8;
+    private static final int lineWidth = 5;
+    private Map<Integer, JLabel> displayedEntries;
     private JScrollPane entryDisplayWrapper;
     private GBCPanelBuilder base;
     private JPanel entryDisplay;
@@ -33,15 +35,6 @@ public class NTFrame extends PopupBase {
 
     public NTFrame() {
         super("Shuffleboard", new Dimension(800, 450));
-        new Clock(100) {
-            @Override
-            public void onCycle() {
-                if (NTEntry.getShouldUpdate().contains(currentTab)) {
-                    populateTab(currentTab);
-                    NTEntry.getShouldUpdate().remove(currentTab);
-                }
-            }
-        }.start();
     }
 
     @Override
@@ -49,7 +42,7 @@ public class NTFrame extends PopupBase {
         super.config();
         content.setLayout(new GridBagLayout());
         this.base = new GBCPanelBuilder(content).setFill(GridBagConstraints.BOTH).setAnchor(GridBagConstraints.CENTER).setInsets(stdInsets);
-        this.entryDisplayWrapper = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        this.entryDisplayWrapper = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
         int lineHeight = 30;
         BasicArrowButton leftMenubar = new BasicArrowButton(SwingConstants.WEST);
@@ -75,6 +68,7 @@ public class NTFrame extends PopupBase {
         entryDisplay = new JPanel();
         entryDisplay.setLayout(new GridBagLayout());
 
+        displayedEntries = new HashMap<>();
         populateTabsBar();
         boolean enableArrows = NTStorage.TABS.size() > tabWidth;
         leftMenubar.setEnabled(enableArrows);
@@ -86,15 +80,16 @@ public class NTFrame extends PopupBase {
         return in.substring(0, Math.min(in.length(), max)) + (in.length() > max && addDots ? "..." : "");
     }
 
-    private void populateTab(String name) {
+    public void populateTab(String name) {
         currentTab = name;
         entryDisplay.removeAll();
         GBCPanelBuilder gbcEntry = new GBCPanelBuilder(entryDisplay).setInsets(stdInsets);
-        List<NTEntry> entries = new ArrayList<>(NTStorage.ENTRIES.values());
+        List<NTEntry> ntEntries = new ArrayList<>(NTStorage.ENTRIES.values());
         if (!name.isEmpty()) {
-            for (int i = 0; i < entries.size(); i++) {
-                NTEntry entry = entries.get(i);
-                if (entry.getTabName().equals(name) && (entry.isInShuffleboard() || entry.isInSmartDashboard()) && !entry.isInMetadata()) {
+            int entryCtr = 0;
+            for (int i = 0; i < ntEntries.size(); i++) {
+                NTEntry entry = ntEntries.get(i);
+                if (entry.getTabName().equals(name) && (entry.isInShuffleboard() || entry.isInSmartDashboard()) && !entry.isInHidden()) {
                     JPanel tempPanel = new JPanel() {
                         @Override
                         protected void paintComponent(Graphics g) {
@@ -109,16 +104,20 @@ public class NTFrame extends PopupBase {
                         }
                     };
                     tempPanel.setLayout(new BorderLayout());
-                    JLabel key = new JLabel(entry.getKey());
-                    JLabel value = new JLabel(String.valueOf(entry.getValue()));
+                    JLabel key = new JLabel(entry.getKey(), SwingConstants.CENTER);
+                    Font f = key.getFont();
+                    key.setFont(f.deriveFont(f.getStyle() | Font.BOLD));
+                    JLabel value = new JLabel(String.valueOf(entry.getValue()), SwingConstants.CENTER);
                     tempPanel.add(key, BorderLayout.NORTH);
                     tempPanel.add(value, BorderLayout.SOUTH);
                     tempPanel.setBorder(emptyBorder);
-                    gbcEntry.clone().setX(i % lineWidth).setY(i / lineWidth).build(tempPanel);
+                    gbcEntry.clone().setX(entryCtr % lineWidth).setY(entryCtr++ / lineWidth).build(tempPanel);
+                    displayedEntries.put(entry.getId(), value);
                 }
             }
         }
-
+        entryDisplay.repaint();
+        entryDisplay.revalidate();
         entryDisplayWrapper.setViewportView(entryDisplay);
         entryDisplayWrapper.setPreferredSize(new Dimension(760, 300));
         entryDisplayWrapper.getVerticalScrollBar().setUnitIncrement(10);
@@ -130,7 +129,8 @@ public class NTFrame extends PopupBase {
         super.revalidate();
     }
 
-    private void populateTabsBar() {
+    public void populateTabsBar() {
+        displayedEntries.clear();
         content.remove(tabsPanel);
         tabsPanel.removeAll();
         GBCPanelBuilder gbc = new GBCPanelBuilder(tabsPanel).setInsets(stdInsets);
@@ -141,9 +141,21 @@ public class NTFrame extends PopupBase {
             gbc.clone().setPos(i - tabStartIndex, 0, 1, 1).build(tabBtn);
         }
         base.clone().setPos(0, 0, 6, 1).build(tabsPanel);
+        tabsPanel.repaint();
+        tabsPanel.revalidate();
         content.repaint();
         content.revalidate();
         super.repaint();
         super.revalidate();
+    }
+
+    public void updateValue(NTEntry entry) {
+        if (entry.getTabName().equals(currentTab)) {
+            if (displayedEntries.containsKey(entry.getId())) {
+                displayedEntries.get(entry.getId()).setText(String.valueOf(entry.getValue()));
+            } else {
+                populateTab(currentTab);
+            }
+        }
     }
 }

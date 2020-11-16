@@ -18,6 +18,7 @@ import java.net.URISyntaxException;
 public class MainFrame implements MainJDEC {
     public static final Image FIRST_LOGO = Toolkit.getDefaultToolkit().getImage(MainFrame.class.getResource("/first.png"));
     private static final GBCPanelBuilder base = new GBCPanelBuilder(CONTENT).setInsets(new Insets(5, 5, 5, 5)).setFill(GridBagConstraints.BOTH).setAnchor(GridBagConstraints.CENTER);
+    public static NTFrame NT_FRAME;
 
     public static void display() {
         FRAME.setIconImage(FIRST_LOGO);
@@ -61,7 +62,7 @@ public class MainFrame implements MainJDEC {
         });
         NT_BTN.addActionListener((e) -> {
             if (!PopupBase.isAlive(NTFrame.class)) {
-                new NTFrame();
+                NT_FRAME = new NTFrame();
             }
         });
         TEAM_NUMBER.getDocument().addDocumentListener(new TeamNumListener());

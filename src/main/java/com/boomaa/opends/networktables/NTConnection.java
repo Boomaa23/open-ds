@@ -7,6 +7,7 @@ import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.Clock;
 import com.boomaa.opends.util.NumberUtils;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -15,21 +16,20 @@ public class NTConnection extends Clock {
     private TCPInterface connection;
 
     public NTConnection() {
-        super(20);
+        super(100);
     }
 
     @Override
     public void onCycle() {
-        if (connection != null && !connection.isClosed()) {
-            byte[] data = connection.doInteract(clientHello);
-            if (data != null && data.length != 0) {
-                int i = 0;
-                while (i < data.length) {
-                    i += new NTPacketData(ArrayUtils.sliceArr(data, i)).usedLength();
-                }
-            }
-        } else {
+        if (connection == null || connection.isClosed()) {
             reloadConnection();
+            decodeInput(connection.doInteract(clientHello));
+            decodeInput(connection.doInteract(new byte[] {0x00}));
+        } else {
+            try {
+                decodeInput(connection.read());
+            } catch (IOException ignored) {
+            }
         }
     }
 
@@ -46,6 +46,15 @@ public class NTConnection extends Clock {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            }
+        }
+    }
+
+    private void decodeInput(byte[] data) {
+        if (data != null && data.length != 0) {
+            int i = 0;
+            while (i < data.length) {
+                i += new NTPacketData(ArrayUtils.sliceArr(data, i)).usedLength();
             }
         }
     }

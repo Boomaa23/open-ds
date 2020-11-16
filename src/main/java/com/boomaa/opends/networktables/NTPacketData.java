@@ -47,8 +47,6 @@ public class NTPacketData {
                 this.msgId = extractUInt16(1);
                 this.msgStr = readString(3);
                 break;
-            default:
-                break;
         }
         NTStorage.PACKET_DATA.add(this);
     }

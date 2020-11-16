@@ -31,17 +31,21 @@ public class TCPInterface {
         }
     }
 
+    public byte[] read() throws IOException {
+        //TODO change to 1500 (ethernet max MTU) for non-testing
+        byte[] out = new byte[65535];
+        int numRead = in.read(out);
+        out = ArrayUtils.sliceArr(out, 0, numRead);
+        return out;
+    }
+
     public byte[] doInteract(byte[] data) {
         try {
             while (socket == null || in == null) {
                 Thread.sleep(50);
             }
             socket.getOutputStream().write(data);
-            //TODO change to 1500 (ethernet max MTU) for non-testing
-            byte[] out = new byte[65535];
-            int numRead = in.read(out);
-            out = ArrayUtils.sliceArr(out, 0, numRead);
-            return out;
+            return read();
         } catch (SocketException e) {
             return null;
         } catch (SocketTimeoutException e) {

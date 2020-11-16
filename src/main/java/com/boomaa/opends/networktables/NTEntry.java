@@ -1,44 +1,46 @@
 package com.boomaa.opends.networktables;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.boomaa.opends.display.PopupBase;
+import com.boomaa.opends.display.frames.MainFrame;
+import com.boomaa.opends.display.frames.NTFrame;
 
 public class NTEntry {
-    private static final List<String> shouldUpdate = new ArrayList<>();
     private final String path;
     private final int id;
     private final String key;
     private String tabName;
     private final boolean inShuffleboard;
     private final boolean inSmartDashboard;
+    private final boolean inLiveWindow;
     private final NTDataType dataType;
-    private final boolean inMetadata;
+    private final boolean inHidden;
     private Object value;
 
     public NTEntry(String path, int id, NTDataType dataType, Object value) {
         this.path = path;
         this.id = id;
-        this.inShuffleboard = path.contains("Shuffleboard");
-        this.inSmartDashboard = path.contains("Smart Dashboard");
-        this.dataType = dataType;
-        int ioFirstSep = path.indexOf("/");
-        int ioSecSep = path.indexOf("/",  ioFirstSep + 1);
-        int ioLastSep = path.indexOf("/", (ioSecSep == -1 ? ioFirstSep : ioSecSep) + 1);
-        if (ioLastSep != -1) {
-            this.key = path.substring(ioLastSep + 1);
-            this.tabName = path.substring(ioSecSep + 1, ioLastSep);
-        } else {
-            this.key = path.substring(ioSecSep + 1);
-            this.tabName = path.substring(1, ioSecSep);
-        }
-        if (inSmartDashboard) {
-            this.tabName = "Smart Dashboard";
-        }
-        this.inMetadata = key.startsWith(".") || path.contains("CameraPublisher");
-        if (!NTStorage.TABS.contains(tabName) && !inMetadata && !tabName.startsWith(".")) {
-            NTStorage.TABS.add(tabName);
-        }
         this.value = value;
+        this.inShuffleboard = path.contains("Shuffleboard");
+        this.inSmartDashboard = path.contains("SmartDashboard");
+        this.inLiveWindow = path.contains("LiveWindow");
+        this.dataType = dataType;
+        int ioSep = path.indexOf('/', 1);
+        if (inShuffleboard) {
+            int ioSep2 = path.indexOf('/', ioSep + 1);
+            this.tabName = path.substring(ioSep + 1, ioSep2);
+            this.key = path.substring(ioSep2 + 1);
+        } else {
+            this.tabName = path.substring(1, ioSep);
+            this.key = path.substring(ioSep + 1);
+        }
+        this.inHidden = key.startsWith(".") || path.contains("CameraPublisher") || tabName.equals("FMSInfo") || path.contains("SendableChooser");
+        if (!NTStorage.TABS.contains(tabName) && !inHidden && !tabName.startsWith(".")) {
+            NTStorage.TABS.add(tabName);
+            if (MainFrame.NT_FRAME != null) {
+                MainFrame.NT_FRAME.populateTabsBar();
+            }
+        }
+        displayQueue(this);
     }
 
     public String getPath() {
@@ -58,7 +60,7 @@ public class NTEntry {
     }
 
     public void setValue(Object value) {
-        shouldUpdate.add(tabName);
+        displayQueue(this);
         this.value = value;
     }
 
@@ -70,8 +72,12 @@ public class NTEntry {
         return inSmartDashboard;
     }
 
-    public boolean isInMetadata() {
-        return inMetadata;
+    public boolean isInLiveWindow() {
+        return inLiveWindow;
+    }
+
+    public boolean isInHidden() {
+        return inHidden;
     }
 
     public String getTabName() {
@@ -82,7 +88,9 @@ public class NTEntry {
         return dataType;
     }
 
-    public static List<String> getShouldUpdate() {
-        return shouldUpdate;
+    public static void displayQueue(NTEntry entry) {
+        if (MainFrame.NT_FRAME != null) {
+            MainFrame.NT_FRAME.updateValue(entry);
+        }
     }
 }
