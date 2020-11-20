@@ -18,9 +18,7 @@ import com.boomaa.opends.usb.USBInterface;
 import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.Clock;
 import com.boomaa.opends.util.DSLog;
-import com.boomaa.opends.util.GameTesting;
 import com.boomaa.opends.util.InitChecker;
-import com.boomaa.opends.util.PacketCounters;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;

@@ -4,7 +4,6 @@ import com.boomaa.opends.data.receive.parser.Parser2020;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public class GameTesting {

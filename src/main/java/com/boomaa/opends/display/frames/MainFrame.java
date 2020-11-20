@@ -9,6 +9,7 @@ import com.boomaa.opends.util.OperatingSystem;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -68,6 +69,8 @@ public class MainFrame implements MainJDEC {
         TEAM_NUMBER.getDocument().addDocumentListener(new TeamNumListener());
         TEAM_NUMBER.setText("5818"); //TODO remove after testing
         IS_ENABLED.setEnabled(false);
+        createKeyAction(KeyEvent.VK_SPACE, MainJDEC.ESTOP_BTN::doClick);
+        createKeyAction(KeyEvent.VK_ENTER, () -> MainJDEC.IS_ENABLED.setSelected(false));
         GBCPanelBuilder endr = base.clone().setAnchor(GridBagConstraints.LINE_END).setFill(GridBagConstraints.NONE);
 
         base.clone().setPos(0, 0, 6, 1).setFill(GridBagConstraints.NONE).build(TITLE);
@@ -153,5 +156,14 @@ public class MainFrame implements MainJDEC {
             }
         });
         return href;
+    }
+
+    public static void createKeyAction(int keyCode, Runnable action) {
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(e -> {
+            if (e.getID() == KeyEvent.KEY_PRESSED && e.getKeyCode() == keyCode) {
+                action.run();
+            }
+            return false;
+        });
     }
 }

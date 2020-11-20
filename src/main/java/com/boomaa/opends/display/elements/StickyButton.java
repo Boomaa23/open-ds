@@ -1,8 +1,6 @@
 package com.boomaa.opends.display.elements;
 
-import javax.swing.JButton;
-
-public class StickyButton extends JButton {
+public class StickyButton extends KButton {
     private final int stickyDuration;
     private int useCount = 0;
     private boolean wasPressed = false;

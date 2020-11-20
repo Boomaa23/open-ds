@@ -1,8 +1,6 @@
 package com.boomaa.opends.networktables;
 
-import com.boomaa.opends.display.PopupBase;
 import com.boomaa.opends.display.frames.MainFrame;
-import com.boomaa.opends.display.frames.NTFrame;
 
 public class NTEntry {
     private final String path;
