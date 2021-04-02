@@ -43,7 +43,7 @@ public interface MainJDEC {
     KButton NT_BTN = new KButton("Shuffleboard");
 
     JLabel BAT_VOLTAGE = new JLabel("0.00 V");
-    HideableLabel ROBOT_CONNECTION_STATUS = new HideableLabel(false, "Connected");
+    MultiValueLabel ROBOT_CONNECTION_STATUS = new MultiValueLabel(false, "Connected", "Simulated");
     HideableLabel FMS_CONNECTION_STATUS = new HideableLabel(false, "Connected");
     HideableLabel ESTOP_STATUS = new HideableLabel(false, "ESTOP");
     HideableLabel MATCH_TIME = new HideableLabel(false, "0");

@@ -35,7 +35,7 @@ public class DisplayEndpoint implements MainJDEC {
     public static UDPInterface FMS_UDP_INTERFACE;
     public static TCPInterface FMS_TCP_INTERFACE;
     public static InitChecker NET_IF_INIT = new InitChecker();
-    public static Integer[] VALID_PROTOCOL_YEARS = { 2020, 2016, 2015, 2014 };
+    public static Integer[] VALID_PROTOCOL_YEARS = { 2021, 2020, 2016, 2015, 2014 };
 
     private static ElementUpdater updater;
     private static PacketCreator creator;
@@ -84,8 +84,7 @@ public class DisplayEndpoint implements MainJDEC {
         }
     };
 
-    //TODO see if FMS clock can be 500ms as per specification
-    private static final Clock fmsTcpClock = new Clock(500) {
+    private static final Clock fmsTcpClock = new Clock(Clock.INSTANT) {
         @Override
         public void onCycle() {
             if (updater != null && creator != null && MainJDEC.FMS_CONNECT.isSelected()) {
@@ -107,7 +106,7 @@ public class DisplayEndpoint implements MainJDEC {
         }
     };
 
-    private static final Clock fmsUdpClock = new Clock(500) {
+    private static final Clock fmsUdpClock = new Clock(Clock.INSTANT) {
         @Override
         public void onCycle() {
             if (updater != null && creator != null && MainJDEC.FMS_CONNECT.isSelected()) {

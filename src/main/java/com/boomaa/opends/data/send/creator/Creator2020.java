@@ -10,6 +10,7 @@ import com.boomaa.opends.data.send.PacketBuilder;
 import com.boomaa.opends.data.send.SendTag;
 import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.display.RobotMode;
+import com.boomaa.opends.usb.HIDDevice;
 import com.boomaa.opends.usb.Joystick;
 import com.boomaa.opends.usb.USBInterface;
 import com.boomaa.opends.util.NumberUtils;
@@ -25,7 +26,7 @@ public class Creator2020 extends PacketCreator {
                 + (IS_ENABLED.isSelected() ? Control.ENABLED.getFlag() : 0)
                 + ((RobotMode) ROBOT_DRIVE_MODE.getSelectedItem()).getControlFlag().getFlag();
         builder.addInt(control);
-        int request = 0x00;
+        int request = Request.DS_CONNECTED.getFlag();
         if (RESTART_ROBO_RIO_BTN.wasPressed()) {
             request += Request.REBOOT_ROBO_RIO.getFlag();
         }
@@ -41,7 +42,7 @@ public class Creator2020 extends PacketCreator {
         }
         if (IS_ENABLED.isSelected()) {
             USBInterface.updateValues();
-            for (int i = 0; i < Joystick.MAX_JS_NUM; i++) {
+            for (int i = 0; i <= HIDDevice.MAX_JS_INDEX; i++) {
                 builder.addBytes(SendTag.JOYSTICK.getBytes());
             }
         }
@@ -52,7 +53,7 @@ public class Creator2020 extends PacketCreator {
     @Override
     public byte[] dsToRioTcp() {
         PacketBuilder builder = new PacketBuilder();
-        for (int i = 0; i < Joystick.MAX_JS_NUM; i++) {
+        for (int i = 0; i < HIDDevice.MAX_JS_NUM; i++) {
             builder.addBytes(SendTag.JOYSTICK_DESC.getBytes());
         }
         if (FMS_CONNECT.isSelected()) {

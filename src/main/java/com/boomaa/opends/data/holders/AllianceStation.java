@@ -36,7 +36,7 @@ public class AllianceStation {
     @Override
     public String toString() {
         return "AllianceStation{" +
-                "sidedNum=" + sidedZeroedNum +
+                "sidedZeroedNum=" + sidedZeroedNum +
                 ", isBlue=" + isBlue +
                 ", status=" + status +
                 '}';

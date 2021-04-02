@@ -176,6 +176,13 @@ public class JoystickFrame extends PopupBase {
                     int cIndex = current.getIndex();
                     int nIndex = Integer.parseInt(EmbeddedJDEC.INDEX_SET.getText());
                     if (cIndex != nIndex) {
+                        if (nIndex >= HIDDevice.MAX_JS_NUM) {
+                            MessageBox.show("Index \"" + nIndex +
+                                    "\" greater than maximum joystick index of \"" +
+                                    HIDDevice.MAX_JS_NUM, MessageBox.Type.ERROR);
+                            EmbeddedJDEC.INDEX_SET.setText(String.valueOf(cIndex));
+                            return;
+                        }
                         for (HIDDevice dev : USBInterface.getControlDevices().values()) {
                             if (dev.getIndex() == nIndex) {
                                 MessageBox.show("Duplicate index \"" + nIndex + "\" for controller \"" + dev.toString()

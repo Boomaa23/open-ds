@@ -55,7 +55,8 @@ public class NumberUtils {
     }
 
     public static int dblToInt8(double in) {
-        return (int) (in * 127);
+        // range [-128, 127]
+        return (int) (in * (in < 0 ? 128 : 127));
     }
 
     @Deprecated
@@ -113,7 +114,8 @@ public class NumberUtils {
     }
 
     public static String padByte(byte b, int size) {
-        return String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(' ', '0');
+        String formatStr = "%" + size + "s";
+        return String.format(formatStr, Integer.toBinaryString(b & 0xFF)).replace(' ', '0');
     }
 
     public static String padDouble(double value, int decimals) {

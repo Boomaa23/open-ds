@@ -7,6 +7,7 @@ import java.util.Objects;
 
 public abstract class HIDDevice {
     public static final int MAX_JS_NUM = 6; //max 6 joysticks
+    public static int MAX_JS_INDEX = 0; //maximum populated index (var)
     protected boolean[] buttons;
     protected int hwIdx;
     protected int swIdx;
@@ -19,9 +20,16 @@ public abstract class HIDDevice {
         this.hwIdx = index;
         this.swIdx = index;
         this.name = name;
+        checkMax();
     }
 
     public abstract void update();
+
+    private void checkMax() {
+        if (swIdx > MAX_JS_INDEX) {
+            MAX_JS_INDEX = swIdx;
+        }
+    }
 
     public void updateButtons(ByteBuffer btns) {
         for (int i = 0; i < btns.limit(); i++) {
@@ -42,6 +50,7 @@ public abstract class HIDDevice {
     }
 
     public void setIndex(int index) {
+        checkMax();
         this.swIdx = index;
     }
 

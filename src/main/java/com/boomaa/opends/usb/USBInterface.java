@@ -44,16 +44,17 @@ public class USBInterface {
         Map<Integer, HIDDevice> deviceMapTemp = new HashMap<>(controlDevices);
         controlDevices.clear();
         for (HIDDevice device : deviceMapTemp.values()) {
-            controlDevices.put(device.getIndex(), device);
+            int devIdx = device.getIndex();
+            controlDevices.put(devIdx, device);
         }
     }
 
-    public static int iterateSend(boolean isData) {
+    public synchronized static int iterateSend(boolean isData) {
         int out;
         if (isData) {
             out = sendDataIterator;
             sendDataIterator++;
-            sendDataIterator %= HIDDevice.MAX_JS_NUM;
+            sendDataIterator %= (HIDDevice.MAX_JS_INDEX + 1);
         } else {
             out = sendDescIterator;
             sendDescIterator++;

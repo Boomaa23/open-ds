@@ -58,8 +58,8 @@ public class NTEntry {
     }
 
     public void setValue(Object value) {
-        displayQueue(this);
         this.value = value;
+        displayQueue(this);
     }
 
     public boolean isInShuffleboard() {

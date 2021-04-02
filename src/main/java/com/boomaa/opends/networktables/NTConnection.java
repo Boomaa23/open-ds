@@ -43,7 +43,7 @@ public class NTConnection extends Clock {
             String rioIp = AddressConstants.getRioAddress();
             InetAddress.getByName(rioIp);
             this.connection = new TCPInterface(rioIp, AddressConstants.getRioPorts().getShuffleboard());
-        } catch (UnknownHostException | NumberFormatException ignored) {
+        } catch (NumberFormatException | UnknownHostException ignored) {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {

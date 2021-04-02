@@ -1,6 +1,7 @@
 package com.boomaa.opends.util;
 
 public abstract class Clock extends Thread {
+    public static final int INSTANT = 0;
     protected final int msToCycle;
     protected boolean done = false;
 

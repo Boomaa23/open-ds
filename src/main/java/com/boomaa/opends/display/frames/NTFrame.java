@@ -123,6 +123,7 @@ public class NTFrame extends PopupBase {
         entryDisplayWrapper.getVerticalScrollBar().setUnitIncrement(10);
         base.clone().setPos(0, 1, 8, 5).build(entryDisplayWrapper);
         entryDisplayWrapper.repaint();
+        entryDisplayWrapper.revalidate();
         content.repaint();
         content.revalidate();
         super.repaint();

@@ -17,6 +17,7 @@ public class UDPInterface {
             this.clientPort = clientPort;
             this.clientSocket = new DatagramSocket();
             this.serverSocket = new DatagramSocket(serverPort);
+            serverSocket.setSoTimeout(1000);
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
@@ -45,6 +46,8 @@ public class UDPInterface {
             }
             serverSocket.receive(packet);
         } catch (SocketTimeoutException | SocketException e) {
+            clientSocket.close();
+            serverSocket.close();
             return new UDPTransform(new byte[0], packet, true);
         } catch (IOException e) {
             e.printStackTrace();

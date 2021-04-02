@@ -14,7 +14,7 @@ import java.net.UnknownHostException;
 public class NetworkReloader extends DisplayEndpoint {
     public static void reloadRio(Protocol protocol) {
         PacketCounters.get(Remote.ROBO_RIO, protocol).reset();
-//        NETWORK_TABLES.reloadConnection();
+        NETWORK_TABLES.reloadConnection();
         try {
             String rioIp = AddressConstants.getRioAddress();
             InetAddress.getByName(rioIp);
@@ -23,14 +23,13 @@ public class NetworkReloader extends DisplayEndpoint {
                 RIO_UDP_INTERFACE = new UDPInterface(rioIp, rioPorts.getUdpClient(), rioPorts.getUdpServer());
             }
             if (protocol == Protocol.TCP) {
-                RIO_TCP_INTERFACE = new TCPInterface(InetAddress.getByName(rioIp).getHostAddress(), rioPorts.getTcp());
+                RIO_TCP_INTERFACE = new TCPInterface(rioIp, rioPorts.getTcp());
             }
             NET_IF_INIT.set(true, Remote.ROBO_RIO, protocol);
-            MainJDEC.IS_ENABLED.setEnabled(true);
-        } catch (UnknownHostException | NumberFormatException ignored) {
+        } catch (NumberFormatException ignored) {
             unsetRio(protocol);
         } catch (IOException e) {
-            MessageBox.show(e.getMessage(), MessageBox.Type.ERROR);
+            e.printStackTrace();
             unsetRio(protocol);
         }
     }
@@ -71,8 +70,8 @@ public class NetworkReloader extends DisplayEndpoint {
                 }
                 NET_IF_INIT.set(true, Remote.FMS, protocol);
             } catch (IOException e) {
+                e.printStackTrace();
                 MainJDEC.FMS_CONNECT.setSelected(false);
-                MessageBox.show(e.getMessage(), MessageBox.Type.ERROR);
                 NET_IF_INIT.set(false, Remote.FMS, protocol);
             }
         } else {
