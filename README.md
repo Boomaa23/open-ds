@@ -4,7 +4,7 @@ A reverse-engineered lightweight FRC Driver Station alternative for Windows and 
 
 Download [here](https://ncocdn.cf/software/open-ds.jar) ([JDK 8+](https://www.oracle.com/java/technologies/javase-downloads.html) required)
 
-Copyright (C) 2020 Boomaa23
+Copyright (C) 2020-2021 Boomaa23
 
 ## Features
 OpenDS is a fully functional FRC Driver Station alternative for Windows 
@@ -55,7 +55,7 @@ Download the stable jar from [here](https://ncocdn.cf/software/open-ds.jar) and 
 ### Troubleshooting
 If you run into issues, ensure that you are running a 64-bit installation of either Windows 7/8.1/10 or Linux kernel version 2.6.35 or greater.
 
-For errors relating to JInput, natives, joysticks, or JNI, ensure the program has write access to the computer's temp folder. If not, download [this](https://ncocdn.cf/software/open-ds-natives.zip) set of natives and place the extracted contents in your temp folder.
+For errors relating to connections or AWT, try launching from the command line (`java -jar open-ds.jar`) and observing the console output.
 
 If issues persist, please report them on the "Issues" section of the GitHub [here](https://github.com/Boomaa23/open-ds/issues) and they will be resolved as soon as possible.
 
@@ -64,7 +64,7 @@ If issues persist, please report them on the "Issues" section of the GitHub [her
 ## License
 OpenDS may be used without restriction for the purpose of testing robots by teams and individuals, but is copyrighted material and cannot be redistributed.
 ```
-Copyright (c) 2020, Boomaa23
+Copyright (c) 2020-2021, Boomaa23
 All rights reserved.
 
 This software may be used and redistributed subject to the following conditions:
@@ -102,7 +102,7 @@ If you find a bug or issue with OpenDS, please report it on the "Issues" section
 For protocol changes in future years, OpenDS is easily modifiable. Ports, IP addresses, display layouts, and packet creation/parsing are all re-formattable.
 
 ## Acknowledgements
-A big thank you to Jessica Creighton for the FRCture documentation and to Alex Spataru for his work on LibDS (now LibDS-Legacy).
+Thank you to Jessica Creighton for the FRCture documentation and to Alex Spataru for his work on LibDS.
 
 
 <!-- There are four main classes that need to be implemented for a new protocol year:
