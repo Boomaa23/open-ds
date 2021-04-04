@@ -156,7 +156,7 @@ public enum SendTag {
     ROBOT_RADIO_METRICS(0x03, Protocol.UDP, Remote.FMS,
             //TODO bandwidth utilization (uint16)
             RefSendTag.yearOfAction(2020),
-            () -> new PacketBuilder().addInt(WlanConnection.getRadio(MainJDEC.TEAM_NUMBER.checkedIntParse()).getSignal())
+            () -> new PacketBuilder().addInt(WlanConnection.getRadio().getSignal())
                     .addInt(0x00).addInt(0x00).build(),
             NullSendTag.getInstance(),
             NullSendTag.getInstance(),

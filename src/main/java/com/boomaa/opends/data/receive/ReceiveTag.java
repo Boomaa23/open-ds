@@ -33,26 +33,24 @@ public enum ReceiveTag {
             NullReceiveTag.getInstance(),
             NullReceiveTag.getInstance()
     ),
-    // Indices differ from documentation: Free Space (4, 8) instead of (0,4)
     DISK_INFO(0x04, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS,
             RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<Integer>) (packet, size) -> new TagValueMap<Integer>()
-                .addTo("Block", NumberUtils.getUInt32(ArrayUtils.sliceArr(packet, 0, 4))) //inferred
+                .addTo("Block", NumberUtils.getUInt32(ArrayUtils.sliceArr(packet, 0, 4)))
                 .addTo("Free Space", NumberUtils.getUInt32(ArrayUtils.sliceArr(packet, 4, 8))),
             RefRecieveTag.yearOfAction(2015),
             (ReceiveTagAction<Integer>) (packet, size) ->
                     TagValueMap.singleton("Utilization %", (int) packet[0]),
             NullReceiveTag.getInstance()
     ),
-    //TODO 2020 field listing does not match data - fix
+    //TODO 2020 field listing does not match data - fix, percentages do not make sense
     CPU_INFO(0x05, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS,
             RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<Float>) (packet, size) -> {
-                float numCpus = NumberUtils.getFloat(ArrayUtils.sliceArr(packet, 0, 4));
+                float numCpus = packet[0];
                 TagValueMap<Float> map = new TagValueMap<Float>().addTo("Number of CPUs", numCpus);
-                for (int i = 0; i < numCpus; i++) {
-                    int n = i + 1;
-                    int c = i + 4;
+                int c = 1;
+                for (int n = 0; n < numCpus; n++) {
                     map.addTo("CPU " + n + " Time Critical %", NumberUtils.getFloat(ArrayUtils.sliceArr(packet, c, c += 4)))
                             .addTo("CPU " + n + " Above Normal %", NumberUtils.getFloat(ArrayUtils.sliceArr(packet, c, c += 4)))
                             .addTo("CPU " + n + " Normal %", NumberUtils.getFloat(ArrayUtils.sliceArr(packet, c, c += 4)))
@@ -66,10 +64,12 @@ public enum ReceiveTag {
             NullReceiveTag.getInstance()
     ),
     RAM_INFO(0x06, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS, DISK_INFO.getActions()),
+    //TODO fix this, not correct
+    // are channels ordered backwards? https://www.chiefdelphi.com/t/alternate-viewer-for-driver-station-logs-dslog/120629/13?u=boomaa
     PDP_LOG(0x08, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS,
             RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<Double>) (packet, size) -> {
-                DSLog.PDP_STATS = packet;
+                DSLog.PDP_STATS = ArrayUtils.sliceArr(packet, 1);
                 TagValueMap<Double> map = new TagValueMap<>();
                 StringBuilder binaryBuilder = new StringBuilder();
                 for (int i = 1; i < packet.length - 3; i++) {
@@ -135,6 +135,7 @@ public enum ReceiveTag {
             NullReceiveTag.getInstance(),
             NullReceiveTag.getInstance()
     ),
+    //TODO fix disable and rail faults (record more data)
     DISABLE_FAULTS(0x04, Protocol.TCP, Remote.ROBO_RIO, InLog.ALWAYS,
             RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<Integer>) (packet, size) -> new TagValueMap<Integer>(),

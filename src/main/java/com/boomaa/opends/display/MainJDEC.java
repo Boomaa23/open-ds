@@ -54,7 +54,7 @@ public interface MainJDEC {
     static int getProtocolYear() {
         try {
             return Integer.parseInt(String.valueOf(PROTOCOL_YEAR.getSelectedItem()));
-        } catch (NumberFormatException ignored) {
+        } catch (NullPointerException | NumberFormatException ignored) {
         }
         return DisplayEndpoint.VALID_PROTOCOL_YEARS[0];
     }

@@ -1,15 +1,27 @@
 package com.boomaa.opends.util;
 
+import com.boomaa.opends.data.receive.ReceiveTag;
 import com.boomaa.opends.data.receive.parser.Parser2020;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Collections;
 
 public class GameTesting {
     public static void main(String[] args) throws URISyntaxException, IOException {
 //        byte[] data = decodeHexString("0e0300c0381103c0e00441203c180501100481405014ffac59");
 //        System.out.println(ReceiveTag.PDP_LOG.getAction().getValue(data));
+        byte[] bs = new byte[] {(byte) 0x3f, (byte) 0x1c, (byte) 0x53, (byte) 0xd2};
+        System.out.println(NumberUtils.getFloat(bs));
+        System.out.println((float) 0x02);
+        DSLog dl = new DSLog();
+        dl.start();
+        //PDP
+        printudp("284a0104320c28001a080e0300c0381103c0e00441203c180501100481405014ffa6570a090e2d2d2d2d2d2d2d2d");
+        //CPU
+//        printudp("282c0104320c2d002205024283945e00000000000000003eabbe154277688100000000000000003e965929");
+
         long ct = System.currentTimeMillis() / 1000;
         long val = -2_212_122_495L + ct;
         byte[] data = NumberUtils.intToByteQuad((int) val);

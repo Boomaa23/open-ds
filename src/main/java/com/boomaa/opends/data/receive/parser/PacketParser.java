@@ -53,9 +53,13 @@ public abstract class PacketParser {
         if (tagStartIndex < packet.length) {
             byte[] tagPacket = ArrayUtils.sliceArr(packet, tagStartIndex);
             int c = 0;
-            int size = 0;
-            while ((c + 1 + size) < tagPacket.length) {
-                size = getTagSize(c + tagStartIndex);
+            int size;
+            while (true) {
+                try {
+                    size = getTagSize(c + tagStartIndex);
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    break;
+                }
                 for (ReceiveTag tag : ReceiveTag.values()) {
                     if (tag.getRemote() == remote && tag.getProtocol() == protocol && tag.getFlag() == tagPacket[c + 1]) {
                         ReceiveTagAction<?> action = tag.getActions()[MainJDEC.getProtocolIndex()];

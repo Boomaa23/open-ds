@@ -2,24 +2,25 @@ package com.boomaa.opends.util;
 
 import com.boomaa.opends.data.StatsFields;
 import com.boomaa.opends.data.holders.Date;
+import com.boomaa.opends.data.holders.Remote;
 import com.boomaa.opends.data.send.PacketBuilder;
+import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.display.RobotMode;
 import com.boomaa.opends.display.frames.MessageBox;
 import com.boomaa.opends.networking.WlanConnection;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Calendar;
 
 public class DSLog extends Clock {
-    private final String filepath;
+    private FileOutputStream output;
     public static byte[] PDP_STATS = new byte[24];
 
     public DSLog() {
-        super(1000);
+        super(20);
         Calendar date = Calendar.getInstance();
         String weekday = Date.DayMap.getFromInt(date.get(Calendar.DAY_OF_WEEK) - 1).name();
         String folderName = OperatingSystem.isWindows() ? "C:\\Users\\Public\\Documents\\FRC\\Log Files\\" : "/var/log/opends/";
@@ -27,13 +28,14 @@ public class DSLog extends Clock {
         if (!folder.isDirectory()) {
             folder.mkdirs();
         }
-        this.filepath = folderName + date.get(Calendar.YEAR) + "_" + NumberUtils.padInt(date.get(Calendar.MONTH) + 1, 2) + "_" + NumberUtils.padInt(date.get(Calendar.DAY_OF_MONTH), 2)
+        String filepath = folderName + date.get(Calendar.YEAR) + "_" + NumberUtils.padInt(date.get(Calendar.MONTH) + 1, 2) + "_" + NumberUtils.padInt(date.get(Calendar.DAY_OF_MONTH), 2)
                 + " " + NumberUtils.padInt(date.get(Calendar.HOUR_OF_DAY), 2) + "_" + NumberUtils.padInt(date.get(Calendar.MINUTE), 2) + "_" + NumberUtils.padInt(date.get(Calendar.SECOND), 2)
                 + " " + weekday.charAt(0) + weekday.substring(1, 3).toLowerCase() + ".dslog";
         File logFile = new File(filepath);
         if (!logFile.isFile()) {
             try {
                 logFile.createNewFile();
+                this.output = new FileOutputStream(logFile);
             } catch (IOException e) {
                 MessageBox.show("Could not create log file", MessageBox.Type.ERROR);
                 this.interrupt();
@@ -41,6 +43,7 @@ public class DSLog extends Clock {
             }
         }
         writeData(new PacketBuilder()
+                .pad(0x00, 3)
                 .addInt(0x03) // only observed value
                 .pad(0x00, 4)
                 .addBytes(NumberUtils.intToByteQuad((int) (-2_212_122_495L + (System.currentTimeMillis() / 1000))))
@@ -53,17 +56,34 @@ public class DSLog extends Clock {
 
     @Override
     public void onCycle() {
-        int trace = (MainJDEC.ESTOP_STATUS.isDisplayed() ? Trace.BROWNOUT.flag : 0)
-                + (MainJDEC.ROBOT_DRIVE_MODE.getSelectedItem() == RobotMode.TELEOPERATED ? Trace.DS_TELEOP.flag + Trace.ROBOT_TELEOP.flag : 0)
-                + (MainJDEC.ROBOT_DRIVE_MODE.getSelectedItem() == RobotMode.AUTONOMOUS ? Trace.ROBOT_AUTO.flag : 0)
-                + (!MainJDEC.IS_ENABLED.isSelected() ? Trace.DS_DISABLED.flag + Trace.ROBOT_DISABLED.flag : 0);
-        WlanConnection wifi = WlanConnection.getRadio(MainJDEC.TEAM_NUMBER.checkedIntParse());
+        //TODO figure out diff b/n DS_mode and ROBOT_mode traces
+        int trace = 0xFF;
+        WlanConnection radio = WlanConnection.getRadio();
+        double bat = checkedNumParse(MainJDEC.BAT_VOLTAGE.getText().replaceAll(" V", ""));
+
+        if (DisplayEndpoint.NET_IF_INIT.isOrInit(Remote.ROBO_RIO)) {
+            if (MainJDEC.IS_ENABLED.isSelected()) {
+                RobotMode selMode = (RobotMode) MainJDEC.ROBOT_DRIVE_MODE.getSelectedItem();
+                if (selMode == RobotMode.TELEOPERATED) {
+                    trace -= Trace.DS_TELEOP.flag + Trace.ROBOT_TELEOP.flag;
+                } else if (selMode == RobotMode.AUTONOMOUS) {
+                    trace -= Trace.DS_AUTO.flag + Trace.ROBOT_AUTO.flag;
+                }
+            } else {
+                trace -= Trace.DS_DISABLED.flag + Trace.ROBOT_DISABLED.flag;
+            }
+            // < 6.8 volts = roboRIO brownout voltage
+            if (bat < 6.8) {
+                trace -= Trace.BROWNOUT.flag;
+            }
+        }
+
         writeData(new PacketBuilder()
-                .addInts(getTripTime(0x00), trace, getPacketLoss(0x00))
-                .addBytes(getBattery(checkedNumParse(MainJDEC.BAT_VOLTAGE.getText().replaceAll(" V", ""))))
-                .addInts(getRioCPU((int) checkedNumParse(StatsFields.CPU_PERCENT.getValue())),
+                .addInts(getTripTime(0x00), getPacketLoss(0x00))
+                .addBytes(getBattery(bat))
+                .addInts(getRioCPU((int) checkedNumParse(StatsFields.CPU_PERCENT.getValue())), trace,
                         getCAN((int) checkedNumParse(StatsFields.CAN_UTILIZATION.getValue())),
-                        getWifiDb(wifi != null ? wifi.getSignal() : 0x00),
+                        getWifiDb(radio != null ? radio.getSignal() : 0x00),
                         getWifiMb(0x00)) //wifiMb
                 .pad(0x00, 2)
                 .addBytes(PDP_STATS)
@@ -72,10 +92,9 @@ public class DSLog extends Clock {
     }
 
     private void writeData(byte[] data) {
-        try (FileOutputStream output = new FileOutputStream(filepath, true)) {
+        try {
             output.write(data);
-        } catch (FileNotFoundException e0) {
-            this.interrupt();
+            output.flush();
         } catch (IOException e1) {
             e1.printStackTrace();
         }
@@ -124,6 +143,7 @@ public class DSLog extends Clock {
         BROWNOUT(0x80),
         WATCHDOG(0x40),
         DS_TELEOP(0x20),
+        DS_AUTO(0x10),
         DS_DISABLED(0x08),
         ROBOT_TELEOP(0x04),
         ROBOT_AUTO(0x02),
