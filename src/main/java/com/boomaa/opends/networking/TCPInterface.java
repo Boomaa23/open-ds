@@ -14,18 +14,19 @@ public class TCPInterface {
     private InputStream in;
     private boolean closed;
 
-    public TCPInterface(String ip, int port) {
+    public TCPInterface(String ip, int port) throws SocketException {
         try {
-            while (this.socket == null) {
-                this.socket = new Socket(ip, port);
-            }
+            this.socket = new Socket(ip, port);
             this.in = socket.getInputStream();
-            socket.setSoTimeout(100);
         } catch (ConnectException e) {
-            this.closed = true;
+            close();
         } catch (IOException e) {
-            this.closed = true;
+            close();
             e.printStackTrace();
+        }
+        if (socket == null || in == null) {
+            close();
+            throw new SocketException("Null socket or socket input stream");
         }
     }
 
@@ -33,22 +34,25 @@ public class TCPInterface {
         //TODO change to 1500 (ethernet max MTU) for non-testing
         byte[] out = new byte[65535];
         int numRead = in.read(out);
+        if (numRead == -1) {
+            numRead = out.length;
+        }
         out = ArrayUtils.sliceArr(out, 0, numRead);
         return out;
     }
 
     public byte[] doInteract(byte[] data) {
         try {
-            while (socket == null || in == null) {
-                Thread.sleep(50);
-            }
             socket.getOutputStream().write(data);
             return read();
         } catch (SocketException e) {
+            close();
             return null;
         } catch (SocketTimeoutException e) {
+            close();
             return new byte[0];
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
+            close();
             e.printStackTrace();
         }
         return null;

@@ -36,6 +36,7 @@ public interface MainJDEC {
 
     JComboBox<Integer> PROTOCOL_YEAR = new JComboBox<>(DisplayEndpoint.VALID_PROTOCOL_YEARS);
     JCheckBox FMS_CONNECT = new JCheckBox("Connect FMS");
+    JCheckBox USB_CONNECT = new JCheckBox("USB");
 
     KButton LOG_BTN = new KButton("Log");
     KButton JS_BTN = new KButton("Joysticks");

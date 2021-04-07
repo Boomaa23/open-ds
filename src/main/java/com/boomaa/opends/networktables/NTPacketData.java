@@ -20,9 +20,12 @@ public class NTPacketData {
         if (data.length < 2) {
             usedLength = Integer.MAX_VALUE;
         }
+        this.usedLength = 1;
         this.data = data;
         this.messageType = NTMessageType.getFromFlag(data[0]);
-        this.usedLength = 1;
+        if (messageType == null) {
+            return;
+        }
         switch (messageType) {
             case kEntryAssign:
                 this.msgStr = readString(usedLength);
@@ -67,11 +70,15 @@ public class NTPacketData {
                 return readString(start);
             case NT_STRING_ARRAY:
                 usedLength++;
-                String[] strs = new String[data[start]];
-                for (int i = 0; i < strs.length; i++) {
-                    strs[i] = readString(usedLength);
+                int len = data[start];
+                if (len != -1) {
+                    String[] strs = new String[data[start]];
+                    for (int i = 0; i < strs.length; i++) {
+                        strs[i] = readString(usedLength);
+                    }
+                    return strs;
                 }
-                return strs;
+                return "none";
             case NT_DOUBLE_ARRAY:
                 usedLength++;
                 double[] dbls = new double[data[start]];

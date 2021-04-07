@@ -57,6 +57,7 @@ public abstract class PacketParser {
             while (true) {
                 try {
                     size = getTagSize(c + tagStartIndex);
+                    byte check = tagPacket[c + 1];
                 } catch (ArrayIndexOutOfBoundsException e) {
                     break;
                 }

@@ -179,7 +179,6 @@ public class Updater2020 extends ElementUpdater {
         ALLIANCE_COLOR.setEnabled(true);
         ALLIANCE_NUM.setEnabled(true);
         FMS_CONNECTION_STATUS.forceHide();
-        IS_ENABLED.setEnabled(true);
         ROBOT_DRIVE_MODE.setEnabled(true);
     }
 

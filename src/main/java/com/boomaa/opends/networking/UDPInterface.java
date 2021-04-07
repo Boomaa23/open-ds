@@ -5,9 +5,9 @@ import java.net.*;
 
 public class UDPInterface {
     private DatagramSocket clientSocket;
+    private DatagramSocket serverSocket;
     private InetAddress ip;
     private int clientPort;
-    private DatagramSocket serverSocket;
     private int bufSize = 1024;
     private boolean closed;
 
@@ -17,6 +17,7 @@ public class UDPInterface {
             this.clientPort = clientPort;
             this.clientSocket = new DatagramSocket();
             this.serverSocket = new DatagramSocket(serverPort);
+            clientSocket.setSoTimeout(1000);
             serverSocket.setSoTimeout(1000);
         } catch (UnknownHostException e) {
             e.printStackTrace();
@@ -46,8 +47,7 @@ public class UDPInterface {
             }
             serverSocket.receive(packet);
         } catch (SocketTimeoutException | SocketException e) {
-            clientSocket.close();
-            serverSocket.close();
+            close();
             return new UDPTransform(new byte[0], packet, true);
         } catch (IOException e) {
             e.printStackTrace();

@@ -1,6 +1,7 @@
 package com.boomaa.opends.display;
 
 import com.boomaa.opends.display.frames.MainFrame;
+import com.boomaa.opends.util.OperatingSystem;
 
 import javax.swing.JFrame;
 import java.awt.Container;
@@ -50,7 +51,11 @@ public abstract class PopupBase extends JFrame {
 
     @Override
     public void dispose() {
+        if (OperatingSystem.isWindows()) {
+            super.dispose();
+        } else {
+            setVisible(true);
+        }
         alive.remove(this.getClass());
-        super.dispose();
     }
 }

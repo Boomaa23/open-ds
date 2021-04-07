@@ -4,7 +4,6 @@ import com.boomaa.opends.data.holders.Protocol;
 import com.boomaa.opends.data.holders.Remote;
 import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.display.MainJDEC;
-import com.boomaa.opends.display.frames.MessageBox;
 import com.boomaa.opends.util.PacketCounters;
 
 import java.io.IOException;
@@ -14,15 +13,21 @@ import java.net.UnknownHostException;
 public class NetworkReloader extends DisplayEndpoint {
     public static void reloadRio(Protocol protocol) {
         PacketCounters.get(Remote.ROBO_RIO, protocol).reset();
-        NETWORK_TABLES.reloadConnection();
         try {
-            String rioIp = AddressConstants.getRioAddress();
-            InetAddress.getByName(rioIp);
+            String rioIp = AddressConstants.getRioAddress(MainJDEC.USB_CONNECT.isSelected());
+            exceptionPingTest(rioIp);
             PortTriple rioPorts = AddressConstants.getRioPorts();
             if (protocol == Protocol.UDP) {
+                if (RIO_UDP_INTERFACE != null) {
+                    RIO_UDP_INTERFACE.close();
+                }
                 RIO_UDP_INTERFACE = new UDPInterface(rioIp, rioPorts.getUdpClient(), rioPorts.getUdpServer());
             }
             if (protocol == Protocol.TCP) {
+                NETWORK_TABLES.reloadConnection();
+                if (RIO_TCP_INTERFACE != null) {
+                    RIO_TCP_INTERFACE.close();
+                }
                 RIO_TCP_INTERFACE = new TCPInterface(rioIp, rioPorts.getTcp());
             }
             NET_IF_INIT.set(true, Remote.ROBO_RIO, protocol);
@@ -59,9 +64,9 @@ public class NetworkReloader extends DisplayEndpoint {
 
         if (FMS_CONNECT.isSelected()) {
             PortTriple fmsPorts = AddressConstants.getFMSPorts();
-            String fmsIp = AddressConstants.getFMSIp();
+            String fmsIp = AddressConstants.FMS_IP;
             try {
-                InetAddress.getByName(fmsIp);
+                exceptionPingTest(fmsIp);
                 if (protocol == Protocol.UDP) {
                     FMS_UDP_INTERFACE = new UDPInterface(fmsIp, fmsPorts.getUdpClient(), fmsPorts.getUdpServer());
                 }
@@ -76,6 +81,22 @@ public class NetworkReloader extends DisplayEndpoint {
             }
         } else {
             NET_IF_INIT.set(false, Remote.FMS, protocol);
+        }
+    }
+
+    public static boolean pingTest(String ip) {
+        try {
+            return exceptionPingTest(ip);
+        } catch (IOException ignored) {
+        }
+        return false;
+    }
+
+    public static boolean exceptionPingTest(String ip) throws IOException {
+        try {
+            return InetAddress.getByName(ip).isReachable(500);
+        } catch (UnknownHostException ignored) {
+            throw new IOException("Unknown host");
         }
     }
 }

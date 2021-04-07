@@ -80,15 +80,7 @@ public class JoystickFrame extends PopupBase {
         EmbeddedJDEC.DISABLE_BTN.addActionListener(e -> EmbeddedJDEC.LIST.getSelectedValue()
                 .setDisabled(EmbeddedJDEC.DISABLE_BTN.isSelected()));
         EmbeddedJDEC.RELOAD_BTN.addActionListener(e -> refreshControllerDisplay());
-        EmbeddedJDEC.CLOSE_BTN.addActionListener(e -> {
-            if (OperatingSystem.isWindows()) {
-                valueUpdater.interrupt();
-                this.dispose();
-            } else {
-                this.setVisible(false);
-                PopupBase.removeAlive(JoystickFrame.class);
-            }
-        });
+        EmbeddedJDEC.CLOSE_BTN.addActionListener(e -> this.dispose());
 
         content.setLayout(new GridBagLayout());
         GBCPanelBuilder base = new GBCPanelBuilder(content).setFill(GridBagConstraints.BOTH).setAnchor(GridBagConstraints.CENTER).setInsets(new Insets(5, 5, 5, 5));

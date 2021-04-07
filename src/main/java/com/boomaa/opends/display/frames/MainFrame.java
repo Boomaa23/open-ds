@@ -1,10 +1,12 @@
 package com.boomaa.opends.display.frames;
 
+import com.boomaa.opends.data.holders.Protocol;
 import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.display.PopupBase;
 import com.boomaa.opends.display.TeamNumListener;
 import com.boomaa.opends.display.elements.GBCPanelBuilder;
+import com.boomaa.opends.networking.NetworkReloader;
 import com.boomaa.opends.util.OperatingSystem;
 
 import javax.swing.*;
@@ -66,6 +68,18 @@ public class MainFrame implements MainJDEC {
                 NT_FRAME = new NTFrame();
             }
         });
+        USB_CONNECT.addActionListener((e) -> {
+            Thread reload = new Thread() {
+                @Override
+                public void run() {
+                    NetworkReloader.reloadRio(Protocol.UDP);
+                    NetworkReloader.reloadRio(Protocol.TCP);
+                    super.run();
+                    interrupt();
+                }
+            };
+            reload.start();
+        });
         TEAM_NUMBER.getDocument().addDocumentListener(new TeamNumListener());
         TEAM_NUMBER.setText("5818"); //TODO remove after testing
         IS_ENABLED.setEnabled(false);
@@ -97,7 +111,8 @@ public class MainFrame implements MainJDEC {
         base.clone().setPos(3, 5, 1, 1).build(STATS_BTN);
         base.clone().setPos(2, 6, 1, 1).build(NT_BTN);
         base.clone().setPos(3, 6, 1, 1).build(LOG_BTN);
-        base.clone().setPos(2, 7, 2, 1).build(FMS_CONNECT);
+        base.clone().setPos(2, 7, 1, 1).build(FMS_CONNECT);
+        base.clone().setPos(3, 7, 1, 1).build(USB_CONNECT);
 
         base.clone().setPos(4, 2, 2, 1).setFill(GridBagConstraints.NONE).build(BAT_VOLTAGE);
         endr.clone().setPos(4, 3, 1, 1).build(new JLabel("Robot:"));

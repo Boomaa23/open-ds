@@ -1,6 +1,8 @@
 package com.boomaa.opends.networktables;
 
+import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.networking.AddressConstants;
+import com.boomaa.opends.networking.NetworkReloader;
 import com.boomaa.opends.networking.TCPInterface;
 import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.Clock;
@@ -10,7 +12,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 public class NTConnection extends Clock {
-    private static byte[] clientHello = { 0x01, 0x00, 0x03 };
+    private static final byte[] clientHello = { 0x01, 0x00, 0x03 };
     private TCPInterface connection;
     private boolean doReconnectSend = false;
 
@@ -36,18 +38,18 @@ public class NTConnection extends Clock {
     }
 
     public void reloadConnection() {
-        if (connection != null && !connection.isClosed()) {
+        if (connection != null) {
             connection.close();
         }
+        String rioIp = AddressConstants.getRioAddress(MainJDEC.USB_CONNECT.isSelected());
         try {
-            String rioIp = AddressConstants.getRioAddress();
-            InetAddress.getByName(rioIp);
-            this.connection = new TCPInterface(rioIp, AddressConstants.getRioPorts().getShuffleboard());
-        } catch (NumberFormatException | UnknownHostException ignored) {
+            NetworkReloader.exceptionPingTest(rioIp);
+            connection = new TCPInterface(rioIp, AddressConstants.getRioPorts().getShuffleboard());
+        } catch (IOException e) {
             try {
                 Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            } catch (InterruptedException e0) {
+                e0.printStackTrace();
             }
         }
         doReconnectSend = true;
