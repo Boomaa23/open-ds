@@ -13,8 +13,9 @@ public class NTEntry {
     private final NTDataType dataType;
     private final boolean inHidden;
     private Object value;
+    private boolean persistent;
 
-    public NTEntry(String path, int id, NTDataType dataType, Object value) {
+    public NTEntry(String path, int id, NTDataType dataType, Object value, boolean persistent) {
         this.path = path;
         this.id = id;
         this.value = value;
@@ -22,6 +23,7 @@ public class NTEntry {
         this.inSmartDashboard = path.contains("SmartDashboard");
         this.inLiveWindow = path.contains("LiveWindow");
         this.dataType = dataType;
+        this.persistent = persistent;
         int ioSep = path.indexOf('/', 1);
         if (inShuffleboard) {
             int ioSep2 = path.indexOf('/', ioSep + 1);
@@ -84,6 +86,14 @@ public class NTEntry {
 
     public NTDataType getDataType() {
         return dataType;
+    }
+
+    public void setPersistent(boolean persistent) {
+        this.persistent = persistent;
+    }
+
+    public boolean isPersistent() {
+        return persistent;
     }
 
     public static void displayQueue(NTEntry entry) {

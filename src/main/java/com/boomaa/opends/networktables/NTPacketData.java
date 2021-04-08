@@ -15,26 +15,23 @@ public class NTPacketData {
     private Object value = "null";
     private int usedLength;
 
-    //TODO move from NTv2 to v3, change begin packets to 0x01, 0x03, 0x00 & do uleb128 encoding
     public NTPacketData(byte[] data) {
         if (data.length < 2) {
             usedLength = Integer.MAX_VALUE;
         }
         this.usedLength = 1;
         this.data = data;
-        this.messageType = NTMessageType.getFromFlag(data[0]);
-        if (messageType == null) {
-            return;
-        }
+        this.messageType = NTMessageType.getFromFlag(NumberUtils.getUInt8(data[0]));
         switch (messageType) {
             case kEntryAssign:
                 this.msgStr = readString(usedLength);
-                this.dataType = NTDataType.getFromFlag(data[usedLength++]);
+                this.dataType = NTDataType.getFromFlag(NumberUtils.getUInt8(data[usedLength++]));
                 this.msgId = extractUInt16(usedLength);
                 this.seqNum = extractUInt16(usedLength);
+                boolean persistent = NumberUtils.getUInt8(data[usedLength++]) == 0x01;
                 this.value = extractValue(usedLength);
                 //TODO add tables and nesting
-                NTStorage.ENTRIES.put(msgId, new NTEntry(msgStr, msgId, dataType, value));
+                NTStorage.ENTRIES.put(msgId, new NTEntry(msgStr, msgId, dataType, value, persistent));
                 break;
             case kEntryUpdate:
                 this.msgId = extractUInt16(usedLength);
@@ -45,10 +42,48 @@ public class NTPacketData {
                 toUpdate.setValue(value);
                 break;
             case kServerHello:
+                int serverFlag = NumberUtils.getUInt8(data[usedLength++]);
+                NTConnection.SERVER_SEEN_CLIENT = serverFlag == 0x01;
+                NTConnection.SERVER_IDENTITY = readString(usedLength);
+                this.value = NTConnection.SERVER_IDENTITY;
+                break;
+            case kFlagsUpdate:
+                this.msgId = extractUInt16(usedLength);
+                int entryFlag = NumberUtils.getUInt8(data[usedLength++]);
+                NTStorage.ENTRIES.get(msgId).setPersistent(entryFlag == 0x01);
+                break;
+            case kClientHello:
+                int clientProtoRev = extractUInt16(usedLength);
+                String clientIdentity = readString(usedLength);
+                NTStorage.CLIENTS.put(clientIdentity, clientProtoRev);
+                this.value = clientIdentity;
+                break;
+            case kProtoUnsup:
+                NTConnection.SERVER_LATEST_VER = extractUInt16(usedLength);
+                break;
+            case kEntryDelete:
+                this.msgId = extractUInt16(usedLength);
+                NTStorage.ENTRIES.remove(msgId);
+                break;
+            case kClearEntries:
+                final int[] checkAgainst = new int[] { 0xD0, 0x6C, 0xB2, 0x7A };
+                byte[] received = ArrayUtils.sliceArr(data, usedLength, usedLength + 4);
+                usedLength += 4;
+                boolean doReset = true;
+                for (int i = 0; i < checkAgainst.length; i++) {
+                    if (received[i] != (byte) checkAgainst[i]) {
+                        doReset = false;
+                        break;
+                    }
+                }
+                if (doReset) {
+                    NTStorage.ENTRIES.clear();
+                    NTStorage.TABS.clear();
+                }
+                break;
             case kExecuteRpc:
             case kRpcResponse:
-                this.msgId = extractUInt16(1);
-                this.msgStr = readString(3);
+                System.err.println("Warning: An unsupported RPC call or response was requested");
                 break;
         }
         NTStorage.PACKET_DATA.add(this);
@@ -63,22 +98,19 @@ public class NTPacketData {
         switch (dataType) {
             case NT_BOOLEAN:
                 usedLength++;
-                return data[start] == 0x01;
+                return NumberUtils.getUInt8(data[start]) == 0x01;
             case NT_DOUBLE:
                 return readDouble(start);
             case NT_STRING:
                 return readString(start);
             case NT_STRING_ARRAY:
                 usedLength++;
-                int len = data[start];
-                if (len != -1) {
-                    String[] strs = new String[data[start]];
-                    for (int i = 0; i < strs.length; i++) {
-                        strs[i] = readString(usedLength);
-                    }
-                    return strs;
+                int len = NumberUtils.getUInt8(data[start]);
+                String[] strs = new String[len];
+                for (int i = 0; i < strs.length; i++) {
+                    strs[i] = readString(usedLength);
                 }
-                return "none";
+                return strs;
             case NT_DOUBLE_ARRAY:
                 usedLength++;
                 double[] dbls = new double[data[start]];
@@ -96,9 +128,10 @@ public class NTPacketData {
     }
 
     private String readString(int start) {
-        int strLen = extractUInt16(start);
-        start += 2;
-        usedLength += strLen;
+        int strLen = NumberUtils.decodeULEB128(ArrayUtils.sliceArr(data, start));
+        int encLen = NumberUtils.sizeULEB128(strLen);
+        usedLength += strLen + encLen;
+        start += encLen;
         return new String(ArrayUtils.sliceArr(data, start, start + strLen));
     }
 

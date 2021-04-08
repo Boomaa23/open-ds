@@ -8,6 +8,7 @@ import com.boomaa.opends.util.PacketCounters;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 
 public class NetworkReloader extends DisplayEndpoint {
@@ -20,6 +21,7 @@ public class NetworkReloader extends DisplayEndpoint {
             if (protocol == Protocol.UDP) {
                 if (RIO_UDP_INTERFACE != null) {
                     RIO_UDP_INTERFACE.close();
+                    RIO_UDP_INTERFACE = null;
                 }
                 RIO_UDP_INTERFACE = new UDPInterface(rioIp, rioPorts.getUdpClient(), rioPorts.getUdpServer());
             }
@@ -27,11 +29,12 @@ public class NetworkReloader extends DisplayEndpoint {
                 NETWORK_TABLES.reloadConnection();
                 if (RIO_TCP_INTERFACE != null) {
                     RIO_TCP_INTERFACE.close();
+                    RIO_TCP_INTERFACE = null;
                 }
                 RIO_TCP_INTERFACE = new TCPInterface(rioIp, rioPorts.getTcp());
             }
             NET_IF_INIT.set(true, Remote.ROBO_RIO, protocol);
-        } catch (NumberFormatException ignored) {
+        } catch (NumberFormatException | SocketException ignored) {
             unsetRio(protocol);
         } catch (IOException e) {
             e.printStackTrace();

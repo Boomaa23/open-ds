@@ -5,8 +5,17 @@ public abstract class Clock extends Thread {
     protected final int msToCycle;
     protected boolean done = false;
 
+    public Clock(String name, int msToCycle) {
+        this.msToCycle = msToCycle;
+        super.setName(name);
+    }
+
     public Clock(int msToCycle) {
         this.msToCycle = msToCycle;
+        String name = getClass().getSimpleName();
+        if (!name.isEmpty()) {
+            super.setName(name);
+        }
     }
 
     public abstract void onCycle();

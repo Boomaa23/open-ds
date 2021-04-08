@@ -17,6 +17,7 @@ public class TCPInterface {
     public TCPInterface(String ip, int port) throws SocketException {
         try {
             this.socket = new Socket(ip, port);
+            socket.setTcpNoDelay(true);
             this.in = socket.getInputStream();
         } catch (ConnectException e) {
             close();
@@ -24,9 +25,12 @@ public class TCPInterface {
             close();
             e.printStackTrace();
         }
-        if (socket == null || in == null) {
+        if (socket == null) {
             close();
-            throw new SocketException("Null socket or socket input stream");
+            throw new SocketException("Null socket");
+        } else if (in == null) {
+            close();
+            throw new SocketException("Null socket input stream");
         }
     }
 
@@ -59,7 +63,6 @@ public class TCPInterface {
     }
 
     public void close() {
-        this.closed = true;
         try {
             if (socket != null) {
                 socket.close();
@@ -70,6 +73,7 @@ public class TCPInterface {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        this.closed = true;
     }
 
     public boolean isClosed() {

@@ -10,7 +10,6 @@ import com.boomaa.opends.usb.USBInterface;
 import com.boomaa.opends.usb.XboxController;
 import com.boomaa.opends.util.Clock;
 import com.boomaa.opends.util.NumberUtils;
-import com.boomaa.opends.util.OperatingSystem;
 
 import javax.swing.*;
 import java.awt.Dimension;
@@ -120,6 +119,7 @@ public class JoystickFrame extends PopupBase {
 
     private void refreshControllerDisplay() {
         EmbeddedJDEC.LIST_MODEL.clear();
+        USBInterface.findControllers();
         for (HIDDevice hid : USBInterface.getControlDevices().values()) {
             EmbeddedJDEC.LIST_MODEL.add(EmbeddedJDEC.LIST_MODEL.size(), hid);
         }

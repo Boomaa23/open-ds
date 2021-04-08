@@ -19,6 +19,7 @@ import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.Clock;
 import com.boomaa.opends.util.DSLog;
 import com.boomaa.opends.util.InitChecker;
+import org.lwjgl.glfw.GLFW;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -43,7 +44,7 @@ public class DisplayEndpoint implements MainJDEC {
     private static ProtocolClass creatorClass = new ProtocolClass("com.boomaa.opends.data.send.creator.Creator");
     private static ProtocolClass updaterClass = new ProtocolClass("com.boomaa.opends.display.updater.Updater");
 
-    private static final Clock rioTcpClock = new Clock(20) {
+    private static final Clock rioTcpClock = new Clock("rioTcp", 20) {
         @Override
         public void onCycle() {
             if (updater != null && creator != null) {
@@ -63,7 +64,7 @@ public class DisplayEndpoint implements MainJDEC {
         }
     };
 
-    private static final Clock rioUdpClock = new Clock(20) {
+    private static final Clock rioUdpClock = new Clock("rioUdp", 20) {
         @Override
         public void onCycle() {
             if (updater != null && creator != null) {
@@ -84,7 +85,7 @@ public class DisplayEndpoint implements MainJDEC {
         }
     };
 
-    private static final Clock fmsTcpClock = new Clock(Clock.INSTANT) {
+    private static final Clock fmsTcpClock = new Clock("fmsTcp", Clock.INSTANT) {
         @Override
         public void onCycle() {
             if (updater != null && creator != null && MainJDEC.FMS_CONNECT.isSelected()) {
@@ -106,7 +107,7 @@ public class DisplayEndpoint implements MainJDEC {
         }
     };
 
-    private static final Clock fmsUdpClock = new Clock(Clock.INSTANT) {
+    private static final Clock fmsUdpClock = new Clock("fmsUdp", Clock.INSTANT) {
         @Override
         public void onCycle() {
             if (updater != null && creator != null && MainJDEC.FMS_CONNECT.isSelected()) {
@@ -140,6 +141,14 @@ public class DisplayEndpoint implements MainJDEC {
         fmsUdpClock.start();
         NETWORK_TABLES.start();
         FILE_LOGGER.start();
+        while (true) {
+            GLFW.glfwPollEvents();
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         //TODO remove after testing
         //checkForUpdates();
     }

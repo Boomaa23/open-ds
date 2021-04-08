@@ -6,13 +6,16 @@ import com.boomaa.opends.networking.NetworkReloader;
 import com.boomaa.opends.networking.TCPInterface;
 import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.Clock;
+import com.boomaa.opends.util.NumberUtils;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.util.List;
 
 public class NTConnection extends Clock {
-    private static final byte[] clientHello = { 0x01, 0x00, 0x03 };
+    public static String SERVER_IDENTITY = "";
+    public static boolean SERVER_SEEN_CLIENT = false;
+    public static int SERVER_LATEST_VER = 0x0300;
+    private static final byte[] clientHello = getClientHello("opends");
     private TCPInterface connection;
     private boolean doReconnectSend = false;
 
@@ -27,13 +30,9 @@ public class NTConnection extends Clock {
         } else {
             if (doReconnectSend) {
                 decodeInput(connection.doInteract(clientHello));
-                decodeInput(connection.doInteract(new byte[] {0x00}));
                 doReconnectSend = false;
             }
-            try {
-                decodeInput(connection.read());
-            } catch (IOException ignored) {
-            }
+            decodeInput(connection.doInteract(new byte[] {0x00}));
         }
     }
 
@@ -62,5 +61,13 @@ public class NTConnection extends Clock {
                 i += new NTPacketData(ArrayUtils.sliceArr(data, i)).usedLength();
             }
         }
+    }
+
+    private static byte[] getClientHello(String clientName) {
+        List<Byte> msg = NumberUtils.encodeULEB128(clientName);
+        msg.add(0, (byte) 0x01);
+        msg.add(1, (byte) 0x03);
+        msg.add(2, (byte) 0x00);
+        return ArrayUtils.byteListUnbox(msg);
     }
 }

@@ -16,7 +16,7 @@ public class USBInterface {
         updateValues();
     }
 
-    public static void findControllers() {
+    public static synchronized void findControllers() {
         GLFW.glfwPollEvents();
         for (int idx = 0; idx < GLFW.GLFW_JOYSTICK_LAST; idx++) {
             if (GLFW.glfwJoystickPresent(idx)) {
