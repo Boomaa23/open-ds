@@ -54,7 +54,7 @@ public abstract class PopupBase extends JFrame {
         if (OperatingSystem.isWindows()) {
             super.dispose();
         } else {
-            setVisible(true);
+            setVisible(false);
         }
         alive.remove(this.getClass());
     }

@@ -23,7 +23,8 @@ public class DSLog extends Clock {
         super(20);
         Calendar date = Calendar.getInstance();
         String weekday = Date.DayMap.getFromInt(date.get(Calendar.DAY_OF_WEEK) - 1).name();
-        String folderName = OperatingSystem.isWindows() ? "C:\\Users\\Public\\Documents\\FRC\\Log Files\\" : "/var/log/opends/";
+        String folderName = OperatingSystem.isWindows() ? "C:\\Users\\Public\\Documents\\FRC\\Log Files\\"
+            : System.getProperty("user.home") + "/opends/";
         File folder = new File(folderName);
         if (!folder.isDirectory()) {
             folder.mkdirs();
