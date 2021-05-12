@@ -86,7 +86,6 @@ public enum SendTag {
                     builder.addInt(ctrl.getIndex())
                             .addInt(ctrl instanceof XboxController ? 1 : 0) //isXbox
                             .addInt((ctrl instanceof XboxController ? JoystickType.XINPUT_GAMEPAD : JoystickType.HID_JOYSTICK).numAsInt());
-                    //TODO make sure this controller name-getting works VVV
                     String name = ctrl.getName();
                     builder.addInt(name.length())
                             .addBytes(name.getBytes())

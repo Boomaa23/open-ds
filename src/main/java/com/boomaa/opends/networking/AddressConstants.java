@@ -18,8 +18,8 @@ public class AddressConstants {
     }
 
     public static String getRioAddress(boolean isUSB) throws NumberFormatException {
-        return isUSB ? USB_RIO_IP : LOCALHOST;
-//                "roboRIO-" + MainJDEC.TEAM_NUMBER.checkedIntParse() + "-FRC.local";
+        return isUSB ? USB_RIO_IP : //LOCALHOST;
+                "roboRIO-" + MainJDEC.TEAM_NUMBER.checkedIntParse() + "-FRC.local";
     }
 
     private static Object getProtoYearValue(String base) {

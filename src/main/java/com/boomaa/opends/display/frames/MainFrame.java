@@ -80,6 +80,7 @@ public class MainFrame implements MainJDEC {
             };
             reload.start();
         });
+        RESTART_CODE_BTN.addActionListener(e -> IS_ENABLED.setSelected(false));
         TEAM_NUMBER.getDocument().addDocumentListener(new TeamNumListener());
         TEAM_NUMBER.setText("5818"); //TODO remove after testing
         IS_ENABLED.setEnabled(false);

@@ -59,7 +59,7 @@ public class Updater2020 extends ElementUpdater {
                 TagValueMap<?> cpuInfo = cif.first();
                 double cpuPercent = 0;
                 float numCpus = (Float) cpuInfo.get("Number of CPUs");
-                for (int i = 1; i <= numCpus; i++) {
+                for (int i = 0; i < numCpus; i++) {
                     //TODO test if this cpu percentage algorithm works
                     float tCrit = (Float) cpuInfo.get("CPU " + i + " Time Critical %");
                     float tAbove = (Float) cpuInfo.get("CPU " + i + " Above Normal %");

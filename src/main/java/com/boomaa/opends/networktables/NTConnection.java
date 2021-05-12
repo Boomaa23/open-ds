@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class NTConnection extends Clock {
+    public static byte[] CUTOFF_DATA = new byte[0];
     public static String SERVER_IDENTITY = "";
     public static boolean SERVER_SEEN_CLIENT = false;
     public static int SERVER_LATEST_VER = 0x0300;
@@ -58,7 +59,20 @@ public class NTConnection extends Clock {
         if (data != null && data.length != 0) {
             int i = 0;
             while (i < data.length) {
-                i += new NTPacketData(ArrayUtils.sliceArr(data, i)).usedLength();
+                byte[] slicedData = ArrayUtils.sliceArr(data, i);
+                if (i == data.length - 1 && CUTOFF_DATA.length != 0) {
+                    byte[] mergedData = new byte[slicedData.length + CUTOFF_DATA.length];
+                    for (int j = 0; j < mergedData.length; j++) {
+                        if (j < CUTOFF_DATA.length) {
+                            mergedData[j] = CUTOFF_DATA[j];
+                        } else {
+                            mergedData[j] = slicedData[j - CUTOFF_DATA.length];
+                        }
+                    }
+                    slicedData = mergedData;
+                    CUTOFF_DATA = new byte[0];
+                }
+                i += new NTPacketData(slicedData).usedLength();
             }
         }
     }

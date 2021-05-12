@@ -21,72 +21,75 @@ public class NTPacketData {
         }
         this.usedLength = 1;
         this.data = data;
-        this.messageType = NTMessageType.getFromFlag(NumberUtils.getUInt8(data[0]));
-        switch (messageType) {
-            case kEntryAssign:
-                this.msgStr = readString(usedLength);
-                this.dataType = NTDataType.getFromFlag(NumberUtils.getUInt8(data[usedLength++]));
-                this.msgId = extractUInt16(usedLength);
-                this.seqNum = extractUInt16(usedLength);
-                boolean persistent = NumberUtils.getUInt8(data[usedLength++]) == 0x01;
-                this.value = extractValue(usedLength);
-                //TODO add tables and nesting
-                NTStorage.ENTRIES.put(msgId, new NTEntry(msgStr, msgId, dataType, value, persistent));
-                break;
-            case kEntryUpdate:
-                this.msgId = extractUInt16(usedLength);
-                NTEntry toUpdate = NTStorage.ENTRIES.get(msgId);
-                this.seqNum = extractUInt16(usedLength);
-                this.dataType = toUpdate.getDataType();
-                this.value = extractValue(usedLength);
-                toUpdate.setValue(value);
-                break;
-            case kServerHello:
-                int serverFlag = NumberUtils.getUInt8(data[usedLength++]);
-                NTConnection.SERVER_SEEN_CLIENT = serverFlag == 0x01;
-                NTConnection.SERVER_IDENTITY = readString(usedLength);
-                this.value = NTConnection.SERVER_IDENTITY;
-                break;
-            case kFlagsUpdate:
-                this.msgId = extractUInt16(usedLength);
-                int entryFlag = NumberUtils.getUInt8(data[usedLength++]);
-                NTStorage.ENTRIES.get(msgId).setPersistent(entryFlag == 0x01);
-                break;
-            case kClientHello:
-                int clientProtoRev = extractUInt16(usedLength);
-                String clientIdentity = readString(usedLength);
-                NTStorage.CLIENTS.put(clientIdentity, clientProtoRev);
-                this.value = clientIdentity;
-                break;
-            case kProtoUnsup:
-                NTConnection.SERVER_LATEST_VER = extractUInt16(usedLength);
-                break;
-            case kEntryDelete:
-                this.msgId = extractUInt16(usedLength);
-                NTStorage.ENTRIES.remove(msgId);
-                break;
-            case kClearEntries:
-                final int[] checkAgainst = new int[] { 0xD0, 0x6C, 0xB2, 0x7A };
-                byte[] received = ArrayUtils.sliceArr(data, usedLength, usedLength + 4);
-                usedLength += 4;
-                boolean doReset = true;
-                for (int i = 0; i < checkAgainst.length; i++) {
-                    if (received[i] != (byte) checkAgainst[i]) {
-                        doReset = false;
-                        break;
+        try {
+            this.messageType = NTMessageType.getFromFlag(NumberUtils.getUInt8(data[0]));
+            switch (messageType) {
+                case kEntryAssign:
+                    this.msgStr = readString(usedLength);
+                    this.dataType = NTDataType.getFromFlag(NumberUtils.getUInt8(data[usedLength++]));
+                    this.msgId = extractUInt16(usedLength);
+                    this.seqNum = extractUInt16(usedLength);
+                    boolean persistent = NumberUtils.getUInt8(data[usedLength++]) == 0x01;
+                    this.value = extractValue(usedLength);
+                    //TODO add tables and nesting
+                    NTStorage.ENTRIES.put(msgId, new NTEntry(msgStr, msgId, dataType, value, persistent));
+                    break;
+                case kEntryUpdate:
+                    this.msgId = extractUInt16(usedLength);
+                    NTEntry toUpdate = NTStorage.ENTRIES.get(msgId);
+                    this.seqNum = extractUInt16(usedLength);
+                    this.dataType = toUpdate.getDataType();
+                    this.value = extractValue(usedLength);
+                    toUpdate.setValue(value);
+                    break;
+                case kServerHello:
+                    int serverFlag = NumberUtils.getUInt8(data[usedLength++]);
+                    NTConnection.SERVER_SEEN_CLIENT = serverFlag == 0x01;
+                    NTConnection.SERVER_IDENTITY = readString(usedLength);
+                    this.value = NTConnection.SERVER_IDENTITY;
+                    break;
+                case kFlagsUpdate:
+                    this.msgId = extractUInt16(usedLength);
+                    int entryFlag = NumberUtils.getUInt8(data[usedLength++]);
+                    NTStorage.ENTRIES.get(msgId).setPersistent(entryFlag == 0x01);
+                    break;
+                case kClientHello:
+                    int clientProtoRev = extractUInt16(usedLength);
+                    String clientIdentity = readString(usedLength);
+                    NTStorage.CLIENTS.put(clientIdentity, clientProtoRev);
+                    this.value = clientIdentity;
+                    break;
+                case kProtoUnsup:
+                    NTConnection.SERVER_LATEST_VER = extractUInt16(usedLength);
+                    break;
+                case kEntryDelete:
+                    this.msgId = extractUInt16(usedLength);
+                    NTStorage.ENTRIES.remove(msgId);
+                    break;
+                case kClearEntries:
+                    final int[] checkAgainst = new int[] {0xD0, 0x6C, 0xB2, 0x7A};
+                    byte[] received = ArrayUtils.sliceArr(data, usedLength, usedLength + 4);
+                    usedLength += 4;
+                    boolean doReset = true;
+                    for (int i = 0; i < checkAgainst.length; i++) {
+                        if (received[i] != (byte) checkAgainst[i]) {
+                            doReset = false;
+                            break;
+                        }
                     }
-                }
-                if (doReset) {
-                    NTStorage.ENTRIES.clear();
-                    NTStorage.TABS.clear();
-                }
-                break;
-            case kExecuteRpc:
-            case kRpcResponse:
-                System.err.println("Warning: An unsupported RPC call or response was requested");
-                break;
+                    if (doReset) {
+                        NTStorage.ENTRIES.clear();
+                        NTStorage.TABS.clear();
+                    }
+                    break;
+                case kExecuteRpc:
+                case kRpcResponse:
+                    break;
+            }
+            NTStorage.PACKET_DATA.add(this);
+        } catch (ArrayIndexOutOfBoundsException | NullPointerException e) {
+            NTConnection.CUTOFF_DATA = data;
         }
-        NTStorage.PACKET_DATA.add(this);
     }
 
     private int extractUInt16(int start) {

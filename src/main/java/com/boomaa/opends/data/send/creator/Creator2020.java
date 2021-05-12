@@ -97,7 +97,6 @@ public class Creator2020 extends PacketCreator {
             builder.addBytes(NumberUtils.intToBytePair(Integer.parseInt(teamStr)));
         }
         double bat = Double.parseDouble(BAT_VOLTAGE.getText().replaceAll(" V", ""));
-        //TODO test if this battery re-encoder works
         int b1 = (int) bat;
         int b2 = (int) ((bat - b1) * 256);
         builder.addInt(b1);
