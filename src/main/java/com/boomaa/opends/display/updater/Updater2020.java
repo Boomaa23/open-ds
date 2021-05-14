@@ -15,6 +15,7 @@ import com.boomaa.opends.data.receive.parser.Parser2020;
 import com.boomaa.opends.data.send.creator.PacketCreator;
 import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.display.RobotMode;
+import com.boomaa.opends.util.DSLog;
 import com.boomaa.opends.util.NumberUtils;
 
 import java.util.List;
@@ -119,6 +120,20 @@ public class Updater2020 extends ElementUpdater {
                         break;
                     }
                 }
+            }
+
+            TVMList em = tagMap.getMatching(ReceiveTag.ERROR_MESSAGE);
+            if (!em.isEmpty()) {
+                TagValueMap<?> errorMessage = em.first();
+                String error = (String) errorMessage.get("Details") + errorMessage.get("Location") + errorMessage.get("Call Stack");
+                String flag = (String) errorMessage.get("Flag");
+                DSLog.queueEvent(error, flag != null && flag.equals("Error") ? DSLog.EventSeverity.ERROR : DSLog.EventSeverity.WARNING);
+            }
+
+            TVMList so = tagMap.getMatching(ReceiveTag.STANDARD_OUT);
+            if (!so.isEmpty()) {
+                TagValueMap<?> stdOut = so.first();
+                DSLog.queueEvent((String) stdOut.get("Message"), DSLog.EventSeverity.INFO);
             }
         }
     }

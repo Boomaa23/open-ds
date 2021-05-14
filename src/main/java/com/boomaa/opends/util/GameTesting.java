@@ -17,8 +17,10 @@ public class GameTesting {
         System.out.println((float) 0x02);
         DSLog dl = new DSLog();
         dl.start();
+        DSLog.queueEvent(String.valueOf(System.currentTimeMillis()), DSLog.EventSeverity.ERROR);
+        dl.end();
         //PDP
-        printudp("284a0104320c28001a080e0300c0381103c0e00441203c180501100481405014ffa6570a090e2d2d2d2d2d2d2d2d");
+//        printudp("284a0104320c28001a080e0300c0381103c0e00441203c180501100481405014ffa6570a090e2d2d2d2d2d2d2d2d");
         //CPU
 //        printudp("282c0104320c2d002205024283945e00000000000000003eabbe154277688100000000000000003e965929");
 
@@ -30,6 +32,9 @@ public class GameTesting {
         System.out.println(ct);
         System.out.println(Arrays.toString(data));
         System.out.println(NumberUtils.getUInt32(decodeHexString("dac124f3")));
+        System.out.println(NumberUtils.getUInt32(decodeHexString("DCC0A14A")) + 4_294_967_295L);
+        System.out.println(NumberUtils.getUInt32(decodeHexString("DCC37C7F")) + 4_294_967_295L);
+        System.out.println((-Integer.MAX_VALUE));
 //        2_082_844_800L + 4_294_967_295L
     }
 

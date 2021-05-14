@@ -18,8 +18,17 @@ public class AddressConstants {
     }
 
     public static String getRioAddress(boolean isUSB) throws NumberFormatException {
-        return isUSB ? USB_RIO_IP : //LOCALHOST;
-                "roboRIO-" + MainJDEC.TEAM_NUMBER.checkedIntParse() + "-FRC.local";
+        if (isUSB) {
+            return USB_RIO_IP;
+        }
+        int teamNum = MainJDEC.TEAM_NUMBER.checkedIntParse();
+        if (teamNum != -1) {
+            return "roboRIO-" + teamNum +"-FRC.local";
+        } else if (MainJDEC.TEAM_NUMBER.getText().toLowerCase().equals("localhost")) {
+            return LOCALHOST;
+        }
+        // Default case that will always fail
+        return "route-find-fail";
     }
 
     private static Object getProtoYearValue(String base) {

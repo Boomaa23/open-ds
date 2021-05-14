@@ -97,9 +97,14 @@ public class NetworkReloader extends DisplayEndpoint {
 
     public static boolean exceptionPingTest(String ip) throws IOException {
         try {
-            return InetAddress.getByName(ip).isReachable(500);
+            return InetAddress.getByName(ip).isReachable(1000);
         } catch (UnknownHostException ignored) {
-            throw new IOException("Unknown host");
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            throw new IOException("Unknown host " + ip);
         }
     }
 }

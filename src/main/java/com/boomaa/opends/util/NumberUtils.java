@@ -58,6 +58,10 @@ public class NumberUtils {
         return ByteBuffer.allocate(4).putInt(in).array();
     }
 
+    public static byte[] longToByteOctet(long in) {
+        return ByteBuffer.allocate(8).putLong(in).array();
+    }
+
     public static int dblToInt8(double in) {
         // range [-128, 127] for joysticks
         return (int) (in * (in < 0 ? 128 : 127));
@@ -194,6 +198,18 @@ public class NumberUtils {
             ci.next();
         }
         return String.format("%.1f %cB", bytes / 1000.0, ci.current());
+    }
+
+    public static String toTitleCase(String text) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < text.length(); i++) {
+            if (i == 0 || text.charAt(i - 1) == ' ') {
+                sb.append(Character.toUpperCase(text.charAt(i)));
+            } else {
+                sb.append(Character.toLowerCase(text.charAt(i)));
+            }
+        }
+        return sb.toString();
     }
 
     public static String[] extractAllASCII(byte[] bytes) {
