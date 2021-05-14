@@ -76,7 +76,7 @@ public abstract class PacketParser {
         return tagValues;
     }
 
-    public <T extends DataBase> List<T> getFlagDataAt(T[] values, int index) {
+    public <T extends DataBase.Holder> List<T> getFlagDataAt(T[] values, int index) {
         List<T> outList = new ArrayList<>();
         for (T data : values) {
             if (NumberUtils.hasMaskMatch(packet[index], data.getFlag())) {

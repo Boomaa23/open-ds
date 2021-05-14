@@ -1,12 +1,10 @@
 package com.boomaa.opends.util;
 
-import com.boomaa.opends.data.receive.ReceiveTag;
 import com.boomaa.opends.data.receive.parser.Parser2020;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
-import java.util.Collections;
 
 public class GameTesting {
     public static void main(String[] args) throws URISyntaxException, IOException {
@@ -15,15 +13,17 @@ public class GameTesting {
         byte[] bs = new byte[] {(byte) 0x3f, (byte) 0x1c, (byte) 0x53, (byte) 0xd2};
         System.out.println(NumberUtils.getFloat(bs));
         System.out.println((float) 0x02);
-        DSLog dl = new DSLog();
-        dl.start();
-        DSLog.queueEvent(String.valueOf(System.currentTimeMillis()), DSLog.EventSeverity.ERROR);
-        dl.end();
+//        DSLog dl = new DSLog();
+//        dl.start();
+//        DSLog.queueEvent(String.valueOf(System.currentTimeMillis()), DSLog.EventSeverity.ERROR);
+//        dl.end();
         //PDP
 //        printudp("284a0104320c28001a080e0300c0381103c0e00441203c180501100481405014ffa6570a090e2d2d2d2d2d2d2d2d");
         //CPU
 //        printudp("282c0104320c2d002205024283945e00000000000000003eabbe154277688100000000000000003e965929");
 
+        System.out.println("EGG " + NumberUtils.getFloat(new byte[] {0x42, (byte) 0xa0, (byte) 0xcf, (byte) 0xe4}));
+        System.out.println(1.75 % 1D);
         long ct = System.currentTimeMillis() / 1000;
         long val = -2_212_122_495L + ct;
         byte[] data = NumberUtils.intToByteQuad((int) val);
@@ -36,6 +36,11 @@ public class GameTesting {
         System.out.println(NumberUtils.getUInt32(decodeHexString("DCC37C7F")) + 4_294_967_295L);
         System.out.println((-Integer.MAX_VALUE));
 //        2_082_844_800L + 4_294_967_295L
+        int[] current = {
+                1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        };
+        System.out.println(Arrays.toString(fillPDP(current)));
+
     }
 
     public static void printtcp(String str) {
@@ -102,12 +107,32 @@ public class GameTesting {
         return (byte) ((firstDigit << 4) + secondDigit);
     }
 
-    private static int toDigit(char hexChar) {
+    public static int toDigit(char hexChar) {
         int digit = Character.digit(hexChar, 16);
         if(digit == -1) {
             throw new IllegalArgumentException(
                     "Invalid Hexadecimal Character: "+ hexChar);
         }
         return digit;
+    }
+
+    public static byte[] fillPDP(int[] current) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < current.length; i++) {
+            sb.append(String.format("%10s", Integer.toBinaryString(current[i] * 8)).replaceAll(" ", "0"));
+            if (i == 6 || i == 12) {
+                sb.append("0000");
+            }
+        }
+        byte[] pdp = new byte[24];
+        int ctr = 0;
+        for (int i = 0; i < pdp.length; i++) {
+            if (i < 21) {
+                pdp[i] = (byte) Integer.parseInt(sb.substring(ctr, ctr += 8), 2);
+            } else {
+                pdp[i] = 0;
+            }
+        }
+        return pdp;
     }
 }

@@ -1,23 +1,33 @@
 package com.boomaa.opends.data.holders;
 
-import com.boomaa.opends.display.MainJDEC;
+public enum Trace implements DataBase.Holder {
+    ROBOTCODE(DataBase.create()
+            .addFlag(0x20, 2021, 2020)
+    ),
+    ISROBORIO(DataBase.create()
+            .addFlag(0x10, 2021, 2020)
+    ),
+    TESTMODE(DataBase.create()
+            .addFlag(0x08, 2021, 2020)
+    ),
+    AUTOMODE(DataBase.create()
+            .addFlag(0x04, 2021, 2020)
+    ),
+    TELEOPCODE(DataBase.create()
+            .addFlag(0x02, 2021, 2020)
+    ),
+    DISABLED(DataBase.create()
+            .addFlag(0x01, 2021, 2020)
+    );
 
-public enum Trace implements DataBase {
-    ROBOTCODE(0x20, 0x20),
-    ISROBORIO(0x10, 0x10),
-    TESTMODE(0x08, 0x08),
-    AUTOMODE(0x04, 0x04),
-    TELEOPCODE(0x02, 0x02),
-    DISABLED(0x01, 0x01);
+    public final DataBase flags;
 
-    private final int[] flags;
-
-    Trace(int... flags) {
+    Trace(DataBase flags) {
         this.flags = flags;
     }
 
     @Override
     public int getFlag() {
-        return flags[MainJDEC.getProtocolIndex()];
+        return flags.getCurrentFlag();
     }
 }

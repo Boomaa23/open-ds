@@ -1,23 +1,37 @@
 package com.boomaa.opends.data.holders;
 
-import com.boomaa.opends.display.MainJDEC;
+public enum Control implements DataBase.Holder {
+    ESTOP(DataBase.create()
+            .addFlag(0x80, 2021, 2020, 2016, 2015)
+            .addFlag(0x00, 2014)
+    ),
+    FMS_CONNECTED(DataBase.create()
+            .addFlag(0x08, 2021, 2020, 2016, 2015, 2014)
+    ),
+    ENABLED(DataBase.create()
+            .addFlag(0x04, 2021, 2020, 2016, 2015)
+            .addFlag(0x20, 2014)
+    ),
+    TELEOP_MODE(DataBase.create()
+            .addFlag(0x00, 2021, 2020, 2016, 2015, 2014)
+    ),
+    TEST_MODE(DataBase.create()
+            .addFlag(0x01, 2021, 2020, 2016, 2015)
+            .addFlag(0x02, 2014)
+    ),
+    AUTO_MODE(DataBase.create()
+            .addFlag(0x02, 2021, 2020, 2016, 2015)
+            .addFlag(0x10, 2014)
+    );
 
-public enum Control implements DataBase {
-    ESTOP(0x80, 0x80, 0x80, 0x00),
-    FMS_CONNECTED(0x08, 0x08, 0x08, 0x08),
-    ENABLED(0x04, 0x04, 0x04, 0x20),
-    TELEOP_MODE(0x00, 0x00, 0x00, 0x00),
-    TEST_MODE(0x01, 0x01, 0x01, 0x02),
-    AUTO_MODE(0x02, 0x02, 0x02, 0x10);
+    public final DataBase flags;
 
-    private final int[] flags;
-
-    Control(int... flags) {
+    Control(DataBase flags) {
         this.flags = flags;
     }
 
     @Override
     public int getFlag() {
-        return flags[MainJDEC.getProtocolIndex()];
+        return flags.getCurrentFlag();
     }
 }

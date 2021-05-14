@@ -70,6 +70,7 @@ public class Updater2020 extends ElementUpdater {
                             / (tCrit + tAbove + tNorm + tLow);
                 }
                 cpuPercent /= numCpus;
+                cpuPercent *= 100;
                 StatsFields.CPU_PERCENT.updateTableValue(cpuPercent);
             }
 

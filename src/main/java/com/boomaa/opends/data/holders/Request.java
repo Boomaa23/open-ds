@@ -1,21 +1,26 @@
 package com.boomaa.opends.data.holders;
 
-import com.boomaa.opends.display.MainJDEC;
-
-public enum Request implements DataBase {
+public enum Request implements DataBase.Holder {
     // added, not in FRCture documentation
-    DS_CONNECTED(0x10, 0x10, -1, -1, -1),
-    REBOOT_ROBO_RIO(0x08, 0x08, -1, -1, 0x80),
-    RESTART_CODE(0x04, 0x04, -1, -1, -1);
+    DS_CONNECTED(DataBase.create()
+            .addFlag(0x10, 2021, 2020)
+    ),
+    REBOOT_ROBO_RIO(DataBase.create()
+            .addFlag(0x08, 2021, 2020)
+            .addFlag(0x80, 2014)
+    ),
+    RESTART_CODE(DataBase.create()
+            .addFlag(0x04, 2021, 2020)
+    );
 
-    private final int[] flags;
+    public final DataBase flags;
 
-    Request(int... flags) {
+    Request(DataBase flags) {
         this.flags = flags;
     }
 
     @Override
     public int getFlag() {
-        return flags[MainJDEC.getProtocolIndex()];
+        return flags.getCurrentFlag();
     }
 }

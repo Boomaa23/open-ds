@@ -43,7 +43,6 @@ public enum ReceiveTag {
                     TagValueMap.singleton("Utilization %", (int) packet[0]),
             NullReceiveTag.getInstance()
     ),
-    //TODO 2020 field listing does not match data - fix, percentages do not make sense
     CPU_INFO(0x05, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS,
             RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<Float>) (packet, size) -> {
@@ -135,12 +134,12 @@ public enum ReceiveTag {
             NullReceiveTag.getInstance(),
             NullReceiveTag.getInstance()
     ),
-    //TODO fix disable and rail faults (record more data)
+    //TODO fix disable and rail faults (record more data?)
     DISABLE_FAULTS(0x04, Protocol.TCP, Remote.ROBO_RIO, InLog.ALWAYS,
             RefRecieveTag.yearOfAction(2020),
-            (ReceiveTagAction<Integer>) (packet, size) -> new TagValueMap<Integer>(),
-//                .addTo("Comms", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 0, 2)))
-//                .addTo("12V", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 2, 4))),
+            (ReceiveTagAction<Integer>) (packet, size) -> new TagValueMap<Integer>()
+                .addTo("Comms", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 0, 2)))
+                .addTo("12V", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 2, 4))),
             NullReceiveTag.getInstance(),
             NullReceiveTag.getInstance(),
             NullReceiveTag.getInstance()

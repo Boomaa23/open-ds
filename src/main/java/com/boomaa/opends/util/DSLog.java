@@ -3,6 +3,7 @@ package com.boomaa.opends.util;
 import com.boomaa.opends.data.StatsFields;
 import com.boomaa.opends.data.holders.Date;
 import com.boomaa.opends.data.holders.Remote;
+import com.boomaa.opends.data.receive.ReceiveTag;
 import com.boomaa.opends.data.send.PacketBuilder;
 import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.display.MainJDEC;
@@ -73,7 +74,7 @@ public class DSLog extends Clock {
 
     @Override
     public void onCycle() {
-        //TODO figure out diff b/n DS_mode and ROBOT_mode traces
+        //TODO make ROBOT_mode reflect changes in robot connection
         int trace = 0xFF;
         WlanConnection radio = WlanConnection.getRadio();
         double bat = checkedNumParse(MainJDEC.BAT_VOLTAGE.getText().replaceAll(" V", ""));
@@ -100,9 +101,9 @@ public class DSLog extends Clock {
                 .addBytes(getBattery(bat))
                 .addInts(getRioCPU((int) checkedNumParse(StatsFields.CPU_PERCENT.getValue())), trace,
                         getCAN((int) checkedNumParse(StatsFields.CAN_UTILIZATION.getValue())),
-                        getWifiDb(radio != null ? radio.getSignal() : 0x00),
-                        getWifiMb(0x00)) //wifiMb
-                .pad(0x00, 2)
+                        getWifiDb(radio != null ? radio.getSignal() : 0x00))
+                .addBytes(getWifiMb(0x00))
+                .pad(0x00, 1)
                 .addBytes(PDP_STATS)
                 .build()
         );
@@ -154,7 +155,7 @@ public class DSLog extends Clock {
     }
 
     private int getTripTime(int tripTime) {
-        return tripTime * 15;
+        return tripTime * 2;
     }
 
     private int getPacketLoss(int packetLoss) {
@@ -180,8 +181,8 @@ public class DSLog extends Clock {
         return wifiDb * 2;
     }
 
-    private int getWifiMb(int wifiMb) {
-        return wifiMb * 2;
+    private byte[] getWifiMb(double wifiMb) {
+        return new byte[] { (byte) wifiMb, (byte) (wifiMb % 1D * 0xFF) };
     }
 
     public enum EventSeverity {

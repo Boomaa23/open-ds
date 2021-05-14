@@ -141,7 +141,10 @@ public class DisplayEndpoint implements MainJDEC {
         fmsUdpClock.start();
         NETWORK_TABLES.start();
         FILE_LOGGER.start();
-        while (true) {
+        //TODO remove after testing
+        //checkForUpdates();
+
+        while (MainJDEC.FRAME.isShowing()) {
             GLFW.glfwPollEvents();
             try {
                 Thread.sleep(100);
@@ -149,8 +152,6 @@ public class DisplayEndpoint implements MainJDEC {
                 e.printStackTrace();
             }
         }
-        //TODO remove after testing
-        //checkForUpdates();
     }
 
     public static void doProtocolUpdate() {
