@@ -49,23 +49,31 @@ public class MainFrame implements MainJDEC {
     public static void layoutInit() {
         FRAME.setPreferredSize(new Dimension(560, 320));
         LOG_BTN.addActionListener((e) -> {
-            if (!PopupBase.isAlive(LogFrame.class)) {
+            if (!PopupBase.isAlive("LogFrame")) {
                 new LogFrame();
+            } else {
+                PopupBase.getAlive("LogFrame").forceShow();
             }
         });
         JS_BTN.addActionListener((e) -> {
-            if (!PopupBase.isAlive(JoystickFrame.class)) {
+            if (!PopupBase.isAlive("JoystickFrame")) {
                 new JoystickFrame();
+            } else {
+                PopupBase.getAlive("JoystickFrame").forceShow();
             }
         });
         STATS_BTN.addActionListener((e) -> {
-            if (!PopupBase.isAlive(StatsFrame.class)) {
+            if (!PopupBase.isAlive("StatsFrame")) {
                 new StatsFrame();
+            } else {
+                PopupBase.getAlive("StatsFrame").forceShow();
             }
         });
         NT_BTN.addActionListener((e) -> {
-            if (!PopupBase.isAlive(NTFrame.class)) {
+            if (!PopupBase.isAlive("NTFrame")) {
                 NT_FRAME = new NTFrame();
+            } else {
+                PopupBase.getAlive("NTFrame").forceShow();
             }
         });
         USB_CONNECT.addActionListener((e) -> {

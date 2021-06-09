@@ -12,11 +12,13 @@ import java.io.IOException;
 import java.util.List;
 
 public class NTConnection extends Clock {
+    private static final byte[] CLIENT_HELLO = getClientHello("opends");
+    private static final byte[] CLIENT_HELLO_COMPLETE = new byte[] { 0x05 };
+    private static final byte[] KEEP_ALIVE = new byte[] { 0x00 };
     public static byte[] CUTOFF_DATA = new byte[0];
     public static String SERVER_IDENTITY = "";
     public static boolean SERVER_SEEN_CLIENT = false;
     public static int SERVER_LATEST_VER = 0x0300;
-    private static final byte[] clientHello = getClientHello("opends");
     private TCPInterface connection;
     private boolean doReconnectSend = false;
 
@@ -30,10 +32,11 @@ public class NTConnection extends Clock {
             reloadConnection();
         } else {
             if (doReconnectSend) {
-                decodeInput(connection.doInteract(clientHello));
+                decodeInput(connection.doInteract(CLIENT_HELLO));
+                decodeInput(connection.doInteract(CLIENT_HELLO_COMPLETE));
                 doReconnectSend = false;
             }
-            decodeInput(connection.doInteract(new byte[] {0x00}));
+            decodeInput(connection.doInteract(KEEP_ALIVE));
         }
     }
 

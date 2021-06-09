@@ -38,7 +38,7 @@ public class NTPacketData {
                     this.msgId = extractUInt16(usedLength);
                     NTEntry toUpdate = NTStorage.ENTRIES.get(msgId);
                     this.seqNum = extractUInt16(usedLength);
-                    this.dataType = toUpdate.getDataType();
+                    this.dataType = NTDataType.getFromFlag(NumberUtils.getUInt8(data[usedLength++]));
                     this.value = extractValue(usedLength);
                     toUpdate.setValue(value);
                     break;

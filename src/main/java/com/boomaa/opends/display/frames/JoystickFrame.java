@@ -23,7 +23,7 @@ public class JoystickFrame extends PopupBase {
     private ValueUpdater valueUpdater;
 
     public JoystickFrame() {
-        super("Joysticks", new Dimension(500, 265));
+        super("Joysticks", new Dimension(520, 275));
     }
 
     @Override
@@ -131,6 +131,7 @@ public class JoystickFrame extends PopupBase {
 
     private void refreshControllerDisplay() {
         EmbeddedJDEC.LIST_MODEL.clear();
+        USBInterface.clearControllers();
         USBInterface.findControllers();
         for (HIDDevice hid : USBInterface.getControlDevices().values()) {
             EmbeddedJDEC.LIST_MODEL.add(EmbeddedJDEC.LIST_MODEL.size(), hid);

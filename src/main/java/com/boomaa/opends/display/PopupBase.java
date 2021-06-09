@@ -7,11 +7,14 @@ import javax.swing.JFrame;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class PopupBase extends JFrame {
-    private static List<Class<?>> alive = new ArrayList<>();
-    private final Dimension dimension;
+    protected static Map<String, PopupBase> alive = new LinkedHashMap<>();
+    protected final String uuid;
+    protected final Dimension dimension;
     protected Container content;
 
     public PopupBase() {
@@ -20,11 +23,14 @@ public abstract class PopupBase extends JFrame {
 
     public PopupBase(String title, Dimension dimension) {
         super(title);
-        alive.add(this.getClass());
+        this.uuid = getClass().getSimpleName();
+        alive.put(uuid, this);
         this.dimension = dimension;
         this.content = this.getContentPane();
         config();
-        display();
+        super.pack();
+        super.setLocationRelativeTo(null);
+        forceShow();
     }
 
     public void config() {
@@ -36,26 +42,32 @@ public abstract class PopupBase extends JFrame {
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 
-    public void display() {
-        this.pack();
-        this.setVisible(true);
+    public void forceShow() {
+        super.setVisible(true);
     }
 
-    public static boolean isAlive(Class<?> clazz) {
-        return alive.contains(clazz);
+    public void forceHide() {
+        super.setVisible(false);
     }
 
-    public static void removeAlive(Class<?> clazz) {
-        alive.remove(clazz);
+    public String getUUID() {
+        return uuid;
+    }
+
+    public static boolean isAlive(String uuid) {
+        return alive.containsKey(uuid);
+    }
+
+    public static PopupBase getAlive(String uuid) {
+        return alive.get(uuid);
+    }
+
+    public static void removeAlive(String uuid) {
+        alive.remove(uuid);
     }
 
     @Override
     public void dispose() {
-        if (OperatingSystem.isWindows()) {
-            super.dispose();
-        } else {
-            setVisible(false);
-        }
-        alive.remove(this.getClass());
+        forceHide();
     }
 }

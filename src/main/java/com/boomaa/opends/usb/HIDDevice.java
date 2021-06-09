@@ -25,6 +25,7 @@ public abstract class HIDDevice {
 
     public abstract void update();
 
+    //TODO what is this?
     private void checkMax() {
         if (swIdx > MAX_JS_INDEX) {
             MAX_JS_INDEX = swIdx;

@@ -20,15 +20,20 @@ public class USBInterface {
         GLFW.glfwPollEvents();
         for (int idx = 0; idx < GLFW.GLFW_JOYSTICK_LAST; idx++) {
             if (GLFW.glfwJoystickPresent(idx)) {
-                controlDevices.put(idx, GLFW.glfwJoystickIsGamepad(idx) ? new XboxController(idx) : new Joystick(idx));
+                //TODO fix xbox controller compatibility
+//                controlDevices.put(idx, GLFW.glfwJoystickIsGamepad(idx) ? new XboxController(idx) : new Joystick(idx));
+                controlDevices.put(idx, new Joystick(idx));
             }
         }
     }
 
+    public static synchronized void clearControllers() {
+        controlDevices.clear();
+    }
+
     public static synchronized void updateValues() {
         GLFW.glfwPollEvents();
-        int size = controlDevices.size();
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i <= HIDDevice.MAX_JS_INDEX; i++) {
             HIDDevice ctrl = controlDevices.get(i);
             if (ctrl != null) {
                 if (ctrl.needsRemove()) {
@@ -42,7 +47,7 @@ public class USBInterface {
 
     public static synchronized void reindexControllers() {
         Map<Integer, HIDDevice> deviceMapTemp = new HashMap<>(controlDevices);
-        controlDevices.clear();
+        clearControllers();
         for (HIDDevice device : deviceMapTemp.values()) {
             int devIdx = device.getIndex();
             controlDevices.put(devIdx, device);
