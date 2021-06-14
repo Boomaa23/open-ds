@@ -40,7 +40,7 @@ public class JoystickFrame extends PopupBase {
         EmbeddedJDEC.LIST_SCR.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         EmbeddedJDEC.LIST_SCR.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         EmbeddedJDEC.LIST_SCR.setPreferredSize(new Dimension(200, 100));
-        refreshControllerDisplay();
+        resetControllerDisplay();
 
         EmbeddedJDEC.UP_BTN.setEnabled(false);
         EmbeddedJDEC.DOWN_BTN.setEnabled(false);
@@ -52,7 +52,7 @@ public class JoystickFrame extends PopupBase {
             HIDDevice device = EmbeddedJDEC.LIST.getSelectedValue();
             if (device != null) {
                 EmbeddedJDEC.INDEX_SET.setEnabled(true);
-                EmbeddedJDEC.INDEX_SET.setText(String.valueOf(device.getIndex()));
+                EmbeddedJDEC.INDEX_SET.setText(String.valueOf(device.getFRCIdx()));
 
                 EmbeddedJDEC.DISABLE_BTN.setEnabled(true);
                 EmbeddedJDEC.DISABLE_BTN.setSelected(device.isDisabled());
@@ -79,16 +79,16 @@ public class JoystickFrame extends PopupBase {
             }
         });
         EmbeddedJDEC.UP_BTN.addActionListener(e -> {
-            HIDDevice current = EmbeddedJDEC.LIST.getSelectedValue();
-            swapDeviceIndices(current, current.getIndex() + 1);
+            int idx = EmbeddedJDEC.LIST.getSelectedIndex();
+            swapDeviceIndices(idx, idx - 1);
         });
         EmbeddedJDEC.DOWN_BTN.addActionListener(e -> {
-            HIDDevice current = EmbeddedJDEC.LIST.getSelectedValue();
-            swapDeviceIndices(current, current.getIndex() - 1);
+            int idx = EmbeddedJDEC.LIST.getSelectedIndex();
+            swapDeviceIndices(idx, idx + 1);
         });
         EmbeddedJDEC.DISABLE_BTN.addActionListener(e -> EmbeddedJDEC.LIST.getSelectedValue()
                 .setDisabled(EmbeddedJDEC.DISABLE_BTN.isSelected()));
-        EmbeddedJDEC.RELOAD_BTN.addActionListener(e -> refreshControllerDisplay());
+        EmbeddedJDEC.RELOAD_BTN.addActionListener(e -> resetControllerDisplay());
         EmbeddedJDEC.CLOSE_BTN.addActionListener(e -> this.dispose());
 
         content.setLayout(new GridBagLayout());
@@ -129,9 +129,28 @@ public class JoystickFrame extends PopupBase {
         valueUpdater.start();
     }
 
-    private void refreshControllerDisplay() {
+    private static synchronized void swapDeviceIndices(int aIndex, int bIndex) {
+        HIDDevice aDevice = EmbeddedJDEC.LIST_MODEL.getElementAt(aIndex);
+        try {
+            HIDDevice bDevice = EmbeddedJDEC.LIST_MODEL.getElementAt(bIndex);
+            aDevice.setFRCIdx(bIndex);
+            bDevice.setFRCIdx(aIndex);
+            EmbeddedJDEC.LIST_MODEL.set(aIndex, bDevice);
+            EmbeddedJDEC.LIST_MODEL.set(bIndex, aDevice);
+            EmbeddedJDEC.LIST.setSelectedIndex(bIndex);
+        } catch (ArrayIndexOutOfBoundsException ignored) {
+            int listSize = EmbeddedJDEC.LIST_MODEL.size();
+            aDevice.setFRCIdx(bIndex);
+            if (bIndex >= listSize) {
+                EmbeddedJDEC.LIST_MODEL.removeElement(aDevice);
+                EmbeddedJDEC.LIST_MODEL.addElement(aDevice);
+                EmbeddedJDEC.LIST.setSelectedIndex(listSize - 1);
+            }
+        }
+    }
+
+    private void resetControllerDisplay() {
         EmbeddedJDEC.LIST_MODEL.clear();
-        USBInterface.clearControllers();
         USBInterface.findControllers();
         for (HIDDevice hid : USBInterface.getControlDevices().values()) {
             EmbeddedJDEC.LIST_MODEL.add(EmbeddedJDEC.LIST_MODEL.size(), hid);
@@ -170,33 +189,6 @@ public class JoystickFrame extends PopupBase {
         JCheckBox DISABLE_BTN = new JCheckBox("Disable");
     }
 
-    private static void swapDeviceIndices(HIDDevice current, int nIndex) {
-        try {
-            int cIndex = current.getIndex();
-            if (cIndex != nIndex) {
-                if (nIndex >= HIDDevice.MAX_JS_NUM) {
-                    MessageBox.show("Index \"" + nIndex +
-                        "\" greater than maximum joystick index of \"" +
-                        HIDDevice.MAX_JS_NUM, MessageBox.Type.ERROR);
-                    EmbeddedJDEC.INDEX_SET.setText(String.valueOf(cIndex));
-                    return;
-                }
-                for (HIDDevice dev : USBInterface.getControlDevices().values()) {
-                    if (dev.getIndex() == nIndex) {
-                        MessageBox.show("Duplicate index \"" + nIndex + "\" for controller \"" + dev.toString()
-                                + "\"\nSetting controller \"" + dev.toString() + "\" on index \"" + dev.getIndex()
-                                + "\"\n to new index \"" + cIndex + "\" and making requested index change",
-                            MessageBox.Type.WARNING);
-                        dev.setIndex(cIndex);
-                    }
-                }
-            }
-            current.setIndex(nIndex);
-            USBInterface.reindexControllers();
-        } catch (NumberFormatException ignored) {
-        }
-    }
-
     public static class ValueUpdater extends Clock {
         public ValueUpdater() {
             super(100);
@@ -204,25 +196,35 @@ public class JoystickFrame extends PopupBase {
 
         @Override
         public void onCycle() {
+            if (!PopupBase.getAlive("JoystickFrame").isVisible()) {
+                return;
+            }
             HIDDevice current = EmbeddedJDEC.LIST.getSelectedValue();
+            int cListIdx = EmbeddedJDEC.LIST.getSelectedIndex();
             if (current != null) {
-                EmbeddedJDEC.UP_BTN.setEnabled(current.getIndex() != 0);
-                EmbeddedJDEC.DOWN_BTN.setEnabled(current.getIndex() != EmbeddedJDEC.LIST_MODEL.size() - 1);
+                EmbeddedJDEC.UP_BTN.setEnabled(cListIdx != 0);
+                EmbeddedJDEC.DOWN_BTN.setEnabled(cListIdx != EmbeddedJDEC.LIST_MODEL.size() - 1);
                 USBInterface.updateValues();
-                swapDeviceIndices(current, Integer.parseInt(EmbeddedJDEC.INDEX_SET.getText()));
+                try {
+                    int nFRCIdx = Integer.parseInt(EmbeddedJDEC.INDEX_SET.getText());
+                    manualSwapDeviceIndices(cListIdx, nFRCIdx, current.getFRCIdx());
+                } catch (NumberFormatException ignored) {
+                }
                 if (current instanceof Joystick) {
                     Joystick js = (Joystick) current;
-                    EmbeddedJDEC.VAL_X.setText(NumberUtils.roundTo(js.getX(), 2));
-                    EmbeddedJDEC.VAL_Y.setText(NumberUtils.roundTo(js.getY(), 2));
-                    EmbeddedJDEC.VAL_Z.setText(NumberUtils.roundTo(js.getZ(), 2));
+                    HIDDevice.Axes axes = js.getAxes();
+                    EmbeddedJDEC.VAL_X.setText(NumberUtils.roundTo(axes.get("X").getValue(), 2));
+                    EmbeddedJDEC.VAL_Y.setText(NumberUtils.roundTo(axes.get("Y").getValue(), 2));
+                    EmbeddedJDEC.VAL_Z.setText(NumberUtils.roundTo(axes.get("Z").getValue(), 2));
                     EmbeddedJDEC.VAL_RX.setText(" N/A");
                     EmbeddedJDEC.VAL_RY.setText(" N/A");
                 } else if (current instanceof XboxController) {
                     XboxController xbox = (XboxController) current;
-                    EmbeddedJDEC.VAL_X.setText(NumberUtils.roundTo(xbox.getX(true), 2));
-                    EmbeddedJDEC.VAL_Y.setText(NumberUtils.roundTo(xbox.getY(true), 2));
-                    EmbeddedJDEC.VAL_RX.setText(NumberUtils.roundTo(xbox.getX(false), 2));
-                    EmbeddedJDEC.VAL_RY.setText(NumberUtils.roundTo(xbox.getY(false), 2));
+                    HIDDevice.Axes axes = xbox.getAxes();
+                    EmbeddedJDEC.VAL_X.setText(NumberUtils.roundTo(axes.get("Left X").getValue(), 2));
+                    EmbeddedJDEC.VAL_Y.setText(NumberUtils.roundTo(axes.get("Left Y").getValue(), 2));
+                    EmbeddedJDEC.VAL_RX.setText(NumberUtils.roundTo(axes.get("Right X").getValue(), 2));
+                    EmbeddedJDEC.VAL_RY.setText(NumberUtils.roundTo(axes.get("Right Y").getValue(), 2));
                     EmbeddedJDEC.VAL_Z.setText(" N/A");
                 }
                 boolean[] buttons = current.getButtons();
@@ -236,6 +238,32 @@ public class JoystickFrame extends PopupBase {
                 EmbeddedJDEC.VAL_RX.setText(" N/A");
                 EmbeddedJDEC.VAL_RY.setText(" N/A");
             }
+        }
+    }
+
+    private static synchronized void manualSwapDeviceIndices(int cListIdx, int nFRCIdx, int cFRCIdx) {
+        try {
+            if (cFRCIdx != nFRCIdx) {
+                int maxCheck = Math.max(cFRCIdx, nFRCIdx);
+                if (maxCheck >= HIDDevice.MAX_JS_NUM) {
+                    MessageBox.show("Index \"" + maxCheck +
+                            "\" greater than maximum joystick index of \"" +
+                            (HIDDevice.MAX_JS_NUM - 1) + "\"", MessageBox.Type.ERROR);
+                    EmbeddedJDEC.INDEX_SET.setText(String.valueOf(cListIdx));
+                    return;
+                }
+
+                for (HIDDevice dev : USBInterface.getControlDevices().values()) {
+                    if (dev.getFRCIdx() == nFRCIdx) {
+                        MessageBox.show("Duplicate index \"" + nFRCIdx + "\" for controller \"" + dev.toString()
+                                        + "\"\nSetting controller \"" + dev.toString() + "\" on index \"" + dev.getFRCIdx()
+                                        + "\"\n to new index \"" + cListIdx + "\" and making requested index change",
+                                MessageBox.Type.WARNING);
+                    }
+                }
+                swapDeviceIndices(cListIdx, nFRCIdx);
+            }
+        } catch (NumberFormatException ignored) {
         }
     }
 }

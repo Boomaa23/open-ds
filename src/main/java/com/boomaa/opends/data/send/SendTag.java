@@ -8,7 +8,6 @@ import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.display.RobotMode;
 import com.boomaa.opends.networking.WlanConnection;
 import com.boomaa.opends.usb.HIDDevice;
-import com.boomaa.opends.usb.Joystick;
 import com.boomaa.opends.usb.JoystickType;
 import com.boomaa.opends.usb.USBInterface;
 import com.boomaa.opends.usb.XboxController;
@@ -35,20 +34,24 @@ public enum SendTag {
                 if (ctrl != null && !ctrl.isDisabled()) {
                     ctrl.update();
                     builder.addInt(ctrl.numAxes()); //3 axes
-                    if (ctrl instanceof Joystick) {
-                        Joystick js = (Joystick) ctrl;
-                        builder.addInt(NumberUtils.dblToInt8(js.getX()))
-                                .addInt(NumberUtils.dblToInt8(js.getY()))
-                                .addInt(NumberUtils.dblToInt8(js.getZ()));
-                    } else if (ctrl instanceof XboxController) {
-                        XboxController xbox = (XboxController) ctrl;
-                        builder.addInt(NumberUtils.dblToInt8(xbox.getX(true)))
-                                .addInt(NumberUtils.dblToInt8(xbox.getY(true)))
-                                .addInt(NumberUtils.dblToInt8(xbox.getTrigger(true)))
-                                .addInt(NumberUtils.dblToInt8(xbox.getTrigger(false)))
-                                .addInt(NumberUtils.dblToInt8(xbox.getX(false)))
-                                .addInt(NumberUtils.dblToInt8(xbox.getY(false)));
+                    HIDDevice.Axes axes = ctrl.getAxes();
+                    for (String idx : axes.calcIdxPath()) {
+                        builder.addInt(NumberUtils.dblToInt8(axes.get(idx).getValue()));
                     }
+//                    if (ctrl instanceof Joystick) {
+//                        Joystick js = (Joystick) ctrl;
+//                        builder.addInt(NumberUtils.dblToInt8(js.getX()))
+//                                .addInt(NumberUtils.dblToInt8(js.getY()))
+//                                .addInt(NumberUtils.dblToInt8(js.getZ()));
+//                    } else if (ctrl instanceof XboxController) {
+//                        XboxController xbox = (XboxController) ctrl;
+//                        builder.addInt(NumberUtils.dblToInt8(xbox.getX(true)))
+//                                .addInt(NumberUtils.dblToInt8(xbox.getY(true)))
+//                                .addInt(NumberUtils.dblToInt8(xbox.getTrigger(true)))
+//                                .addInt(NumberUtils.dblToInt8(xbox.getTrigger(false)))
+//                                .addInt(NumberUtils.dblToInt8(xbox.getX(false)))
+//                                .addInt(NumberUtils.dblToInt8(xbox.getY(false)));
+//                    }
                     builder.addInt(ctrl.numButtons())
                             .addBytes(NumberUtils.packBools(ctrl.getButtons()))
                             .addInt(0); //povCount
@@ -83,16 +86,16 @@ public enum SendTag {
                 PacketBuilder builder = new PacketBuilder();
                 HIDDevice ctrl = USBInterface.getControlDevices().get(USBInterface.iterateSend(false));
                 if (ctrl != null && !ctrl.isDisabled()) {
-                    builder.addInt(ctrl.getIndex())
+                    builder.addInt(ctrl.getFRCIdx())
                             .addInt(ctrl instanceof XboxController ? 1 : 0) //isXbox
-                            .addInt((ctrl instanceof XboxController ? JoystickType.XINPUT_GAMEPAD : JoystickType.HID_JOYSTICK).numAsInt());
+                            .addInt(ctrl.getDeviceType().numAsInt());
                     String name = ctrl.getName();
                     builder.addInt(name.length())
                             .addBytes(name.getBytes())
                             .addInt(ctrl.numAxes()); //numAxes
-                    HIDDevice.Axis[] axes = ctrl instanceof XboxController ? XboxController.Axis.values() : Joystick.Axis.values();
-                    for (HIDDevice.Axis axis : axes) {
-                        builder.addInt(axis.getInt());
+                    HIDDevice.Axes axes = ctrl.getAxes();
+                    for (String idx : axes.calcIdxPath()) {
+                        builder.addInt(axes.get(idx).getFRCIdx());
                     }
                     builder.addInt(ctrl.numButtons())
                             .addInt(0); //povCount

@@ -1,14 +1,11 @@
 package com.boomaa.opends.display;
 
 import com.boomaa.opends.display.frames.MainFrame;
-import com.boomaa.opends.util.OperatingSystem;
 
 import javax.swing.JFrame;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 public abstract class PopupBase extends JFrame {

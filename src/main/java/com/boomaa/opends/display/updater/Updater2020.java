@@ -83,7 +83,7 @@ public class Updater2020 extends ElementUpdater {
                 StatsFields.CAN_RX_ERR.updateTableValue(canMetrics.get("RX Errors"));
                 StatsFields.CAN_TX_ERR.updateTableValue(canMetrics.get("TX Errors"));
             }
-            //TODO add rumbler capability (JInput != XInput compatible)
+            //TODO add rumbler capability (JInput/GLFW != XInput compatible)
         }
     }
 

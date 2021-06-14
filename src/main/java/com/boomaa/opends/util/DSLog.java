@@ -3,7 +3,6 @@ package com.boomaa.opends.util;
 import com.boomaa.opends.data.StatsFields;
 import com.boomaa.opends.data.holders.Date;
 import com.boomaa.opends.data.holders.Remote;
-import com.boomaa.opends.data.receive.ReceiveTag;
 import com.boomaa.opends.data.send.PacketBuilder;
 import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.display.MainJDEC;
