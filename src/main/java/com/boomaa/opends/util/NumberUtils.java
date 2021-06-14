@@ -1,5 +1,6 @@
 package com.boomaa.opends.util;
 
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.text.CharacterIterator;
@@ -8,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NumberUtils {
-    public static double getDouble(byte[] bytes) {
+    public static double getDouble(byte[] bytes) throws BufferUnderflowException {
         return byteWrapBig(bytes).getDouble();
     }
 

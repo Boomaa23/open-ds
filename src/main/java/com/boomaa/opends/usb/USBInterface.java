@@ -11,6 +11,7 @@ public class USBInterface {
     private static int sendDescIterator = 0;
 
     public static void init() {
+        GLFW.glfwInitHint(GLFW.GLFW_JOYSTICK_HAT_BUTTONS, GLFW.GLFW_FALSE);
         GLFW.glfwInit();
         findControllers();
         updateValues();
@@ -25,7 +26,7 @@ public class USBInterface {
         }
     }
 
-    private static synchronized void clearControllers() {
+    public static synchronized void clearControllers() {
         controlDevices.clear();
     }
 
@@ -43,7 +44,6 @@ public class USBInterface {
         }
     }
 
-    //TODO remove?
     public static synchronized void reindexControllers() {
         Map<Integer, HIDDevice> deviceMapTemp = new HashMap<>(controlDevices);
         clearControllers();

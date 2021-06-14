@@ -14,6 +14,7 @@ import com.boomaa.opends.data.receive.parser.PacketParser;
 import com.boomaa.opends.data.receive.parser.Parser2020;
 import com.boomaa.opends.data.send.creator.PacketCreator;
 import com.boomaa.opends.display.DisplayEndpoint;
+import com.boomaa.opends.display.PopupBase;
 import com.boomaa.opends.display.RobotMode;
 import com.boomaa.opends.util.DSLog;
 import com.boomaa.opends.util.NumberUtils;
@@ -24,7 +25,7 @@ public class Updater2020 extends ElementUpdater {
     @Override
     protected void doUpdateFromRioUdp(PacketParser data, TVMList tagMap) {
         Parser2020.RioToDsUdp rioUdp = (Parser2020.RioToDsUdp) data;
-        IS_ENABLED.setEnabled(true);
+        IS_ENABLED.setEnabled(!PopupBase.isVisible("JoystickFrame") && !ESTOP_STATUS.isDisplayed());
         ESTOP_STATUS.setDisplay(rioUdp.getStatus().contains(Status.ESTOP));
         if (rioUdp.getTrace().contains(Trace.ROBOTCODE)) {
             ROBOT_CODE_STATUS.changeToDisplay(0, true);
@@ -159,8 +160,9 @@ public class Updater2020 extends ElementUpdater {
             ALLIANCE_NUM.setEnabled(false);
         }
         FMS_CONNECTION_STATUS.forceDisplay();
-        IS_ENABLED.setEnabled(false);
+
         ROBOT_DRIVE_MODE.setEnabled(false);
+        IS_ENABLED.setEnabled(false);
         IS_ENABLED.setSelected(fmsUdp.getControl().contains(Control.ENABLED));
     }
 

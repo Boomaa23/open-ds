@@ -55,6 +55,10 @@ public abstract class PopupBase extends JFrame {
         return alive.containsKey(uuid);
     }
 
+    public static boolean isVisible(String uuid) {
+        return alive.containsKey(uuid) && alive.get(uuid).isVisible();
+    }
+
     public static PopupBase getAlive(String uuid) {
         return alive.get(uuid);
     }

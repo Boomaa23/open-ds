@@ -63,6 +63,7 @@ public abstract class HIDDevice {
 
     public void updateAxes(FloatBuffer glfwAxes) {
         if (glfwAxes != null) {
+            //TODO arduino leonardo has 11 axes at -1, remove them?
             for (HIDDevice.Axis axis : getAxes().values()) {
                 axis.setValue(glfwAxes.get(axis.getGLFWIdx()));
             }
@@ -84,8 +85,8 @@ public abstract class HIDDevice {
     }
 
     public void setFRCIdx(int index) {
-        checkMax();
         this.frcIdx = index;
+        checkMax();
     }
 
     public int getFRCIdx() {

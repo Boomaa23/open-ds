@@ -56,6 +56,8 @@ public class MainFrame implements MainJDEC {
             }
         });
         JS_BTN.addActionListener((e) -> {
+            MainJDEC.IS_ENABLED.setSelected(false);
+            MainJDEC.IS_ENABLED.setEnabled(false);
             if (!PopupBase.isAlive("JoystickFrame")) {
                 new JoystickFrame();
             } else {

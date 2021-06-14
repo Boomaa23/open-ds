@@ -3,6 +3,7 @@ package com.boomaa.opends.networktables;
 import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.NumberUtils;
 
+import java.nio.BufferUnderflowException;
 import java.util.Objects;
 
 public class NTPacketData {
@@ -86,7 +87,6 @@ public class NTPacketData {
                 case kRpcResponse:
                     break;
             }
-            NTStorage.PACKET_DATA.add(this);
         } catch (ArrayIndexOutOfBoundsException | NullPointerException e) {
             NTConnection.CUTOFF_DATA = data;
         }
@@ -127,7 +127,11 @@ public class NTPacketData {
 
     private double readDouble(int start) {
         usedLength += 8;
-        return NumberUtils.getDouble(ArrayUtils.sliceArr(data, start, start + 8));
+        try {
+            return NumberUtils.getDouble(ArrayUtils.sliceArr(data, start, start + 8));
+        } catch (BufferUnderflowException ignored) {
+            return 0;
+        }
     }
 
     private String readString(int start) {

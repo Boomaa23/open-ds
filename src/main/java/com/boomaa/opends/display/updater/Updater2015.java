@@ -9,6 +9,7 @@ import com.boomaa.opends.data.receive.TVMList;
 import com.boomaa.opends.data.receive.parser.PacketParser;
 import com.boomaa.opends.data.receive.parser.Parser2015;
 import com.boomaa.opends.data.send.creator.PacketCreator;
+import com.boomaa.opends.display.PopupBase;
 import com.boomaa.opends.display.RobotMode;
 import com.boomaa.opends.util.NumberUtils;
 
@@ -57,7 +58,7 @@ public class Updater2015 extends ElementUpdater {
     protected void doUpdateFromFmsUdp(PacketParser data, TVMList tagMap) {
         Parser2015.FmsToDsUdp fmsUdp = (Parser2015.FmsToDsUdp) data;
         List<Control> control = fmsUdp.getControl();
-        if (control.contains(Control.ENABLED)) {
+        if (control.contains(Control.ENABLED) && !PopupBase.isVisible("JoystickFrame")) {
             IS_ENABLED.setSelected(true);
             IS_ENABLED.setEnabled(false);
         }

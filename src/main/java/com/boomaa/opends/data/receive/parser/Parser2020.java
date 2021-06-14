@@ -29,7 +29,7 @@ public class Parser2020 {
         }
 
         public double getBatteryVoltage() {
-            return (double) packet[5] + ((double) packet[6]) / 256;
+            return NumberUtils.getUInt8(packet[5]) + (NumberUtils.getUInt8(packet[6])) / 256.0;
         }
 
         public boolean isRequestingDate() {

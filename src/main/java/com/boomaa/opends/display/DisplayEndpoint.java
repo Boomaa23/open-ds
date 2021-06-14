@@ -143,6 +143,7 @@ public class DisplayEndpoint implements MainJDEC {
         FILE_LOGGER.start();
         //TODO remove after testing
         //checkForUpdates();
+        System.gc();
 
         while (MainJDEC.FRAME.isShowing()) {
             GLFW.glfwPollEvents();

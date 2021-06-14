@@ -38,20 +38,6 @@ public enum SendTag {
                     for (String idx : axes.calcIdxPath()) {
                         builder.addInt(NumberUtils.dblToInt8(axes.get(idx).getValue()));
                     }
-//                    if (ctrl instanceof Joystick) {
-//                        Joystick js = (Joystick) ctrl;
-//                        builder.addInt(NumberUtils.dblToInt8(js.getX()))
-//                                .addInt(NumberUtils.dblToInt8(js.getY()))
-//                                .addInt(NumberUtils.dblToInt8(js.getZ()));
-//                    } else if (ctrl instanceof XboxController) {
-//                        XboxController xbox = (XboxController) ctrl;
-//                        builder.addInt(NumberUtils.dblToInt8(xbox.getX(true)))
-//                                .addInt(NumberUtils.dblToInt8(xbox.getY(true)))
-//                                .addInt(NumberUtils.dblToInt8(xbox.getTrigger(true)))
-//                                .addInt(NumberUtils.dblToInt8(xbox.getTrigger(false)))
-//                                .addInt(NumberUtils.dblToInt8(xbox.getX(false)))
-//                                .addInt(NumberUtils.dblToInt8(xbox.getY(false)));
-//                    }
                     builder.addInt(ctrl.numButtons())
                             .addBytes(NumberUtils.packBools(ctrl.getButtons()))
                             .addInt(0); //povCount
