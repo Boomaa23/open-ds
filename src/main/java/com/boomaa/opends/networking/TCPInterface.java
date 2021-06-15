@@ -53,7 +53,6 @@ public class TCPInterface {
             close();
             return null;
         } catch (SocketTimeoutException e) {
-            close();
             return new byte[0];
         } catch (IOException e) {
             close();
@@ -78,5 +77,13 @@ public class TCPInterface {
 
     public boolean isClosed() {
         return closed;
+    }
+
+    public void setTimeout(int timeoutMs) {
+        try {
+            socket.setSoTimeout(timeoutMs);
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
     }
 }

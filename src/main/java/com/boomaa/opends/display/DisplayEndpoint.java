@@ -85,7 +85,7 @@ public class DisplayEndpoint implements MainJDEC {
         }
     };
 
-    private static final Clock fmsTcpClock = new Clock("fmsTcp", Clock.INSTANT) {
+    private static final Clock fmsTcpClock = new Clock("fmsTcp", 500) {
         @Override
         public void onCycle() {
             if (updater != null && creator != null && MainJDEC.FMS_CONNECT.isSelected()) {
@@ -103,11 +103,12 @@ public class DisplayEndpoint implements MainJDEC {
                 }
             } else if (!MainJDEC.FMS_CONNECT.isSelected() && FMS_TCP_INTERFACE != null) {
                 updater.updateFromFmsTcp(ParserNull.getInstance());
+                NET_IF_INIT.set(false, Remote.FMS, Protocol.TCP);
             }
         }
     };
 
-    private static final Clock fmsUdpClock = new Clock("fmsUdp", Clock.INSTANT) {
+    private static final Clock fmsUdpClock = new Clock("fmsUdp", 500) {
         @Override
         public void onCycle() {
             if (updater != null && creator != null && MainJDEC.FMS_CONNECT.isSelected()) {
@@ -126,6 +127,7 @@ public class DisplayEndpoint implements MainJDEC {
                 }
             } else if (!MainJDEC.FMS_CONNECT.isSelected() && FMS_UDP_INTERFACE != null) {
                 updater.updateFromFmsUdp(ParserNull.getInstance());
+                NET_IF_INIT.set(false, Remote.FMS, Protocol.UDP);
             }
         }
     };
@@ -145,8 +147,13 @@ public class DisplayEndpoint implements MainJDEC {
         //checkForUpdates();
         System.gc();
 
+        byte ctr = 0;
         while (MainJDEC.FRAME.isShowing()) {
             GLFW.glfwPollEvents();
+            ctr++;
+            if ((ctr %= 100) == 0) {
+                System.gc();
+            }
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {

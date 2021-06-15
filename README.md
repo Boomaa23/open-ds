@@ -62,35 +62,7 @@ If issues persist, please report them on the "Issues" section of the GitHub [her
 
 
 ## License
-OpenDS may be used without restriction for the purpose of testing robots by teams and individuals, but is copyrighted material and cannot be redistributed.
-```
-Copyright (c) 2020-2021, Boomaa23
-All rights reserved.
-
-This software may be used and redistributed subject to the following conditions:
-
-1. The software may be used without restriction for the purpose of testing
-   robots by teams and individuals.
-2. The software may not be used in any capacity at any event whereby FIRST
-   Robotics Competition robots are competing unless express permission/consent
-   is given by a qualified event organizer or official.
-3. The software may be modified for such use, but the modifications may not be
-   redistributed.
-4. Redistribution for the purpose of contributing to the original project (e.g.
-   forking on GitHub and submitting pull requests) is permitted.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
-ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-```
-
+OpenDS may be used without restriction for the purpose of testing robots by teams and individuals.
 >*FIRST®, the FIRST® logo, FIRST® Robotics Competition (formerly also known as FRC®) are trademarks 
 >of For Inspiration and Recognition of Science and Technology (FIRST®), and are used in accordance with branding guidelines*
 

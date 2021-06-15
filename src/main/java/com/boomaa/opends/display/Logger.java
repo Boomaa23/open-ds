@@ -31,7 +31,7 @@ public class Logger extends OutputStream {
 
         OUT = new PrintStream(new Logger(textArea));
         PANE = new JScrollPane(textArea,
-                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     }
 
     public Logger(JTextArea textArea) {

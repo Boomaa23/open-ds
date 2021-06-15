@@ -60,7 +60,7 @@ public abstract class ElementUpdater implements MainJDEC {
             data.getPacketCounter().reset();
         } else {
             data.getPacketCounter().increment();
-//            doLog(data);
+            doLog(data);
         }
     }
 

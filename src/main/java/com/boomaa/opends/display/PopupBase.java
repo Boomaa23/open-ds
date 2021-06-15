@@ -33,7 +33,7 @@ public abstract class PopupBase extends JFrame {
     public void config() {
         //default config goes here
         this.setPreferredSize(dimension);
-        this.setIconImage(MainFrame.FIRST_LOGO);
+        this.setIconImage(MainFrame.ICON);
         this.setLocationRelativeTo(null);
         this.setResizable(true);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -56,7 +56,7 @@ public abstract class PopupBase extends JFrame {
     }
 
     public static boolean isVisible(String uuid) {
-        return alive.containsKey(uuid) && alive.get(uuid).isVisible();
+        return alive.containsKey(uuid) && alive.get(uuid).isShowing();
     }
 
     public static PopupBase getAlive(String uuid) {

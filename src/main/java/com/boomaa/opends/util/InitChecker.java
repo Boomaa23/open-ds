@@ -49,7 +49,7 @@ public class InitChecker {
         return remote == Remote.ROBO_RIO ? (rioUdp && rioTcp) : (fmsUdp && fmsTcp);
     }
 
-    public boolean isOrnit(Protocol protocol) {
+    public boolean isOrInit(Protocol protocol) {
         return protocol == Protocol.UDP ? (rioUdp || fmsUdp) : (rioTcp || fmsTcp);
     }
 

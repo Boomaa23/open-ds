@@ -12,6 +12,8 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 
 public class NetworkReloader extends DisplayEndpoint {
+    private static final int POST_DISCONNECT_WAIT_MS = 500;
+
     public static void reloadRio(Protocol protocol) {
         PacketCounters.get(Remote.ROBO_RIO, protocol).reset();
         try {
@@ -34,10 +36,7 @@ public class NetworkReloader extends DisplayEndpoint {
                 RIO_TCP_INTERFACE = new TCPInterface(rioIp, rioPorts.getTcp());
             }
             NET_IF_INIT.set(true, Remote.ROBO_RIO, protocol);
-        } catch (NumberFormatException | SocketException ignored) {
-            unsetRio(protocol);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (NumberFormatException | IOException ignored) {
             unsetRio(protocol);
         }
     }
@@ -47,6 +46,11 @@ public class NetworkReloader extends DisplayEndpoint {
         MainJDEC.IS_ENABLED.setEnabled(false);
         if (MainJDEC.IS_ENABLED.isSelected()) {
             MainJDEC.IS_ENABLED.setSelected(false);
+        }
+        try {
+            Thread.sleep(POST_DISCONNECT_WAIT_MS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
@@ -75,12 +79,17 @@ public class NetworkReloader extends DisplayEndpoint {
                 }
                 if (protocol == Protocol.TCP) {
                     FMS_TCP_INTERFACE = new TCPInterface(fmsIp, fmsPorts.getTcp());
+                    FMS_TCP_INTERFACE.setTimeout(1000);
                 }
                 NET_IF_INIT.set(true, Remote.FMS, protocol);
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException ignored) {
                 MainJDEC.FMS_CONNECT.setSelected(false);
                 NET_IF_INIT.set(false, Remote.FMS, protocol);
+                try {
+                    Thread.sleep(POST_DISCONNECT_WAIT_MS);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         } else {
             NET_IF_INIT.set(false, Remote.FMS, protocol);

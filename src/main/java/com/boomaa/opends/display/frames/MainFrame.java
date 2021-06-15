@@ -19,12 +19,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 public class MainFrame implements MainJDEC {
-    public static final Image FIRST_LOGO = Toolkit.getDefaultToolkit().getImage(MainFrame.class.getResource("/first.png"));
+    public static final Image ICON = Toolkit.getDefaultToolkit().getImage(MainFrame.class.getResource("/icon.png")).getScaledInstance(32, 32, Image.SCALE_SMOOTH);
     private static final GBCPanelBuilder base = new GBCPanelBuilder(CONTENT).setInsets(new Insets(5, 5, 5, 5)).setFill(GridBagConstraints.BOTH).setAnchor(GridBagConstraints.CENTER);
     public static NTFrame NT_FRAME;
 
     public static void display() {
-        FRAME.setIconImage(FIRST_LOGO);
+        FRAME.setIconImage(MainFrame.ICON);
         CONTENT.setLayout(new GridBagLayout());
 
         TITLE.setText(TITLE.getText() + " " + DisplayEndpoint.CURRENT_VERSION_TAG);
@@ -100,7 +100,7 @@ public class MainFrame implements MainJDEC {
 
         base.clone().setPos(0, 0, 6, 1).setFill(GridBagConstraints.NONE).build(TITLE);
         base.clone().setPos(0, 1, 6, 1).setFill(GridBagConstraints.NONE).build(LINK);
-        base.clone().setPos(5, 0, 1, 2).setFill(GridBagConstraints.NONE).build(new JLabel(new ImageIcon(MainFrame.FIRST_LOGO.getScaledInstance(35, 35, Image.SCALE_SMOOTH))));
+        base.clone().setPos(5, 0, 1, 2).setFill(GridBagConstraints.NONE).build(new JLabel(new ImageIcon(MainFrame.ICON)));
 
         base.clone().setPos(0, 2, 1, 1).build(IS_ENABLED);
         base.clone().setPos(1, 2, 1, 1).build(ROBOT_DRIVE_MODE);

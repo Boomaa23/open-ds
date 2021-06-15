@@ -11,7 +11,7 @@ import com.boomaa.opends.util.NumberUtils;
 
 public enum ReceiveTag {
     //TODO fix the 2015/2016 CPU, RAM, disk, and CAN usage values. LibDS doesn't look right.
-    JOYSTICK_OUTPUT(0x01, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS,
+    JOYSTICK_OUTPUT(0x01, Protocol.UDP, Remote.ROBO_RIO, InLog.NEVER,
             RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<String>) (packet, size) -> {
                 TagValueMap<String> map = new TagValueMap<>();
