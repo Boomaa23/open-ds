@@ -39,6 +39,10 @@ public abstract class PopupBase extends JFrame {
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 
+    public void reopen() {
+        forceShow();
+    }
+
     public void forceShow() {
         super.setVisible(true);
     }
@@ -59,8 +63,9 @@ public abstract class PopupBase extends JFrame {
         return alive.containsKey(uuid) && alive.get(uuid).isShowing();
     }
 
-    public static PopupBase getAlive(String uuid) {
-        return alive.get(uuid);
+    @SuppressWarnings("unchecked")
+    public static <T extends PopupBase> T getAlive(String uuid) {
+        return (T) alive.get(uuid);
     }
 
     public static void removeAlive(String uuid) {

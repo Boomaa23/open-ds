@@ -9,7 +9,7 @@ import com.boomaa.opends.display.RobotMode;
 import com.boomaa.opends.networking.WlanConnection;
 import com.boomaa.opends.usb.HIDDevice;
 import com.boomaa.opends.usb.JoystickType;
-import com.boomaa.opends.usb.USBInterface;
+import com.boomaa.opends.usb.ControlDevices;
 import com.boomaa.opends.usb.XboxController;
 import com.boomaa.opends.util.NumberUtils;
 
@@ -30,7 +30,7 @@ public enum SendTag {
             RefSendTag.yearOfAction(2020),
             () -> {
                 PacketBuilder builder = new PacketBuilder();
-                HIDDevice ctrl = USBInterface.getControlDevices().get(USBInterface.iterateSend(true));
+                HIDDevice ctrl = ControlDevices.getAll().get(ControlDevices.iterateSend(true));
                 if (ctrl != null && !ctrl.isDisabled()) {
                     ctrl.update();
                     builder.addInt(ctrl.numAxes()); //3 axes
@@ -70,7 +70,7 @@ public enum SendTag {
             RefSendTag.yearOfAction(2020),
             () -> {
                 PacketBuilder builder = new PacketBuilder();
-                HIDDevice ctrl = USBInterface.getControlDevices().get(USBInterface.iterateSend(false));
+                HIDDevice ctrl = ControlDevices.getAll().get(ControlDevices.iterateSend(false));
                 if (ctrl != null && !ctrl.isDisabled()) {
                     builder.addInt(ctrl.getFRCIdx())
                             .addInt(ctrl instanceof XboxController ? 1 : 0) //isXbox
@@ -86,7 +86,7 @@ public enum SendTag {
                     builder.addInt(ctrl.numButtons())
                             .addInt(0); //povCount
                 } else {
-                    builder.addInt(USBInterface.getDescIndex()).addInt(0)
+                    builder.addInt(ControlDevices.getDescIndex()).addInt(0)
                             .addInt(JoystickType.UNKNOWN.numAsInt()).pad(0, 4);
                 }
                 return builder.build();

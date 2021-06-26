@@ -14,11 +14,14 @@ public class TCPInterface {
     private InputStream in;
     private boolean closed;
 
-    public TCPInterface(String ip, int port) throws SocketException {
+    public TCPInterface(String ip, int port, int timeout) throws SocketException {
         try {
             this.socket = new Socket(ip, port);
             socket.setTcpNoDelay(true);
             this.in = socket.getInputStream();
+            if (timeout != -1) {
+                socket.setSoTimeout(timeout);
+            }
         } catch (ConnectException e) {
             close();
         } catch (IOException e) {
@@ -32,6 +35,11 @@ public class TCPInterface {
             close();
             throw new SocketException("Null socket input stream");
         }
+    }
+
+    // No socket timeout by default
+    public TCPInterface(String ip, int port) throws SocketException {
+        this(ip, port, -1);
     }
 
     public byte[] read() throws IOException {
@@ -77,13 +85,5 @@ public class TCPInterface {
 
     public boolean isClosed() {
         return closed;
-    }
-
-    public void setTimeout(int timeoutMs) {
-        try {
-            socket.setSoTimeout(timeoutMs);
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
     }
 }

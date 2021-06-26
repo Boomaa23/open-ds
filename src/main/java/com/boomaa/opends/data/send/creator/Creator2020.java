@@ -11,7 +11,7 @@ import com.boomaa.opends.data.send.SendTag;
 import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.display.RobotMode;
 import com.boomaa.opends.usb.HIDDevice;
-import com.boomaa.opends.usb.USBInterface;
+import com.boomaa.opends.usb.ControlDevices;
 import com.boomaa.opends.util.NumberUtils;
 import com.boomaa.opends.util.PacketCounters;
 
@@ -40,7 +40,7 @@ public class Creator2020 extends PacketCreator {
             builder.addBytes(SendTag.TIMEZONE.getBytes());
         }
         if (IS_ENABLED.isSelected()) {
-            USBInterface.updateValues();
+            ControlDevices.updateValues();
             for (int i = 0; i <= HIDDevice.MAX_JS_INDEX; i++) {
                 builder.addBytes(SendTag.JOYSTICK.getBytes());
             }

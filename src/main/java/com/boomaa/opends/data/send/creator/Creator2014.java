@@ -8,7 +8,7 @@ import com.boomaa.opends.data.send.PacketBuilder;
 import com.boomaa.opends.data.send.SendTag;
 import com.boomaa.opends.display.RobotMode;
 import com.boomaa.opends.usb.Joystick;
-import com.boomaa.opends.usb.USBInterface;
+import com.boomaa.opends.usb.ControlDevices;
 
 import java.util.zip.CRC32;
 
@@ -39,8 +39,8 @@ public class Creator2014 extends NoTCPCreator {
         builder.addInt(station.isBlue() ? 0x42 : 0x52)
                 .addInt(station.getSidedNum() + 0x30);
         if (IS_ENABLED.isSelected()) {
-            USBInterface.findControllers();
-            USBInterface.updateValues();
+            ControlDevices.findAll();
+            ControlDevices.updateValues();
             for (int i = 0; i < Joystick.MAX_JS_NUM; i++) {
                 builder.addBytes(SendTag.JOYSTICK.getBytes());
             }

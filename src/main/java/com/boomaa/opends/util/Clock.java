@@ -26,6 +26,7 @@ public abstract class Clock extends Thread {
             try {
                 Thread.sleep(msToCycle);
             } catch (InterruptedException ignored) {
+                break;
             }
             onCycle();
         }
@@ -34,5 +35,9 @@ public abstract class Clock extends Thread {
 
     public void end() {
         this.done = true;
+    }
+
+    public boolean isDone() {
+        return done;
     }
 }

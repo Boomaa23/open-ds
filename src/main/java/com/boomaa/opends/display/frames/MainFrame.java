@@ -52,7 +52,7 @@ public class MainFrame implements MainJDEC {
             if (!PopupBase.isAlive("LogFrame")) {
                 new LogFrame();
             } else {
-                PopupBase.getAlive("LogFrame").forceShow();
+                PopupBase.getAlive("LogFrame").reopen();
             }
         });
         JS_BTN.addActionListener((e) -> {
@@ -61,21 +61,21 @@ public class MainFrame implements MainJDEC {
             if (!PopupBase.isAlive("JoystickFrame")) {
                 new JoystickFrame();
             } else {
-                PopupBase.getAlive("JoystickFrame").forceShow();
+                PopupBase.getAlive("JoystickFrame").reopen();
             }
         });
         STATS_BTN.addActionListener((e) -> {
             if (!PopupBase.isAlive("StatsFrame")) {
                 new StatsFrame();
             } else {
-                PopupBase.getAlive("StatsFrame").forceShow();
+                PopupBase.getAlive("StatsFrame").reopen();
             }
         });
         NT_BTN.addActionListener((e) -> {
             if (!PopupBase.isAlive("NTFrame")) {
                 NT_FRAME = new NTFrame();
             } else {
-                PopupBase.getAlive("NTFrame").forceShow();
+                PopupBase.getAlive("NTFrame").reopen();
             }
         });
         USB_CONNECT.addActionListener((e) -> {

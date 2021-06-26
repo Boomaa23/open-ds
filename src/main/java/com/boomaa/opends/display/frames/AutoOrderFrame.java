@@ -3,11 +3,10 @@ package com.boomaa.opends.display.frames;
 import com.boomaa.opends.display.PopupBase;
 import com.boomaa.opends.display.elements.GBCPanelBuilder;
 import com.boomaa.opends.usb.HIDDevice;
-import com.boomaa.opends.usb.USBInterface;
+import com.boomaa.opends.usb.ControlDevices;
 import com.boomaa.opends.util.Clock;
 
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -28,33 +27,23 @@ public class AutoOrderFrame extends PopupBase {
     @Override
     public void config() {
         super.config();
-        super.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
         devices.clear();
-        if (EmbeddedJDEC.SKIP.getActionListeners().length == 0) {
-            EmbeddedJDEC.SKIP.addActionListener(e -> {
+        if (EmbeddedJDEC.SKIP_BTN.getActionListeners().length == 0) {
+            EmbeddedJDEC.SKIP_BTN.addActionListener(e -> {
                 EmbeddedJDEC.JS_NAMES[idxCtr++].setText("<skipped>");
                 if (idxCtr == EmbeddedJDEC.JS_NAMES.length) {
-                    EmbeddedJDEC.SKIP.setEnabled(false);
+                    EmbeddedJDEC.SKIP_BTN.setEnabled(false);
                 }
             });
         }
 
-        EmbeddedJDEC.DONE.addActionListener(e -> {
-            for (JLabel label : EmbeddedJDEC.JS_NAMES) {
-                label.setText("");
-            }
-            idxCtr = 0;
-            EmbeddedJDEC.SKIP.setEnabled(true);
-            USBInterface.reindexControllers();
-            if (valueUpdater != null) {
-                valueUpdater.end();
-            }
+        EmbeddedJDEC.DONE_BTN.addActionListener(e -> {
             JoystickFrame.EmbeddedJDEC.LIST_MODEL.clear();
             for (HIDDevice device : devices) {
                 JoystickFrame.EmbeddedJDEC.LIST_MODEL.add(JoystickFrame.EmbeddedJDEC.LIST_MODEL.size(), device);
             }
-            super.forceDispose();
+            this.dispose();
         });
 
         content.setLayout(new GridBagLayout());
@@ -76,13 +65,28 @@ public class AutoOrderFrame extends PopupBase {
         base.clone().setPos(1, 5, 5, 1).build(EmbeddedJDEC.JS_NAMES[4]);
         base.clone().setPos(1, 6, 5, 1).build(EmbeddedJDEC.JS_NAMES[5]);
 
-        base.clone().setPos(0, 7, 3, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.SKIP);
-        base.clone().setPos(3, 7, 3, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.DONE);
+        //TODO spacing/GBC positioning does not work for these buttons
+        base.clone().setPos(0, 7, 3, 1).build(EmbeddedJDEC.SKIP_BTN);
+        base.clone().setPos(3, 7, 3, 1).build(EmbeddedJDEC.DONE_BTN);
 
         if (valueUpdater == null) {
             valueUpdater = new ValueUpdater();
         }
         valueUpdater.start();
+    }
+
+    @Override
+    public void dispose() {
+        for (JLabel label : EmbeddedJDEC.JS_NAMES) {
+            label.setText("");
+        }
+        idxCtr = 0;
+        EmbeddedJDEC.SKIP_BTN.setEnabled(true);
+        ControlDevices.reindexAll();
+        if (valueUpdater != null) {
+            valueUpdater.end();
+        }
+        super.forceDispose();
     }
 
     public interface EmbeddedJDEC {
@@ -94,9 +98,8 @@ public class AutoOrderFrame extends PopupBase {
             new JLabel(),
             new JLabel()
         };
-
-        JButton SKIP = new JButton("Skip");
-        JButton DONE = new JButton("Done");
+        JButton SKIP_BTN = new JButton("Skip");
+        JButton DONE_BTN = new JButton("Done");
     }
 
     public static class ValueUpdater extends Clock {
@@ -106,8 +109,8 @@ public class AutoOrderFrame extends PopupBase {
 
         @Override
         public void onCycle() {
-            USBInterface.updateValues();
-            for (HIDDevice device : USBInterface.getControlDevices().values()) {
+            ControlDevices.updateValues();
+            for (HIDDevice device : ControlDevices.getAll().values()) {
                 if (devices.contains(device)) {
                     continue;
                 }

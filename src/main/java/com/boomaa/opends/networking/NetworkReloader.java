@@ -8,7 +8,6 @@ import com.boomaa.opends.util.PacketCounters;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 
 public class NetworkReloader extends DisplayEndpoint {
@@ -78,8 +77,7 @@ public class NetworkReloader extends DisplayEndpoint {
                     FMS_UDP_INTERFACE = new UDPInterface(fmsIp, fmsPorts.getUdpClient(), fmsPorts.getUdpServer());
                 }
                 if (protocol == Protocol.TCP) {
-                    FMS_TCP_INTERFACE = new TCPInterface(fmsIp, fmsPorts.getTcp());
-                    FMS_TCP_INTERFACE.setTimeout(1000);
+                    FMS_TCP_INTERFACE = new TCPInterface(fmsIp, fmsPorts.getTcp(), 1000);
                 }
                 NET_IF_INIT.set(true, Remote.FMS, protocol);
             } catch (IOException ignored) {

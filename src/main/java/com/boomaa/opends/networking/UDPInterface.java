@@ -38,21 +38,21 @@ public class UDPInterface {
         }
     }
 
-    public UDPTransform doReceieve() {
+    public byte[] doReceieve() {
         byte[] buffer = new byte[bufSize];
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
         try {
             if (closed) {
-                return new UDPTransform(new byte[0], packet, true);
+                return new byte[0];
             }
             serverSocket.receive(packet);
         } catch (SocketTimeoutException | SocketException e) {
             close();
-            return new UDPTransform(new byte[0], packet, true);
+            return new byte[0];
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return new UDPTransform(buffer, packet, false);
+        return buffer;
     }
 
     public void setBufSize(int bufSize) {

@@ -12,9 +12,8 @@ import com.boomaa.opends.display.updater.ElementUpdater;
 import com.boomaa.opends.networking.NetworkReloader;
 import com.boomaa.opends.networking.TCPInterface;
 import com.boomaa.opends.networking.UDPInterface;
-import com.boomaa.opends.networking.UDPTransform;
 import com.boomaa.opends.networktables.NTConnection;
-import com.boomaa.opends.usb.USBInterface;
+import com.boomaa.opends.usb.ControlDevices;
 import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.Clock;
 import com.boomaa.opends.util.DSLog;
@@ -70,12 +69,12 @@ public class DisplayEndpoint implements MainJDEC {
             if (updater != null && creator != null) {
                 if (NET_IF_INIT.get(Remote.ROBO_RIO, Protocol.UDP)) {
                     RIO_UDP_INTERFACE.doSend(creator.dsToRioUdp());
-                    UDPTransform rioUdpGet = RIO_UDP_INTERFACE.doReceieve();
-                    if (rioUdpGet == null || rioUdpGet.isBlank()) {
+                    byte[] rioUdpGet = RIO_UDP_INTERFACE.doReceieve();
+                    if (rioUdpGet == null || rioUdpGet.length == 0) {
                         updater.updateFromRioUdp(ParserNull.getInstance());
                         NET_IF_INIT.set(false, Remote.ROBO_RIO, Protocol.UDP);
                     } else {
-                        updater.updateFromRioUdp(getPacketParser("RioToDsUdp", rioUdpGet.getBuffer()));
+                        updater.updateFromRioUdp(getPacketParser("RioToDsUdp", rioUdpGet));
                     }
                 } else {
                     updater.updateFromRioUdp(ParserNull.getInstance());
@@ -114,12 +113,12 @@ public class DisplayEndpoint implements MainJDEC {
             if (updater != null && creator != null && MainJDEC.FMS_CONNECT.isSelected()) {
                 if (NET_IF_INIT.get(Remote.FMS, Protocol.UDP)) {
                     FMS_UDP_INTERFACE.doSend(creator.dsToFmsUdp());
-                    UDPTransform fmsUdpGet = FMS_UDP_INTERFACE.doReceieve();
-                    if (fmsUdpGet == null || fmsUdpGet.isBlank()) {
+                    byte[] fmsUdpGet = FMS_UDP_INTERFACE.doReceieve();
+                    if (fmsUdpGet == null || fmsUdpGet.length == 0) {
                         updater.updateFromFmsUdp(ParserNull.getInstance());
                         NET_IF_INIT.set(false, Remote.FMS, Protocol.UDP);
                     } else {
-                        updater.updateFromFmsUdp(getPacketParser("FmsToDsUdp", fmsUdpGet.getBuffer()));
+                        updater.updateFromFmsUdp(getPacketParser("FmsToDsUdp", fmsUdpGet));
                     }
                 } else {
                     updater.updateFromFmsUdp(ParserNull.getInstance());
@@ -133,7 +132,7 @@ public class DisplayEndpoint implements MainJDEC {
     };
 
     public static void main(String[] args) {
-        USBInterface.init();
+        ControlDevices.init();
         MainFrame.display();
         doProtocolUpdate();
         PROTOCOL_YEAR.addActionListener((e) -> doProtocolUpdate());
@@ -197,8 +196,8 @@ public class DisplayEndpoint implements MainJDEC {
                     String redirect = connection.getHeaderField("Location");
                     String remoteVer = redirect.substring(redirect.lastIndexOf("/") + 1);
                     if (!remoteVer.equals(CURRENT_VERSION_TAG)) {
-                        new HyperlinkBox("A new version " + remoteVer + " is available! Download from <br /><a href=\"" + redirect + "\">" + redirect + "</a>")
-                                .display("New Version Available");
+                        new HyperlinkBox(String.format("A new version %s is available! Download from <br /><a href=\"%s\">%s</a>",
+                                remoteVer, redirect, redirect)).display("New Version Available");
                     }
                     break;
             }
