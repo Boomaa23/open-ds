@@ -13,6 +13,7 @@ import com.boomaa.opends.util.Clock;
 import com.boomaa.opends.util.NumberUtils;
 
 import javax.swing.*;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -87,6 +88,13 @@ public class JoystickFrame extends PopupBase {
             int idx = EmbeddedJDEC.LIST.getSelectedIndex();
             swapDeviceIndices(idx, idx + 1);
         });
+        EmbeddedJDEC.AUTO_ORDER_BTN.addActionListener(e -> {
+            if (!PopupBase.isAlive("AutoOrderFrame")) {
+                new AutoOrderFrame();
+            } else {
+                PopupBase.getAlive("AutoOrderFrame").forceShow();
+            }
+        });
         EmbeddedJDEC.DISABLE_BTN.addActionListener(e -> EmbeddedJDEC.LIST.getSelectedValue()
                 .setDisabled(EmbeddedJDEC.DISABLE_BTN.isSelected()));
         EmbeddedJDEC.RELOAD_BTN.addActionListener(e -> resetControllerDisplay());
@@ -133,11 +141,12 @@ public class JoystickFrame extends PopupBase {
 
         base.clone().setPos(0, 3, 7, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.BUTTON_GRID);
 
-        base.clone().setPos(0, 4, 8, 1).build(EmbeddedJDEC.CLOSE_BTN);
+        base.clone().setPos(0, 4, 1, 1).build(EmbeddedJDEC.AUTO_ORDER_BTN);
+        base.clone().setPos(1, 4, 7, 1).build(EmbeddedJDEC.CLOSE_BTN);
 
         EmbeddedJDEC.BUTTON_GRID.setLayout(new GridBagLayout());
 
-        if (valueUpdater == null || !valueUpdater.isAlive()) {
+        if (valueUpdater == null) {
             valueUpdater = new ValueUpdater();
         }
         valueUpdater.start();
@@ -176,7 +185,7 @@ public class JoystickFrame extends PopupBase {
     @Override
     public void dispose() {
         if (valueUpdater != null) {
-            valueUpdater.interrupt();
+            valueUpdater.end();
         }
         super.dispose();
     }
@@ -194,6 +203,7 @@ public class JoystickFrame extends PopupBase {
 
         JTextField INDEX_SET = new JTextField("");
         JButton RELOAD_BTN = new JButton("↻");
+        JButton AUTO_ORDER_BTN = new JButton("Auto");
         StickyButton CLOSE_BTN = new StickyButton("Close", 5);
 
         JButton UP_BTN = new JButton("↑");
@@ -212,7 +222,7 @@ public class JoystickFrame extends PopupBase {
 
         @Override
         public void onCycle() {
-            if (!PopupBase.getAlive("JoystickFrame").isVisible()) {
+            if (!PopupBase.getAlive("JoystickFrame").isVisible() || PopupBase.isAlive("AutoOrderFrame")) {
                 return;
             }
             HIDDevice current = EmbeddedJDEC.LIST.getSelectedValue();
@@ -223,7 +233,7 @@ public class JoystickFrame extends PopupBase {
                 USBInterface.updateValues();
                 try {
                     int nFRCIdx = Integer.parseInt(EmbeddedJDEC.INDEX_SET.getText());
-                    if (cListIdx != nFRCIdx) {
+                    if (current.getFRCIdx() != nFRCIdx) {
                         for (HIDDevice dev : USBInterface.getControlDevices().values()) {
                             if (dev.getFRCIdx() == nFRCIdx) {
                                 MessageBox.show("Duplicate index \"" + nFRCIdx + "\" for controller \"" + dev.toString()

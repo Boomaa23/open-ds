@@ -71,4 +71,9 @@ public abstract class PopupBase extends JFrame {
     public void dispose() {
         forceHide();
     }
+
+    public void forceDispose() {
+        removeAlive(this.uuid);
+        super.dispose();
+    }
 }
