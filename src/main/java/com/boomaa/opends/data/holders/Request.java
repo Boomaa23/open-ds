@@ -1,22 +1,26 @@
 package com.boomaa.opends.data.holders;
 
-public enum Request {
-    REBOOT_ROBO_RIO(0x08, 4),
-    RESTART_CODE(0x04, 5);
+public enum Request implements DataBase.Holder {
+    // added, not in FRCture documentation
+    DS_CONNECTED(DataBase.create()
+            .addFlag(0x10, 2021, 2020)
+    ),
+    REBOOT_ROBO_RIO(DataBase.create()
+            .addFlag(0x08, 2021, 2020)
+            .addFlag(0x80, 2014)
+    ),
+    RESTART_CODE(DataBase.create()
+            .addFlag(0x04, 2021, 2020)
+    );
 
-    private final byte flag;
-    private final int bitmaskPos;
+    public final DataBase flags;
 
-    Request(int flag, int bitmaskPos) {
-        this.flag = (byte) flag;
-        this.bitmaskPos = bitmaskPos;
+    Request(DataBase flags) {
+        this.flags = flags;
     }
 
-    public byte getFlag() {
-        return flag;
-    }
-
-    public int getBitmaskPos() {
-        return bitmaskPos;
+    @Override
+    public int getFlag() {
+        return flags.getCurrentFlag();
     }
 }

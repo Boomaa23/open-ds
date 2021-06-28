@@ -1,5 +1,6 @@
 package com.boomaa.opends.util;
 
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.text.CharacterIterator;
@@ -8,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NumberUtils {
-    public static double getDouble(byte[] bytes) {
+    public static double getDouble(byte[] bytes) throws BufferUnderflowException {
         return byteWrapBig(bytes).getDouble();
     }
 
@@ -43,6 +44,10 @@ public class NumberUtils {
         return out;
     }
 
+    public static int getUInt8(byte num) {
+        return num < 0 ? 256 + num : num;
+    }
+
     public static byte[] intToBytePair(int in) {
         byte[] out = new byte[2];
         out[0] = (byte) ((in >>> 8) & 0xFF);
@@ -54,41 +59,71 @@ public class NumberUtils {
         return ByteBuffer.allocate(4).putInt(in).array();
     }
 
+    public static byte[] longToByteOctet(long in) {
+        return ByteBuffer.allocate(8).putLong(in).array();
+    }
+
     public static int dblToInt8(double in) {
-        return (int) (in * 127);
+        // range [-128, 127] for joysticks
+        return (int) (in * (in < 0 ? 128 : 127));
     }
 
-    //TODO test to make sure this works
-    public static int readULEB128(byte[] data) {
-        int result = 0;
-        int shift = 0;
-        int b;
-        int ctr = 0;
+    // Decode ULEB128 encoded data (byte array)
+    // Index 0 must be start of ULEB128 size tag
+    public static int decodeULEB128(byte[] data) {
+        int value = 0;
+        int bytesRead = 0;
+        boolean continueReading;
         do {
-            b = data[ctr++];
-            result |= (b & 0x7F) << shift;
-            shift += 7;
-        } while ((b & 0x80) != 0);
-        return result;
+            final byte rawByteValue = data[bytesRead];
+            if (bytesRead == 9 && (rawByteValue & ~0x1) != 0) {
+                throw new IllegalStateException("ULEB128 sequence exceeds 64bits");
+            }
+
+            value |= (rawByteValue & 0x7FL) << (bytesRead * 7);
+
+            bytesRead++;
+            continueReading = ((rawByteValue & 0x80) != 0);
+        } while (continueReading);
+
+        return value;
     }
 
-    public static boolean hasMaskMatch(byte data, byte flag, int... bitmaskPos) {
-        char[] bin = padByte(data).toCharArray();
-        StringBuilder maskedStr = new StringBuilder();
-        boolean putMask = false;
-        for (int i = 0; i < bin.length; i++) {
-            for (int mask : bitmaskPos) {
-                if (!putMask && i == mask) {
-                    maskedStr.append(bin[i]);
-                    putMask = true;
-                }
-            }
-            if (!putMask) {
-                maskedStr.append('0');
-            }
-            putMask = false;
+    // ULEB128 encoding for a string value
+    public static List<Byte> encodeULEB128(String value) {
+        List<Byte> bytes = encodeULEB128(value.length());
+        for (byte b : value.getBytes()) {
+            bytes.add(b);
         }
-        return maskedStr.toString().equals(padByte(flag));
+        return bytes;
+    }
+
+    // ULEB128 encoding for data of length len
+    public static List<Byte> encodeULEB128(long len) {
+        List<Byte> bytes = new ArrayList<>();
+        do {
+            byte b = (byte) (len & 0x7F);
+            len >>= 7;
+            if (len != 0) {
+                b |= 0x80;
+            }
+            bytes.add(b);
+        } while (len != 0);
+        return bytes;
+    }
+
+    // Number of bytes needed to represent data of length len
+    public static int sizeULEB128(int len) {
+        int groupCount = 0;
+        do {
+            groupCount++;
+            len >>>= 7;
+        } while (len != 0);
+        return groupCount;
+    }
+
+    public static boolean hasMaskMatch(byte b1, int i2) {
+        return (b1 & i2) == i2;
     }
 
     public static boolean hasPlacedBit(byte b, int bitmaskPos) {
@@ -100,7 +135,8 @@ public class NumberUtils {
     }
 
     public static String padByte(byte b, int size) {
-        return String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(' ', '0');
+        String formatStr = "%" + size + "s";
+        return String.format(formatStr, Integer.toBinaryString(b & 0xFF)).replace(' ', '0');
     }
 
     public static String padDouble(double value, int decimals) {
@@ -133,28 +169,24 @@ public class NumberUtils {
         return Math.round(value * pow) / pow;
     }
 
-    //TODO test that this works
     public static byte[] packBools(boolean[] bools) {
-        int len = bools.length;
-        int bytes = len >> 3;
-        if ((len & 0x07) != 0) {
-            bytes++;
+        int numBools = bools.length;
+        int packedSize = numBools >> 3;
+        if ((numBools & 0x07) != 0) {
+            packedSize++;
         }
-        byte[] out = new byte[bytes];
+        byte[] out = new byte[packedSize];
         for (int i = 0; i < bools.length; i++) {
             if (bools[i]) {
-                out[i >> 3] |= (byte) reverseByte(1 << (i & 0x07));
+                out[i >> 3] |= (byte) 1 << (i & 0x07);
             }
         }
-        return out;
-    }
-
-    // Reverses all the bits in a byte. Used to convert MSB 0 into LSB 0 for button encoding
-    public static int reverseByte(int in) {
-        in = (in & 0xF0) >> 4 | (in & 0x0F) << 4;
-        in = (in & 0xCC) >> 2 | (in & 0x33) << 2;
-        in = (in & 0xAA) >> 1 | (in & 0x55) << 1;
-        return in;
+        // Output bytes are reversed
+        byte[] flipped = new byte[out.length];
+        for (int i = 0; i < flipped.length; i++) {
+            flipped[i] = out[flipped.length - i - 1];
+        }
+        return flipped;
     }
 
     public static String bytesHumanReadable(long bytes) {
@@ -167,6 +199,18 @@ public class NumberUtils {
             ci.next();
         }
         return String.format("%.1f %cB", bytes / 1000.0, ci.current());
+    }
+
+    public static String toTitleCase(String text) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < text.length(); i++) {
+            if (i == 0 || text.charAt(i - 1) == ' ') {
+                sb.append(Character.toUpperCase(text.charAt(i)));
+            } else {
+                sb.append(Character.toLowerCase(text.charAt(i)));
+            }
+        }
+        return sb.toString();
     }
 
     public static String[] extractAllASCII(byte[] bytes) {

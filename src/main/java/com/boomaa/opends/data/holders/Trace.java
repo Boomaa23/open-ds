@@ -1,26 +1,33 @@
 package com.boomaa.opends.data.holders;
 
-public enum Trace {
-    ROBOTCODE(0x20, 2),
-    ISROBORIO(0x10, 3),
-    TESTMODE(0x08, 4),
-    AUTOMODE(0x04, 5),
-    TELEOPCODE(0x02, 6),
-    DISABLED(0x01, 7);
+public enum Trace implements DataBase.Holder {
+    ROBOTCODE(DataBase.create()
+            .addFlag(0x20, 2021, 2020)
+    ),
+    ISROBORIO(DataBase.create()
+            .addFlag(0x10, 2021, 2020)
+    ),
+    TESTMODE(DataBase.create()
+            .addFlag(0x08, 2021, 2020)
+    ),
+    AUTOMODE(DataBase.create()
+            .addFlag(0x04, 2021, 2020)
+    ),
+    TELEOPCODE(DataBase.create()
+            .addFlag(0x02, 2021, 2020)
+    ),
+    DISABLED(DataBase.create()
+            .addFlag(0x01, 2021, 2020)
+    );
 
-    private final byte flag;
-    private final int bitmaskPos;
+    public final DataBase flags;
 
-    Trace(int flag, int bitmaskPos) {
-        this.flag = (byte) flag;
-        this.bitmaskPos = bitmaskPos;
+    Trace(DataBase flags) {
+        this.flags = flags;
     }
 
-    public byte getFlag() {
-        return flag;
-    }
-
-    public int getBitmaskPos() {
-        return bitmaskPos;
+    @Override
+    public int getFlag() {
+        return flags.getCurrentFlag();
     }
 }

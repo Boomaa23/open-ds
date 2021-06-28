@@ -1,18 +1,21 @@
 package com.boomaa.opends.networking;
 
+import com.boomaa.opends.display.MainJDEC;
+import com.boomaa.opends.util.Clock;
 import com.boomaa.opends.util.OperatingSystem;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class WlanConnection {
+public class WlanConnection extends Clock {
+    private static WlanConnection RADIO;
     private final String ssid;
-    private final int signal; //percent
+    private int signal; //percent
 
-    public WlanConnection(String ssid, int signal) {
+    public WlanConnection(String ssid) {
+        super(1000);
         this.ssid = ssid;
-        this.signal = signal;
     }
 
     public String getSSID() {
@@ -25,7 +28,20 @@ public class WlanConnection {
 
     //TODO this probably doesn't work considering we can't see the networks and the wifi interfaces will likely be disabled on DSs
     // might even be the wrong thing, the field says "Field Radio Metrics" (e.g. FMS AP) not "Robot Radio Metrics"
-    public static WlanConnection getRadio(int teamNum) {
+    public static WlanConnection getRadio() {
+        int teamNum = MainJDEC.TEAM_NUMBER.checkedIntParse();
+        if (RADIO != null) {
+            if (Integer.parseInt(RADIO.getSSID()) != teamNum) {
+                RADIO.end();
+            }
+            RADIO = new WlanConnection(String.valueOf(teamNum));
+            RADIO.start();
+        }
+        return RADIO;
+    }
+
+    @Override
+    public void onCycle() {
         try {
             OperatingSystem current = OperatingSystem.getCurrent();
             if (current == OperatingSystem.WINDOWS) {
@@ -37,11 +53,12 @@ public class WlanConnection {
                 boolean foundNet = false;
                 while ((line = r.readLine()) != null) {
                     if (!foundNet) {
-                        if (line.contains("SSID") && line.contains(" : " + teamNum)) {
+                        if (line.contains("SSID") && line.contains(" : " + ssid)) {
                             foundNet = true;
                         }
                     } else if (line.contains("Signal")) {
-                        return new WlanConnection(String.valueOf(teamNum), Integer.parseInt(line.substring(30).replaceAll("%", "")));
+                        signal = Integer.parseInt(line.substring(30).replaceAll("%", ""));
+                        return;
                     }
                 }
             } else if (current == OperatingSystem.UNIX) {
@@ -56,14 +73,14 @@ public class WlanConnection {
                         int iospc = qualStr.indexOf(" ");
                         lastsignal = (int) (Integer.parseInt(qualStr.substring(0, iosl)) / ((double) Integer.parseInt(qualStr.substring(iosl + 1, iospc))) * 100);
                     }
-                    if (line.contains("SSID:\"" + teamNum)) {
-                        return new WlanConnection(String.valueOf(teamNum), lastsignal);
+                    if (line.contains("SSID:\"" + ssid)) {
+                        signal = lastsignal;
+                        return;
                     }
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
     }
 }

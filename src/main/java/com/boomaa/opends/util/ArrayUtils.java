@@ -30,6 +30,14 @@ public class ArrayUtils {
         return sliceArr(array, start, array.length);
     }
 
+    public static byte[] byteListUnbox(List<Byte> bytes) {
+        byte[] out = new byte[bytes.size()];
+        for (int i = 0; i < out.length; i++) {
+            out[i] = bytes.get(i);
+        }
+        return out;
+    }
+
     public static Byte[] byteBox(byte[] bytes) {
         Byte[] out = new Byte[bytes.length];
         for (int i = 0; i < out.length; i++) {

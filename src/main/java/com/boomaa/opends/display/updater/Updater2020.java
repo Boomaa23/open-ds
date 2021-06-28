@@ -3,6 +3,8 @@ package com.boomaa.opends.display.updater;
 import com.boomaa.opends.data.Challenge;
 import com.boomaa.opends.data.StatsFields;
 import com.boomaa.opends.data.holders.AllianceStation;
+import com.boomaa.opends.data.holders.Control;
+import com.boomaa.opends.data.holders.Remote;
 import com.boomaa.opends.data.holders.Status;
 import com.boomaa.opends.data.holders.Trace;
 import com.boomaa.opends.data.receive.ReceiveTag;
@@ -11,14 +13,21 @@ import com.boomaa.opends.data.receive.TagValueMap;
 import com.boomaa.opends.data.receive.parser.PacketParser;
 import com.boomaa.opends.data.receive.parser.Parser2020;
 import com.boomaa.opends.data.send.creator.PacketCreator;
-import com.boomaa.opends.display.Logger;
+import com.boomaa.opends.display.DisplayEndpoint;
+import com.boomaa.opends.display.PopupBase;
+import com.boomaa.opends.display.RobotMode;
+import com.boomaa.opends.display.frames.JoystickFrame;
+import com.boomaa.opends.util.DSLog;
 import com.boomaa.opends.util.NumberUtils;
+
+import java.util.List;
 
 public class Updater2020 extends ElementUpdater {
     @Override
     protected void doUpdateFromRioUdp(PacketParser data, TVMList tagMap) {
         Parser2020.RioToDsUdp rioUdp = (Parser2020.RioToDsUdp) data;
-        BROWNOUT_STATUS.setDisplay(rioUdp.getStatus().contains(Status.ESTOP));
+        IS_ENABLED.setEnabled(!DisplayEndpoint.NET_IF_INIT.isOrInit(Remote.FMS) && !PopupBase.isVisible(JoystickFrame.class) && !ESTOP_STATUS.isDisplayed());
+        ESTOP_STATUS.setDisplay(rioUdp.getStatus().contains(Status.ESTOP));
         if (rioUdp.getTrace().contains(Trace.ROBOTCODE)) {
             ROBOT_CODE_STATUS.changeToDisplay(0, true);
         } else if (rioUdp.getStatus().contains(Status.CODE_INIT)) {
@@ -26,9 +35,15 @@ public class Updater2020 extends ElementUpdater {
         } else {
             ROBOT_CODE_STATUS.forceHide();
         }
-        boolean robotConn = rioUdp.getTrace().contains(Trace.ISROBORIO);
-        ROBOT_CONNECTION_STATUS.setDisplay(robotConn);
-        IS_ENABLED.setEnabled(robotConn);
+
+        boolean robotConn = DisplayEndpoint.NET_IF_INIT.isOrInit(Remote.ROBO_RIO);
+        if (robotConn) {
+            boolean isRealRobot = rioUdp.getTrace().contains(Trace.ISROBORIO);
+            ROBOT_CONNECTION_STATUS.changeToDisplay(isRealRobot ? 0 : 1, true);
+        } else {
+            ROBOT_CONNECTION_STATUS.forceHide();
+        }
+
         BAT_VOLTAGE.setText(NumberUtils.padDouble(NumberUtils.roundTo(rioUdp.getBatteryVoltage(), 2), 2) + " V");
 
         if (tagMap.size() > 0) {
@@ -47,7 +62,7 @@ public class Updater2020 extends ElementUpdater {
                 TagValueMap<?> cpuInfo = cif.first();
                 double cpuPercent = 0;
                 float numCpus = (Float) cpuInfo.get("Number of CPUs");
-                for (int i = 1; i <= numCpus; i++) {
+                for (int i = 0; i < numCpus; i++) {
                     //TODO test if this cpu percentage algorithm works
                     float tCrit = (Float) cpuInfo.get("CPU " + i + " Time Critical %");
                     float tAbove = (Float) cpuInfo.get("CPU " + i + " Above Normal %");
@@ -57,6 +72,7 @@ public class Updater2020 extends ElementUpdater {
                             / (tCrit + tAbove + tNorm + tLow);
                 }
                 cpuPercent /= numCpus;
+                cpuPercent *= 100;
                 StatsFields.CPU_PERCENT.updateTableValue(cpuPercent);
             }
 
@@ -69,7 +85,7 @@ public class Updater2020 extends ElementUpdater {
                 StatsFields.CAN_RX_ERR.updateTableValue(canMetrics.get("RX Errors"));
                 StatsFields.CAN_TX_ERR.updateTableValue(canMetrics.get("TX Errors"));
             }
-            //TODO add rumbler capability (JInput != XInput compatible)
+            //TODO add rumbler capability (JInput/GLFW != XInput compatible)
         }
     }
 
@@ -108,6 +124,20 @@ public class Updater2020 extends ElementUpdater {
                     }
                 }
             }
+
+            TVMList em = tagMap.getMatching(ReceiveTag.ERROR_MESSAGE);
+            if (!em.isEmpty()) {
+                TagValueMap<?> errorMessage = em.first();
+                String error = (String) errorMessage.get("Details") + errorMessage.get("Location") + errorMessage.get("Call Stack");
+                String flag = (String) errorMessage.get("Flag");
+                DSLog.queueEvent(error, flag != null && flag.equals("Error") ? DSLog.EventSeverity.ERROR : DSLog.EventSeverity.WARNING);
+            }
+
+            TVMList so = tagMap.getMatching(ReceiveTag.STANDARD_OUT);
+            if (!so.isEmpty()) {
+                TagValueMap<?> stdOut = so.first();
+                DSLog.queueEvent((String) stdOut.get("Message"), DSLog.EventSeverity.INFO);
+            }
         }
     }
 
@@ -115,22 +145,30 @@ public class Updater2020 extends ElementUpdater {
     protected void doUpdateFromFmsUdp(PacketParser data, TVMList tagMap) {
         Parser2020.FmsToDsUdp fmsUdp = (Parser2020.FmsToDsUdp) data;
         AllianceStation station = fmsUdp.getAllianceStation();
-        if (station != null) {
-            ALLIANCE_COLOR.setEnabled(false);
-            ALLIANCE_COLOR.setSelectedItem(station.isBlue() ? "Blue" : "Red");
-            ALLIANCE_NUM.setEnabled(false);
-            ALLIANCE_NUM.setSelectedItem(station.getSidedNum());
+        List<Control> ctrlSignals = fmsUdp.getControl();
+        for (RobotMode mode : RobotMode.values()) {
+            if (ctrlSignals.contains(mode.getControlFlag())) {
+                ROBOT_DRIVE_MODE.setSelectedItem(mode.getControlFlag());
+            }
         }
-        Logger.OUT.println(fmsUdp.getAllianceStation());
-        Logger.OUT.println(fmsUdp.getTournamentLevel());
-        Logger.OUT.println(fmsUdp.getMatchNumber());
-        Logger.OUT.println(fmsUdp.getPlayNumber());
-        MATCH_TIME.setText(fmsUdp.getRemainingTime());
+        if (!station.equals(new AllianceStation(ALLIANCE_NUM.getSelectedIndex() - 1,
+                ALLIANCE_COLOR.getSelectedItem().equals("Blue")))) {
+            ALLIANCE_COLOR.setEnabled(true);
+            ALLIANCE_COLOR.setSelectedItem(station.isBlue() ? "Blue" : "Red");
+            ALLIANCE_COLOR.setEnabled(false);
+            ALLIANCE_NUM.setEnabled(true);
+            ALLIANCE_NUM.setSelectedItem(station.getSidedNum());
+            ALLIANCE_NUM.setEnabled(false);
+        }
+        FMS_CONNECTION_STATUS.forceDisplay();
+
+        ROBOT_DRIVE_MODE.setEnabled(false);
+        IS_ENABLED.setEnabled(false);
+        IS_ENABLED.setSelected(fmsUdp.getControl().contains(Control.ENABLED));
     }
 
     @Override
     protected void doUpdateFromFmsTcp(PacketParser data, TVMList tagMap) {
-        FMS_CONNECTION_STATUS.forceDisplay();
         TVMList challenge = tagMap.getMatching(ReceiveTag.CHALLENGE_QUESTION);
         if (!challenge.isEmpty()) {
             int value = (Integer) challenge.first().get("Challenge Value");
@@ -141,10 +179,12 @@ public class Updater2020 extends ElementUpdater {
 
     @Override
     protected void resetDataRioUdp() {
+        IS_ENABLED.setSelected(false);
+        IS_ENABLED.setEnabled(false);
         BAT_VOLTAGE.setText("0.00 V");
         ROBOT_CONNECTION_STATUS.forceHide();
         ROBOT_CODE_STATUS.forceHide();
-        BROWNOUT_STATUS.forceHide();
+        ESTOP_STATUS.forceHide();
     }
 
     @Override
@@ -154,10 +194,11 @@ public class Updater2020 extends ElementUpdater {
 
     @Override
     protected void resetDataFmsUdp() {
-        FMS_CONNECTION_STATUS.forceHide();
         MATCH_TIME.forceHide();
         ALLIANCE_COLOR.setEnabled(true);
         ALLIANCE_NUM.setEnabled(true);
+        FMS_CONNECTION_STATUS.forceHide();
+        ROBOT_DRIVE_MODE.setEnabled(true);
     }
 
     @Override

@@ -53,6 +53,16 @@ public class GBCPanelBuilder {
         return this;
     }
 
+    public GBCPanelBuilder setWeightX(double weightX) {
+        gbc.weightx = weightX;
+        return this;
+    }
+
+    public GBCPanelBuilder setWeightY(double weightY) {
+        gbc.weighty = weightY;
+        return this;
+    }
+
     public GBCPanelBuilder setAnchor(int anchor) {
         gbc.anchor = anchor;
         return this;
@@ -79,6 +89,7 @@ public class GBCPanelBuilder {
     public GBCPanelBuilder clone() {
         return new GBCPanelBuilder(build)
                 .setX(gbc.gridx).setY(gbc.gridy)
+                .setWeightX(gbc.weightx).setWeightY(gbc.weighty)
                 .setWidth(gbc.gridwidth).setHeight(gbc.gridheight)
                 .setAnchor(gbc.anchor).setFill(gbc.fill).setInsets(gbc.insets);
     }

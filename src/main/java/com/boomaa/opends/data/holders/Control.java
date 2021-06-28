@@ -1,26 +1,37 @@
 package com.boomaa.opends.data.holders;
 
-public enum Control {
-    ESTOP(0x80, 0),
-    FMS_CONNECTED(0x08, 4),
-    ENABLED(0x04, 5),
-    TELEOP_MODE(0x00, 6, 7),
-    TEST_MODE(0x01, 6, 7),
-    AUTO_MODE(0x02, 6, 7);
+public enum Control implements DataBase.Holder {
+    ESTOP(DataBase.create()
+            .addFlag(0x80, 2021, 2020, 2016, 2015)
+            .addFlag(0x00, 2014)
+    ),
+    FMS_CONNECTED(DataBase.create()
+            .addFlag(0x08, 2021, 2020, 2016, 2015, 2014)
+    ),
+    ENABLED(DataBase.create()
+            .addFlag(0x04, 2021, 2020, 2016, 2015)
+            .addFlag(0x20, 2014)
+    ),
+    TELEOP_MODE(DataBase.create()
+            .addFlag(0x00, 2021, 2020, 2016, 2015, 2014)
+    ),
+    TEST_MODE(DataBase.create()
+            .addFlag(0x01, 2021, 2020, 2016, 2015)
+            .addFlag(0x02, 2014)
+    ),
+    AUTO_MODE(DataBase.create()
+            .addFlag(0x02, 2021, 2020, 2016, 2015)
+            .addFlag(0x10, 2014)
+    );
 
-    private final byte flag;
-    private final int[] bitmaskPos;
+    public final DataBase flags;
 
-    Control(int flag, int... bitmaskPos) {
-        this.flag = (byte) flag;
-        this.bitmaskPos = bitmaskPos;
+    Control(DataBase flags) {
+        this.flags = flags;
     }
 
-    public byte getFlag() {
-        return flag;
-    }
-
-    public int[] getBitmaskPos() {
-        return bitmaskPos;
+    @Override
+    public int getFlag() {
+        return flags.getCurrentFlag();
     }
 }

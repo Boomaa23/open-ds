@@ -12,12 +12,13 @@ import com.boomaa.opends.display.updater.ElementUpdater;
 import com.boomaa.opends.networking.NetworkReloader;
 import com.boomaa.opends.networking.TCPInterface;
 import com.boomaa.opends.networking.UDPInterface;
-import com.boomaa.opends.networking.UDPTransform;
 import com.boomaa.opends.networktables.NTConnection;
+import com.boomaa.opends.usb.ControlDevices;
 import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.Clock;
 import com.boomaa.opends.util.DSLog;
 import com.boomaa.opends.util.InitChecker;
+import org.lwjgl.glfw.GLFW;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -34,7 +35,7 @@ public class DisplayEndpoint implements MainJDEC {
     public static UDPInterface FMS_UDP_INTERFACE;
     public static TCPInterface FMS_TCP_INTERFACE;
     public static InitChecker NET_IF_INIT = new InitChecker();
-    public static Integer[] VALID_PROTOCOL_YEARS = { 2020 };
+    public static Integer[] VALID_PROTOCOL_YEARS = { 2021, 2020, 2016, 2015, 2014 };
 
     private static ElementUpdater updater;
     private static PacketCreator creator;
@@ -42,7 +43,7 @@ public class DisplayEndpoint implements MainJDEC {
     private static ProtocolClass creatorClass = new ProtocolClass("com.boomaa.opends.data.send.creator.Creator");
     private static ProtocolClass updaterClass = new ProtocolClass("com.boomaa.opends.display.updater.Updater");
 
-    private static final Clock rioTcpClock = new Clock(20) {
+    private static final Clock rioTcpClock = new Clock("rioTcp", 20) {
         @Override
         public void onCycle() {
             if (updater != null && creator != null) {
@@ -62,18 +63,18 @@ public class DisplayEndpoint implements MainJDEC {
         }
     };
 
-    private static final Clock rioUdpClock = new Clock(20) {
+    private static final Clock rioUdpClock = new Clock("rioUdp", 20) {
         @Override
         public void onCycle() {
             if (updater != null && creator != null) {
                 if (NET_IF_INIT.get(Remote.ROBO_RIO, Protocol.UDP)) {
                     RIO_UDP_INTERFACE.doSend(creator.dsToRioUdp());
-                    UDPTransform rioUdpGet = RIO_UDP_INTERFACE.doReceieve();
-                    if (rioUdpGet == null || rioUdpGet.isBlank()) {
+                    byte[] rioUdpGet = RIO_UDP_INTERFACE.doReceieve();
+                    if (rioUdpGet == null || rioUdpGet.length == 0) {
                         updater.updateFromRioUdp(ParserNull.getInstance());
                         NET_IF_INIT.set(false, Remote.ROBO_RIO, Protocol.UDP);
                     } else {
-                        updater.updateFromRioUdp(getPacketParser("RioToDsUdp", rioUdpGet.getBuffer()));
+                        updater.updateFromRioUdp(getPacketParser("RioToDsUdp", rioUdpGet));
                     }
                 } else {
                     updater.updateFromRioUdp(ParserNull.getInstance());
@@ -83,8 +84,7 @@ public class DisplayEndpoint implements MainJDEC {
         }
     };
 
-    //TODO see if FMS clock can be 500ms as per specification
-    private static final Clock fmsTcpClock = new Clock(20) {
+    private static final Clock fmsTcpClock = new Clock("fmsTcp", 500) {
         @Override
         public void onCycle() {
             if (updater != null && creator != null && MainJDEC.FMS_CONNECT.isSelected()) {
@@ -102,22 +102,23 @@ public class DisplayEndpoint implements MainJDEC {
                 }
             } else if (!MainJDEC.FMS_CONNECT.isSelected() && FMS_TCP_INTERFACE != null) {
                 updater.updateFromFmsTcp(ParserNull.getInstance());
+                NET_IF_INIT.set(false, Remote.FMS, Protocol.TCP);
             }
         }
     };
 
-    private static final Clock fmsUdpClock = new Clock(20) {
+    private static final Clock fmsUdpClock = new Clock("fmsUdp", 500) {
         @Override
         public void onCycle() {
             if (updater != null && creator != null && MainJDEC.FMS_CONNECT.isSelected()) {
                 if (NET_IF_INIT.get(Remote.FMS, Protocol.UDP)) {
                     FMS_UDP_INTERFACE.doSend(creator.dsToFmsUdp());
-                    UDPTransform fmsUdpGet = FMS_UDP_INTERFACE.doReceieve();
-                    if (fmsUdpGet == null || fmsUdpGet.isBlank()) {
+                    byte[] fmsUdpGet = FMS_UDP_INTERFACE.doReceieve();
+                    if (fmsUdpGet == null || fmsUdpGet.length == 0) {
                         updater.updateFromFmsUdp(ParserNull.getInstance());
                         NET_IF_INIT.set(false, Remote.FMS, Protocol.UDP);
                     } else {
-                        updater.updateFromFmsUdp(getPacketParser("FmsToDsUdp", fmsUdpGet.getBuffer()));
+                        updater.updateFromFmsUdp(getPacketParser("FmsToDsUdp", fmsUdpGet));
                     }
                 } else {
                     updater.updateFromFmsUdp(ParserNull.getInstance());
@@ -125,11 +126,13 @@ public class DisplayEndpoint implements MainJDEC {
                 }
             } else if (!MainJDEC.FMS_CONNECT.isSelected() && FMS_UDP_INTERFACE != null) {
                 updater.updateFromFmsUdp(ParserNull.getInstance());
+                NET_IF_INIT.set(false, Remote.FMS, Protocol.UDP);
             }
         }
     };
 
     public static void main(String[] args) {
+        ControlDevices.init();
         MainFrame.display();
         doProtocolUpdate();
         PROTOCOL_YEAR.addActionListener((e) -> doProtocolUpdate());
@@ -139,11 +142,24 @@ public class DisplayEndpoint implements MainJDEC {
         fmsUdpClock.start();
         NETWORK_TABLES.start();
         FILE_LOGGER.start();
-        // TODO remove after testing
-        // checkForUpdates();
+        //TODO remove after testing
+        //checkForUpdates();
+        System.gc();
+
+        byte ctr = 0;
+        while (MainJDEC.FRAME.isShowing()) {
+            GLFW.glfwPollEvents();
+            ctr++;
+            if ((ctr %= 100) == 0) {
+                System.gc();
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
-
-
 
     public static void doProtocolUpdate() {
         parserClass.update();
@@ -180,8 +196,8 @@ public class DisplayEndpoint implements MainJDEC {
                     String redirect = connection.getHeaderField("Location");
                     String remoteVer = redirect.substring(redirect.lastIndexOf("/") + 1);
                     if (!remoteVer.equals(CURRENT_VERSION_TAG)) {
-                        new HyperlinkBox("A new version " + remoteVer + " is available! Download from <br /><a href=\"" + redirect + "\">" + redirect + "</a>")
-                                .display("New Version Available");
+                        new HyperlinkBox(String.format("A new version %s is available! Download from <br /><a href=\"%s\">%s</a>",
+                                remoteVer, redirect, redirect)).display("New Version Available");
                     }
                     break;
             }

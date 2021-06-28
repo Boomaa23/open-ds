@@ -1,10 +1,10 @@
 package com.boomaa.opends.data.receive;
 
 import java.util.Calendar;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class TagValueMap<T> extends HashMap<String, T> {
+public class TagValueMap<T> extends LinkedHashMap<String, T> {
     protected ReceiveTag baseTag;
 
     public TagValueMap<T> addTo(String key, T value) {

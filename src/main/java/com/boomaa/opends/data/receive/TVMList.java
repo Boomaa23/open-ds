@@ -1,8 +1,8 @@
 package com.boomaa.opends.data.receive;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 
-public class TVMList extends ArrayList<TagValueMap<?>> {
+public class TVMList extends LinkedList<TagValueMap<?>> {
     public TVMList getMatching(ReceiveTag tag) {
         TVMList matching = new TVMList();
         for (TagValueMap<?> map : this) {

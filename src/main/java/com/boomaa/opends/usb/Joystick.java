@@ -1,46 +1,24 @@
 package com.boomaa.opends.usb;
 
-import net.java.games.input.Controller;
+import org.lwjgl.glfw.GLFW;
 
 public class Joystick extends HIDDevice {
-    protected double x = 0.0;
-    protected double y = 0.0;
-    protected double z = 0.0;
-
-    public Joystick(Controller controller, int index) {
-        super(controller, index);
-    }
-
-    public double getX() {
-        return x;
-    }
-
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public void setY(double y) {
-        this.y = y;
-    }
-
-    public double getZ() {
-        return z;
-    }
-
-    public void setZ(double z) {
-        this.z = z;
+    public Joystick(int index) {
+        super(index, GLFW.glfwGetJoystickButtons(index).limit(), JoystickType.HID_JOYSTICK);
     }
 
     @Override
-    public int numAxes() {
-        return 3;
+    protected void doUpdate() {
+        updateButtons(GLFW.glfwGetJoystickButtons(glfwIdx));
+        updateAxes(GLFW.glfwGetJoystickAxes(glfwIdx));
     }
 
-    public enum Axis implements HIDDevice.Axis {
-        X, Y, Z, TWIST, THROTTLE
+    @Override
+    protected Axes provideAxes() {
+        return Axes.create(
+                new Axis("X", 0, 0),
+                new Axis("Y", 1, 1),
+                new Axis("Z", 2, 2)
+        );
     }
 }

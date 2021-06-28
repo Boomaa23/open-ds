@@ -4,7 +4,6 @@ open-ds.jar
 *.class
 wireshark/*
 *.iml
-cmake-build-debug/*
 *.log
 *.sln
 *.vcxproj

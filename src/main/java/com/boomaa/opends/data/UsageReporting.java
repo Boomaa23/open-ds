@@ -69,7 +69,7 @@ public class UsageReporting {
                         break;
                 }
                 String prefix = mapping.idPrefix.getPrefix();
-                System.out.println(mapping.getName() + " (" + prefix + (prefix.length() != 0 ? " " : "") + concatStr + ")");
+//                System.out.println(mapping.getName() + " (" + prefix + (prefix.length() != 0 ? " " : "") + concatStr + ")");
                 map.addTo("Usage Report " + namingCounter++, mapping.getName() + " (" + prefix + (prefix.length() != 0 ? " " : "") + concatStr + ")");
                 mapping = null;
                 numAssoc = null;
