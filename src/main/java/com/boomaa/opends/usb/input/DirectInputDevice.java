@@ -7,7 +7,7 @@ import java.util.List;
 
 public class DirectInputDevice implements Controller {
     private final List<DIDeviceObject> objects = new ArrayList<>();
-    private int[] deviceState = new int[objects.size()];
+    private final int[] deviceState;
     private final long address;
     private final byte[] instanceGUID;
     private final byte[] productGUID;
@@ -37,9 +37,17 @@ public class DirectInputDevice implements Controller {
         this.instanceName = instanceName;
         this.productName = productName;
         enumObjects();
-        setDataFormat(DIFlags.DIDF_ABSAXIS);
+        int axisMode = DIFlags.DIDF_ABSAXIS;
+        for (DIDeviceObject obj : objects) {
+            if (obj.isRelative()) {
+                axisMode = DIFlags.DIDF_RELAXIS;
+                break;
+            }
+        }
+        setDataFormat(axisMode);
         setCooperativeLevel(DIFlags.DISCL_BACKGROUND | DIFlags.DISCL_NONEXCLUSIVE);
         acquire();
+        this.deviceState = new int[objects.size()];
     }
 
     public void enumObjects() {
@@ -94,7 +102,7 @@ public class DirectInputDevice implements Controller {
 
     public synchronized long[] fetchRange(int objectId) {
         long[] range = new long[2];
-        checkIOException(fetchRangeProperty(address, objectId, range), "get object range", DIFlags.DI_OK);
+        checkIOException(fetchRangeProperty(address, objectId, range), "get object range", DIFlags.DI_OK, DIFlags.DIERR_UNSUPPORTED);
         return range;
     }
 
@@ -107,19 +115,20 @@ public class DirectInputDevice implements Controller {
     private static native int fetchDeadbandProperty(long address, int objectIdentifier);
 
     private void addObject(byte[] guid, int guidType, int identifier, int type, int instance, int flags, String name) {
-        objects.add(new DIDeviceObject(this, guid, guidType, identifier, type, instance, flags, name, ++currentFormatOffset));
+        objects.add(new DIDeviceObject(this, guid, guidType, identifier, type, instance, flags, name, currentFormatOffset++));
     }
 
     public void incrementNumButtons() {
         numButtons++;
     }
 
-    private static void checkIOException(int value, String failureMsg, int... ensureNoMatch) {
-        for (int check : ensureNoMatch) {
-            if (value != check) {
-                new IOException("Failed to " + failureMsg + " (" + Integer.toHexString(value) + ")").printStackTrace();
+    private static void checkIOException(int value, String failureMsg, int... failFlags) {
+        for (int flag : failFlags) {
+            if (value == flag) {
+                return;
             }
         }
+        new IOException("Failed to " + failureMsg + " (" + Integer.toHexString(value) + ")").printStackTrace();
     }
 
     private boolean ensureAcquired(int value) {

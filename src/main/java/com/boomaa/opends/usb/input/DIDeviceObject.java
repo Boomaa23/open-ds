@@ -58,8 +58,16 @@ public class DIDeviceObject implements Component {
         return (type & DIFlags.DIDFT_AXIS) != 0;
     }
 
+    public final boolean isRelative() {
+        return isAxis() && (type & DIFlags.DIDFT_RELAXIS) != 0;
+    }
+
     public byte[] getGUID() {
         return guid;
+    }
+
+    public int getFlags() {
+        return flags;
     }
 
     public int getType() {

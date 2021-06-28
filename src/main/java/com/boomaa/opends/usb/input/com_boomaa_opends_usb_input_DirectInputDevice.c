@@ -20,7 +20,7 @@ static jint numericGUID(const GUID *guid) {
     } else if (IsEqualGUID(guid, &GUID_Button)) {
         return 8;
     } else {
-        return 7;
+        return 11;
     }
 return 0;
 }
@@ -117,10 +117,20 @@ JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_input_DirectInputDevice_releas
  */
 JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_input_DirectInputDevice_fetchDeviceState
   (JNIEnv *env, jclass unused, jlong address, jintArray deviceStateArray) {
-    jint *device_state = (*env)->GetIntArrayElements(env, deviceStateArray, NULL);
+	jsize state_length = (*env)->GetArrayLength(env, deviceStateArray);
+	DWORD state_size = state_length * sizeof(jint);
+	HRESULT res;
+	jint* device_state = (*env)->GetIntArrayElements(env, deviceStateArray, NULL);
+	if (device_state == NULL)
+		return -1;
+
+	res = IDirectInputDevice8_GetDeviceState(deviceFromAddress(address), state_size, device_state);
+	(*env)->ReleaseIntArrayElements(env, deviceStateArray, device_state, 0);
+	return res;
+    /*jint *device_state = (*env)->GetIntArrayElements(env, deviceStateArray, NULL);
     HRESULT res = IDirectInputDevice8_GetDeviceState(deviceFromAddress(address), (*env) -> GetArrayLength(env, deviceStateArray) * sizeof(jint), device_state);
     (*env) -> ReleaseIntArrayElements(env, deviceStateArray, device_state, 0);
-    return res;
+    return res;*/
 }
 
 /*
@@ -128,6 +138,7 @@ JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_input_DirectInputDevice_fetchD
  * Method:    setDataFormat
  * Signature: (JI[Lcom/boomaa/opends/usb/input/DIDeviceObject;)I
  */
+/*
 JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_input_DirectInputDevice_setDataFormat
   (JNIEnv *env, jclass unused, jlong address, jint flags, jobjectArray objects) {
     LPDIRECTINPUTDEVICE8 lpDevice = deviceFromAddress(address);
@@ -165,7 +176,123 @@ JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_input_DirectInputDevice_setDat
     free(guids);
     free(objectFormats);
     return res;
+}*/
+
+JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_input_DirectInputDevice_setDataFormat
+(JNIEnv* env, jclass unused, jlong address, jint flags, jobjectArray objects) {
+	LPDIRECTINPUTDEVICE8 lpDevice = (LPDIRECTINPUTDEVICE8)(INT_PTR)address;
+	DIDATAFORMAT data_format;
+	jsize num_objects = (*env)->GetArrayLength(env, objects);
+	/*
+	 * Data size must be a multiple of 4, but since sizeof(jint) is
+	 * 4, we're safe
+	 */
+	DWORD data_size = num_objects * sizeof(jint);
+	GUID* guids;
+	DIOBJECTDATAFORMAT* object_formats;
+	int i;
+	HRESULT res;
+	jclass clazz;
+	jmethodID getGUID_method;
+	jmethodID getFlags_method;
+	jmethodID getType_method;
+	jmethodID getInstance_method;
+	jobject object;
+	jint type;
+	jint object_flags;
+	jint instance;
+	jobject guid_array;
+	DWORD composite_type;
+	DWORD flags_masked;
+	LPDIOBJECTDATAFORMAT object_format;
+
+	data_format.dwSize = sizeof(DIDATAFORMAT);
+	data_format.dwObjSize = sizeof(DIOBJECTDATAFORMAT);
+	data_format.dwFlags = flags;
+	data_format.dwDataSize = data_size;
+	data_format.dwNumObjs = num_objects;
+
+	clazz = (*env)->FindClass(env, "com/boomaa/opends/usb/input/DIDeviceObject");
+	if (clazz == NULL)
+		return -1;
+	getGUID_method = (*env)->GetMethodID(env, clazz, "getGUID", "()[B");
+	if (getGUID_method == NULL)
+		return -1;
+	getFlags_method = (*env)->GetMethodID(env, clazz, "getFlags", "()I");
+	if (getFlags_method == NULL)
+		return -1;
+	getType_method = (*env)->GetMethodID(env, clazz, "getType", "()I");
+	if (getType_method == NULL)
+		return -1;
+	getInstance_method = (*env)->GetMethodID(env, clazz, "getInstance", "()I");
+	if (getInstance_method == NULL)
+		return -1;
+
+	guids = (GUID*)malloc(num_objects * sizeof(GUID));
+	if (guids == NULL) {
+		throwIOException(env, "Failed to allocate GUIDs");
+		return -1;
+	}
+	object_formats = (DIOBJECTDATAFORMAT*)malloc(num_objects * sizeof(DIOBJECTDATAFORMAT));
+	if (object_formats == NULL) {
+		free(guids);
+		throwIOException(env, "Failed to allocate data format");
+		return -1;
+	}
+	for (i = 0; i < num_objects; i++) {
+		object = (*env)->GetObjectArrayElement(env, objects, i);
+		if ((*env)->ExceptionOccurred(env)) {
+			free(guids);
+			free(object_formats);
+			return -1;
+		}
+		guid_array = (*env)->CallObjectMethod(env, object, getGUID_method);
+		if ((*env)->ExceptionOccurred(env)) {
+			free(guids);
+			free(object_formats);
+			return -1;
+		}
+		unwrapGUID(env, guid_array, guids + i);
+		if ((*env)->ExceptionOccurred(env)) {
+			free(guids);
+			free(object_formats);
+			return -1;
+		}
+		type = (*env)->CallIntMethod(env, object, getType_method);
+		if ((*env)->ExceptionOccurred(env)) {
+			free(guids);
+			free(object_formats);
+			return -1;
+		}
+		object_flags = (*env)->CallIntMethod(env, object, getFlags_method);
+		if ((*env)->ExceptionOccurred(env)) {
+			free(guids);
+			free(object_formats);
+			return -1;
+		}
+		instance = (*env)->CallIntMethod(env, object, getInstance_method);
+		if ((*env)->ExceptionOccurred(env)) {
+			free(guids);
+			free(object_formats);
+			return -1;
+		}
+		(*env)->DeleteLocalRef(env, object);
+		composite_type = type | DIDFT_MAKEINSTANCE(instance);
+		flags_masked = flags & (DIDOI_ASPECTACCEL | DIDOI_ASPECTFORCE | DIDOI_ASPECTPOSITION | DIDOI_ASPECTVELOCITY);
+		object_format = object_formats + i;
+		object_format->pguid = guids + i;
+		object_format->dwType = composite_type;
+		object_format->dwFlags = flags_masked;
+		// dwOfs must be multiple of 4, but sizeof(jint) is 4, so we're safe
+		object_format->dwOfs = i * sizeof(jint);
+	}
+	data_format.rgodf = object_formats;
+	res = IDirectInputDevice8_SetDataFormat(lpDevice, &data_format);
+	free(guids);
+	free(object_formats);
+	return res;
 }
+
 
 /*
  * Class:     com_boomaa_opends_usb_input_DirectInputDevice

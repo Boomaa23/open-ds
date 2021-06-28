@@ -5,3 +5,10 @@ open-ds.jar
 wireshark/*
 *.iml
 cmake-build-debug/*
+*.log
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+**/Debug
+**/.vs

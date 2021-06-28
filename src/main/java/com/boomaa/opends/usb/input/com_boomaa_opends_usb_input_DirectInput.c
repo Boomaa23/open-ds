@@ -1,3 +1,4 @@
+#pragma comment(lib, "dinput8")
 #include <windows.h>
 #include <jni.h>
 #include "win32util.h"
