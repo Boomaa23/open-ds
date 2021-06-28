@@ -4,3 +4,10 @@ open-ds.jar
 *.class
 wireshark/*
 *.iml
+*.log
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+**/Debug
+**/.vs
