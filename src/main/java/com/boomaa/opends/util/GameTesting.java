@@ -1,15 +1,48 @@
 package com.boomaa.opends.util;
 
 import com.boomaa.opends.data.receive.parser.Parser2020;
+import com.boomaa.opends.usb.input.Component;
+import com.boomaa.opends.usb.input.DIDeviceObject;
+import com.boomaa.opends.usb.input.DirectInput;
+import com.boomaa.opends.usb.input.DirectInputDevice;
 
+import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.URISyntaxException;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
 public class GameTesting {
-    public static void main(String[] args) throws URISyntaxException, IOException {
+    public static void main(String[] args) throws URISyntaxException, IOException, InterruptedException {
 //        byte[] data = decodeHexString("0e0300c0381103c0e00441203c180501100481405014ffac59");
 //        System.out.println(ReceiveTag.PDP_LOG.getAction().getValue(data));
+
+//        long ct = System.currentTimeMillis() / 1000;
+//        long val = -2_212_122_495L + ct;
+//        byte[] data = NumberUtils.intToByteQuad((int) val);
+//        System.out.println(NumberUtils.getUInt32(data));
+//        System.out.println(val);
+//        System.out.println(ct);
+//        System.out.println(Arrays.toString(data));
+//        System.out.println(NumberUtils.getUInt32(decodeHexString("dac124f3")));
+
+//        System.out.println();
+        DirectInputDevice d = new DirectInput().getDevices().get(0);
+        int ctr = 0;
+        while (ctr < 100) {
+            d.poll();
+//            ctr += d.getComponents()[0].getValue();
+            System.out.println(d.getComponents()[0].getValue());
+//            for (Component c : d.getComponents()) {
+//                if (((DIDeviceObject)c).isAxis())
+//                    System.out.println(c.getName() + ": " + c.getValue());
+//            }
+            Thread.sleep(500);
+        }
         byte[] bs = new byte[] {(byte) 0x3f, (byte) 0x1c, (byte) 0x53, (byte) 0xd2};
         System.out.println(NumberUtils.getFloat(bs));
         System.out.println((float) 0x02);
