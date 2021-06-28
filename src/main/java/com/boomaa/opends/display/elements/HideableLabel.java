@@ -21,7 +21,8 @@ public class HideableLabel extends JLabel {
     }
 
     public void toggleDisplay() {
-        setDisplay(!displayed);
+        displayed = !displayed;
+        setDisplay(displayed);
     }
 
     public void forceDisplay() {

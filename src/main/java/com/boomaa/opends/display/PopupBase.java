@@ -9,7 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public abstract class PopupBase extends JFrame {
-    protected static Map<String, PopupBase> alive = new LinkedHashMap<>();
+    protected static Map<Class<?>, PopupBase> alive = new LinkedHashMap<>();
     protected final String uuid;
     protected final Dimension dimension;
     protected Container content;
@@ -21,7 +21,7 @@ public abstract class PopupBase extends JFrame {
     public PopupBase(String title, Dimension dimension) {
         super(title);
         this.uuid = getClass().getSimpleName();
-        alive.put(uuid, this);
+        alive.put(getClass(), this);
         this.dimension = dimension;
         this.content = this.getContentPane();
         config();
@@ -55,20 +55,20 @@ public abstract class PopupBase extends JFrame {
         return uuid;
     }
 
-    public static boolean isAlive(String uuid) {
+    public static boolean isAlive(Class<?> uuid) {
         return alive.containsKey(uuid);
     }
 
-    public static boolean isVisible(String uuid) {
+    public static boolean isVisible(Class<?> uuid) {
         return alive.containsKey(uuid) && alive.get(uuid).isShowing();
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends PopupBase> T getAlive(String uuid) {
+    public static <T extends PopupBase> T getAlive(Class<?> uuid) {
         return (T) alive.get(uuid);
     }
 
-    public static void removeAlive(String uuid) {
+    public static void removeAlive(Class<?> uuid) {
         alive.remove(uuid);
     }
 
@@ -78,7 +78,7 @@ public abstract class PopupBase extends JFrame {
     }
 
     public void forceDispose() {
-        removeAlive(this.uuid);
+        removeAlive(this.getClass());
         super.dispose();
     }
 }

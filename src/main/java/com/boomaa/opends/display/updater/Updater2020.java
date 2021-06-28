@@ -16,6 +16,7 @@ import com.boomaa.opends.data.send.creator.PacketCreator;
 import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.display.PopupBase;
 import com.boomaa.opends.display.RobotMode;
+import com.boomaa.opends.display.frames.JoystickFrame;
 import com.boomaa.opends.util.DSLog;
 import com.boomaa.opends.util.NumberUtils;
 
@@ -25,7 +26,7 @@ public class Updater2020 extends ElementUpdater {
     @Override
     protected void doUpdateFromRioUdp(PacketParser data, TVMList tagMap) {
         Parser2020.RioToDsUdp rioUdp = (Parser2020.RioToDsUdp) data;
-        IS_ENABLED.setEnabled(!DisplayEndpoint.NET_IF_INIT.isOrInit(Remote.FMS) && !PopupBase.isVisible("JoystickFrame") && !ESTOP_STATUS.isDisplayed());
+        IS_ENABLED.setEnabled(!DisplayEndpoint.NET_IF_INIT.isOrInit(Remote.FMS) && !PopupBase.isVisible(JoystickFrame.class) && !ESTOP_STATUS.isDisplayed());
         ESTOP_STATUS.setDisplay(rioUdp.getStatus().contains(Status.ESTOP));
         if (rioUdp.getTrace().contains(Trace.ROBOTCODE)) {
             ROBOT_CODE_STATUS.changeToDisplay(0, true);

@@ -20,13 +20,13 @@ public class ControlDevices {
         GLFW.glfwSetJoystickCallback(GLFWJoystickCallback.create((idx, event) -> {
             if (event == GLFW.GLFW_CONNECTED) {
                 HIDDevice device = add(idx);
-                if (PopupBase.isVisible("JoystickFrame")) {
+                if (PopupBase.isVisible(JoystickFrame.class)) {
                     final int listSize = JoystickFrame.EmbeddedJDEC.LIST_MODEL.size();
                     JoystickFrame.EmbeddedJDEC.LIST_MODEL.add(listSize, device);
                 }
             } else if (event == GLFW.GLFW_DISCONNECTED) {
                 HIDDevice device = controllers.get(idx);
-                if (PopupBase.isVisible("JoystickFrame")) {
+                if (PopupBase.isVisible(JoystickFrame.class)) {
                     final int remIdx = Math.min(device.getFRCIdx(), JoystickFrame.EmbeddedJDEC.LIST_MODEL.size() - 1);
                     JoystickFrame.EmbeddedJDEC.LIST_MODEL.remove(remIdx);
                 }

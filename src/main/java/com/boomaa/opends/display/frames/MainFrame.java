@@ -49,33 +49,33 @@ public class MainFrame implements MainJDEC {
     public static void layoutInit() {
         FRAME.setPreferredSize(new Dimension(560, 320));
         LOG_BTN.addActionListener((e) -> {
-            if (!PopupBase.isAlive("LogFrame")) {
+            if (!PopupBase.isAlive(LogFrame.class)) {
                 new LogFrame();
             } else {
-                PopupBase.getAlive("LogFrame").reopen();
+                PopupBase.getAlive(LogFrame.class).reopen();
             }
         });
         JS_BTN.addActionListener((e) -> {
             MainJDEC.IS_ENABLED.setSelected(false);
             MainJDEC.IS_ENABLED.setEnabled(false);
-            if (!PopupBase.isAlive("JoystickFrame")) {
+            if (!PopupBase.isAlive(JoystickFrame.class)) {
                 new JoystickFrame();
             } else {
-                PopupBase.getAlive("JoystickFrame").reopen();
+                PopupBase.getAlive(JoystickFrame.class).reopen();
             }
         });
         STATS_BTN.addActionListener((e) -> {
-            if (!PopupBase.isAlive("StatsFrame")) {
+            if (!PopupBase.isAlive(StatsFrame.class)) {
                 new StatsFrame();
             } else {
-                PopupBase.getAlive("StatsFrame").reopen();
+                PopupBase.getAlive(StatsFrame.class).reopen();
             }
         });
         NT_BTN.addActionListener((e) -> {
-            if (!PopupBase.isAlive("NTFrame")) {
+            if (!PopupBase.isAlive(NTFrame.class)) {
                 NT_FRAME = new NTFrame();
             } else {
-                PopupBase.getAlive("NTFrame").reopen();
+                PopupBase.getAlive(NTFrame.class).reopen();
             }
         });
         USB_CONNECT.addActionListener((e) -> {

@@ -27,6 +27,7 @@ public class OverlayField extends JTextField implements FocusListener {
 
     @Override
     public void focusGained(FocusEvent e) {
+        super.setForeground(Color.BLACK);
         if (this.getText().isEmpty()) {
             super.setText("");
             showingHint = false;
@@ -36,6 +37,7 @@ public class OverlayField extends JTextField implements FocusListener {
     @Override
     public void focusLost(FocusEvent e) {
         if (this.getText().isEmpty()) {
+            super.setForeground(Color.GRAY);
             super.setText(hint);
             showingHint = true;
         }

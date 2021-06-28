@@ -1,8 +1,10 @@
 # OpenDS
+![Java CI](https://github.com/Boomaa23/open-ds/workflows/Java%20CI/badge.svg)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/Boomaa23/open-ds)
 
 A reverse-engineered lightweight FRC Driver Station alternative for Windows and Linux
 
-Download [here](https://ncocdn.cf/software/open-ds.jar) ([JDK 8+](https://www.oracle.com/java/technologies/javase-downloads.html) required)
+Download [here](https://boomaa23.github.io/open-ds/download.html) ([JDK 8+](https://www.oracle.com/java/technologies/javase-downloads.html) required)
 
 Copyright (C) 2020-2021 Boomaa23
 
@@ -51,7 +53,8 @@ rules R66 and R88. OpenDS is intended for testing use only.
     * Easily modifiable for updated protocol years
     
 ## Setup
-Download the stable jar from [here](https://ncocdn.cf/software/open-ds.jar) and run. There are no prerequisites besides having a Java installation with [JDK 8](https://www.oracle.com/java/technologies/javase-downloads.html) or newer.
+Download the stable jar from [here](https://boomaa23.github.io/open-ds/download.html) and run. There are no prerequisites besides having a Java installation with [JDK 8](https://www.oracle.com/java/technologies/javase-downloads.html) or newer.
+
 ### Troubleshooting
 If you run into issues, ensure that you are running a 64-bit installation of either Windows 7/8.1/10 or Linux kernel version 2.6.35 or greater.
 
@@ -66,7 +69,7 @@ OpenDS may be used without restriction for the purpose of testing robots by team
 >*FIRST®, the FIRST® logo, FIRST® Robotics Competition (formerly also known as FRC®) are trademarks 
 >of For Inspiration and Recognition of Science and Technology (FIRST®), and are used in accordance with branding guidelines*
 
-See [LICENSE.txt](https://github.com/Boomaa23/open-ds/LICENSE.txt) for more details.
+See [LICENSE.txt](https://github.com/Boomaa23/open-ds/blob/master/LICENSE.txt) for more details.
 
 ## Contributing
 If you find a bug or issue with OpenDS, please report it on the "Issues" section of the GitHub [here](https://github.com/Boomaa23/open-ds/issues).

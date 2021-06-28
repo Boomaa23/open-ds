@@ -89,10 +89,10 @@ public class JoystickFrame extends PopupBase {
             swapDeviceIndices(idx, idx + 1);
         });
         EmbeddedJDEC.AUTO_ORDER_BTN.addActionListener(e -> {
-            if (!PopupBase.isAlive("AutoOrderFrame")) {
+            if (!PopupBase.isAlive(AutoOrderFrame.class)) {
                 new AutoOrderFrame();
             } else {
-                PopupBase.getAlive("AutoOrderFrame").reopen();
+                PopupBase.getAlive(AutoOrderFrame.class).reopen();
             }
         });
         EmbeddedJDEC.DISABLE_BTN.addActionListener(e -> EmbeddedJDEC.LIST.getSelectedValue()
@@ -229,7 +229,7 @@ public class JoystickFrame extends PopupBase {
 
         @Override
         public void onCycle() {
-            if (!PopupBase.getAlive("JoystickFrame").isVisible() || PopupBase.isVisible("AutoOrderFrame")) {
+            if (!PopupBase.getAlive(JoystickFrame.class).isVisible() || PopupBase.isVisible(AutoOrderFrame.class)) {
                 return;
             }
             HIDDevice current = EmbeddedJDEC.LIST.getSelectedValue();
