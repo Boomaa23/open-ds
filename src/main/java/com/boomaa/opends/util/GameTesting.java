@@ -1,23 +1,23 @@
 package com.boomaa.opends.util;
 
 import com.boomaa.opends.data.receive.parser.Parser2020;
+import com.boomaa.opends.usb.USBInterface;
 import com.boomaa.opends.usb.input.Component;
 import com.boomaa.opends.usb.input.DIDeviceObject;
 import com.boomaa.opends.usb.input.DirectInput;
 import com.boomaa.opends.usb.input.DirectInputDevice;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URISyntaxException;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
 public class GameTesting {
-    static {
-        Libraries.init(false);
-        //Copy dll manually into %TEMP%
-        System.loadLibrary("ods-input");
-    }
-
     public static void main(String[] args) throws URISyntaxException, IOException, InterruptedException {
 //        byte[] data = decodeHexString("0e0300c0381103c0e00441203c180501100481405014ffac59");
 //        System.out.println(ReceiveTag.PDP_LOG.getAction().getValue(data));

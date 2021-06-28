@@ -1,15 +1,17 @@
 package com.boomaa.opends.util;
 
 public enum OperatingSystem {
-    WINDOWS("win"),
-    MACOS("mac"),
-    UNIX("nix"),
-    UNSUPPORTED("");
+    WINDOWS("win", "win32"),
+    MACOS("mac", "osx"),
+    UNIX("nix", "linux"),
+    UNSUPPORTED("", "");
 
     private final String key;
+    private final String common;
 
-    OperatingSystem(String key) {
+    OperatingSystem(String key, String common) {
         this.key = key;
+        this.common = common;
     }
 
     public static OperatingSystem getCurrent() {
@@ -24,5 +26,9 @@ public enum OperatingSystem {
 
     public static boolean isWindows() {
         return getCurrent() == WINDOWS;
+    }
+
+    public String getCommonName() {
+        return common;
     }
 }
