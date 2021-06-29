@@ -1,4 +1,4 @@
-package com.boomaa.opends.usb.input;
+package com.boomaa.opends.usb;
 
 public class DIDeviceObject implements Component {
     private final DirectInputDevice device;
@@ -26,16 +26,17 @@ public class DIDeviceObject implements Component {
         this.name = name;
         this.formatOffset = formatOffset;
         if (guidType == DIFlags.BUTTON_GUID) {
-            device.incrementNumButtons();
+            int numButtons = device.incrementNumButtons();
             for (Component.Button searchGuid : Component.Button.values()) {
-                if (searchGuid.ordinal() == guidType) { //TODO Can't check buttons like this
+                if (searchGuid.ordinal() == numButtons) {
                     componentId = searchGuid;
                     break;
                 }
             }
         } else {
+            device.incrementNumAxes();
             for (Component.Axis searchGuid : Component.Axis.values()) {
-                if (searchGuid.ordinal() == guidType) {
+                if (searchGuid.guid() == guidType) {
                     componentId = searchGuid;
                     break;
                 }
@@ -50,10 +51,12 @@ public class DIDeviceObject implements Component {
         this.max = range[1];
     }
 
+    @Override
     public boolean isButton() {
         return (type & DIFlags.DIDFT_BUTTON) != 0;
     }
 
+    @Override
     public boolean isAxis() {
         return (type & DIFlags.DIDFT_AXIS) != 0;
     }

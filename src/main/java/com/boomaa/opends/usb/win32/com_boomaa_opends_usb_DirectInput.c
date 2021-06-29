@@ -3,14 +3,14 @@
 #include <jni.h>
 #include "win32util.h"
 #include <dinput.h>
-#include "com_boomaa_opends_usb_input_DirectInput.h"
+#include "com_boomaa_opends_usb_DirectInput.h"
 
 /*
- * Class:     com_boomaa_opends_usb_input_DirectInput
+ * Class:     com_boomaa_opends_usb_DirectInput
  * Method:    create
  * Signature: ()J
  */
-JNIEXPORT jlong JNICALL Java_com_boomaa_opends_usb_input_DirectInput_create
+JNIEXPORT jlong JNICALL Java_com_boomaa_opends_usb_DirectInput_create
   (JNIEnv *env, jobject obj) {
     LPDIRECTINPUT8 lpDirectInput;
     DirectInput8Create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, &IID_IDirectInput8, (void *) &lpDirectInput, NULL);
@@ -53,11 +53,11 @@ static BOOL CALLBACK enumDevicesCallback(LPCDIDEVICEINSTANCE inst, LPVOID contex
 }
 
 /*
- * Class:     com_boomaa_opends_usb_input_DirectInput
+ * Class:     com_boomaa_opends_usb_DirectInput
  * Method:    enumDevices
  * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_com_boomaa_opends_usb_input_DirectInput_enumDevices
+JNIEXPORT void JNICALL Java_com_boomaa_opends_usb_DirectInput_enumDevices
   (JNIEnv *env, jobject obj, jlong address) {
     LPDIRECTINPUT8 lpDirectInput = (LPDIRECTINPUT8) (INT_PTR) address;
     DIEnumContext context;
@@ -69,11 +69,11 @@ JNIEXPORT void JNICALL Java_com_boomaa_opends_usb_input_DirectInput_enumDevices
 }
 
 /*
- * Class:     com_boomaa_opends_usb_input_DirectInput
+ * Class:     com_boomaa_opends_usb_DirectInput
  * Method:    releaseDirectInput
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_com_boomaa_opends_usb_input_DirectInput_releaseDirectInput
+JNIEXPORT void JNICALL Java_com_boomaa_opends_usb_DirectInput_releaseDirectInput
   (JNIEnv *env, jobject obj, jlong address) {
     IDirectInput8_Release((LPDIRECTINPUT8) (INT_PTR) address);
 }

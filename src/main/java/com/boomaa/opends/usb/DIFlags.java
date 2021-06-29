@@ -1,4 +1,4 @@
-package com.boomaa.opends.usb.input;
+package com.boomaa.opends.usb;
 
 public interface DIFlags {
     int DI_OK = 0x00000000;
@@ -18,11 +18,9 @@ public interface DIFlags {
     int DIDFT_AXIS = 0x00000003;
     int DIDFT_BUTTON = 0x0000000C;
 
-    int DI8DEVTYPE_JOYSTICK = 0x14;
-    int DI8DEVTYPE_GAMEPAD = 0x15;
-
     int DIDF_ABSAXIS = 0x00000001;
     int DIDF_RELAXIS = 0x00000002;
+    int DISCL_EXCLUSIVE = 0x00000001;
     int DISCL_NONEXCLUSIVE = 0x00000002;
     int DISCL_BACKGROUND = 0x00000008;
 

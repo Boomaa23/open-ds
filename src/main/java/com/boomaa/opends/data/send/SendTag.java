@@ -7,8 +7,8 @@ import com.boomaa.opends.data.holders.Remote;
 import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.display.RobotMode;
 import com.boomaa.opends.networking.WlanConnection;
+import com.boomaa.opends.usb.Controller;
 import com.boomaa.opends.usb.HIDDevice;
-import com.boomaa.opends.usb.JoystickType;
 import com.boomaa.opends.usb.ControlDevices;
 import com.boomaa.opends.usb.XboxController;
 import com.boomaa.opends.util.NumberUtils;
@@ -30,16 +30,15 @@ public enum SendTag {
             RefSendTag.yearOfAction(2020),
             () -> {
                 PacketBuilder builder = new PacketBuilder();
-                HIDDevice ctrl = ControlDevices.getAll().get(ControlDevices.iterateSend(true));
-                if (ctrl != null && !ctrl.isDisabled()) {
-                    ctrl.update();
-                    builder.addInt(ctrl.numAxes()); //3 axes
-                    HIDDevice.Axes axes = ctrl.getAxes();
-                    for (String idx : axes.calcIdxPath()) {
-                        builder.addInt(NumberUtils.dblToInt8(axes.get(idx).getValue()));
+                HIDDevice dev = ControlDevices.getAll().get(ControlDevices.iterateSend(true));
+                if (dev != null && !dev.isDisabled()) {
+                    dev.update();
+                    builder.addInt(dev.usedNumAxes()); //3 axes
+                    for (int i = 0; i < dev.usedNumAxes(); i++) {
+                        builder.addInt(NumberUtils.dblToInt8(dev.getAxis(i)));
                     }
-                    builder.addInt(ctrl.numButtons())
-                            .addBytes(NumberUtils.packBools(ctrl.getButtons()))
+                    builder.addInt(dev.usedNumButtons())
+                            .addBytes(NumberUtils.packBools(dev.getButtons()))
                             .addInt(0); //povCount
                 } else {
                     // Placeholder values for js index padding
@@ -70,24 +69,23 @@ public enum SendTag {
             RefSendTag.yearOfAction(2020),
             () -> {
                 PacketBuilder builder = new PacketBuilder();
-                HIDDevice ctrl = ControlDevices.getAll().get(ControlDevices.iterateSend(false));
-                if (ctrl != null && !ctrl.isDisabled()) {
-                    builder.addInt(ctrl.getFRCIdx())
-                            .addInt(ctrl instanceof XboxController ? 1 : 0) //isXbox
-                            .addInt(ctrl.getDeviceType().numAsInt());
-                    String name = ctrl.getName();
+                HIDDevice dev = ControlDevices.getAll().get(ControlDevices.iterateSend(false));
+                if (dev != null && !dev.isDisabled()) {
+                    builder.addInt(dev.getIdx())
+                            .addInt(dev instanceof XboxController ? 1 : 0) //isXbox
+                            .addInt(dev.getDeviceType().getFRCFlag());
+                    String name = dev.getName();
                     builder.addInt(name.length())
                             .addBytes(name.getBytes())
-                            .addInt(ctrl.numAxes()); //numAxes
-                    HIDDevice.Axes axes = ctrl.getAxes();
-                    for (String idx : axes.calcIdxPath()) {
-                        builder.addInt(axes.get(idx).getFRCIdx());
+                            .addInt(dev.usedNumAxes()); //numAxes
+                    for (int i = 0; i < dev.usedNumAxes(); i++) {
+                        builder.addInt(NumberUtils.dblToInt8(dev.getAxis(i)));
                     }
-                    builder.addInt(ctrl.numButtons())
+                    builder.addInt(dev.usedNumButtons())
                             .addInt(0); //povCount
                 } else {
                     builder.addInt(ControlDevices.getDescIndex()).addInt(0)
-                            .addInt(JoystickType.UNKNOWN.numAsInt()).pad(0, 4);
+                            .addInt(Controller.Type.UNKNOWN.getFRCFlag()).pad(0, 4);
                 }
                 return builder.build();
             },

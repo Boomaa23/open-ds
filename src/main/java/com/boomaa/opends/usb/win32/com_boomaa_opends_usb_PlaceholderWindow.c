@@ -1,10 +1,10 @@
 #include <jni.h>
 #include <windows.h>
 
-/* Header for class com_boomaa_opends_usb_input_PlaceholderWindow */
+/* Header for class com_boomaa_opends_usb_PlaceholderWindow */
 
-#ifndef _Included_com_boomaa_opends_usb_input_PlaceholderWindow
-#define _Included_com_boomaa_opends_usb_input_PlaceholderWindow
+#ifndef _Included_com_boomaa_opends_usb_PlaceholderWindow
+#define _Included_com_boomaa_opends_usb_PlaceholderWindow
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -16,11 +16,11 @@ static LRESULT CALLBACK ProcWindow(HWND hWnd, UINT message, WPARAM wParam, LPARA
 }
 
 /*
- * Class:     com_boomaa_opends_usb_input_PlaceholderWindow
+ * Class:     com_boomaa_opends_usb_PlaceholderWindow
  * Method:    createWindow
  * Signature: ()J
  */
-JNIEXPORT jlong JNICALL Java_com_boomaa_opends_usb_input_PlaceholderWindow_createWindow
+JNIEXPORT jlong JNICALL Java_com_boomaa_opends_usb_PlaceholderWindow_createWindow
   (JNIEnv *env, jclass clazz) {
     HINSTANCE inst = GetModuleHandle(NULL);
 
@@ -51,11 +51,11 @@ JNIEXPORT jlong JNICALL Java_com_boomaa_opends_usb_input_PlaceholderWindow_creat
 }
 
 /*
- * Class:     com_boomaa_opends_usb_input_PlaceholderWindow
+ * Class:     com_boomaa_opends_usb_PlaceholderWindow
  * Method:    destroy
  * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_com_boomaa_opends_usb_input_PlaceholderWindow_destroy
+JNIEXPORT void JNICALL Java_com_boomaa_opends_usb_PlaceholderWindow_destroy
   (JNIEnv *env, jclass clazz, jlong address) {
     DestroyWindow((HWND) (INT_PTR) address);
 }

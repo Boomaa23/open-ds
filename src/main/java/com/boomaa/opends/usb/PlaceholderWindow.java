@@ -1,4 +1,4 @@
-package com.boomaa.opends.usb.input;
+package com.boomaa.opends.usb;
 
 public class PlaceholderWindow {
     private static PlaceholderWindow INSTANCE = new PlaceholderWindow();

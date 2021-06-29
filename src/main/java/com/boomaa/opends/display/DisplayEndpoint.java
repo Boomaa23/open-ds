@@ -18,7 +18,7 @@ import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.Clock;
 import com.boomaa.opends.util.DSLog;
 import com.boomaa.opends.util.InitChecker;
-import org.lwjgl.glfw.GLFW;
+import com.boomaa.opends.util.Libraries;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -132,6 +132,7 @@ public class DisplayEndpoint implements MainJDEC {
     };
 
     public static void main(String[] args) {
+        Libraries.init();
         ControlDevices.init();
         MainFrame.display();
         doProtocolUpdate();
@@ -144,17 +145,14 @@ public class DisplayEndpoint implements MainJDEC {
         FILE_LOGGER.start();
         //TODO remove after testing
         //checkForUpdates();
-        System.gc();
 
-        byte ctr = 0;
         while (MainJDEC.FRAME.isShowing()) {
-            GLFW.glfwPollEvents();
-            ctr++;
-            if ((ctr %= 100) == 0) {
-                System.gc();
-            }
+            System.gc();
+            ControlDevices.updateValues();
+            ControlDevices.checkForRemoval();
+            ControlDevices.findAll();
             try {
-                Thread.sleep(100);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

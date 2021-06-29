@@ -9,7 +9,7 @@ import com.boomaa.opends.data.send.SendTag;
 import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.display.RobotMode;
-import com.boomaa.opends.usb.Joystick;
+import com.boomaa.opends.usb.IndexTracker;
 import com.boomaa.opends.usb.ControlDevices;
 import com.boomaa.opends.util.NumberUtils;
 
@@ -49,7 +49,7 @@ public class Creator2015 extends NoTCPCreator {
         if (IS_ENABLED.isSelected()) {
             ControlDevices.findAll();
             ControlDevices.updateValues();
-            for (int i = 0; i < Joystick.MAX_JS_NUM; i++) {
+            for (int i = 0; i < IndexTracker.MAX_JS_NUM; i++) {
                 builder.addBytes(SendTag.JOYSTICK.getBytes());
             }
         }

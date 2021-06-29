@@ -1,118 +1,113 @@
 package com.boomaa.opends.usb;
 
-import org.lwjgl.glfw.GLFW;
-
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 public abstract class HIDDevice {
-    public static final int MAX_JS_NUM = 6; //max 6 joysticks
-    public static int MAX_JS_INDEX = 0; //maximum populated index (var)
-    protected boolean[] buttons;
-    protected int glfwIdx;
-    protected int frcIdx;
-    protected String name;
-    protected final JoystickType jsType;
-    protected final Axes axes;
+    private final Controller ctrl;
+    private int[] axesPath;
+    private int[] buttonPath;
+    protected int idx;
     protected boolean disabled;
-    protected boolean queueRemove;
 
-    public HIDDevice(int index, int numButtons, String name, JoystickType jsType) {
-        this.buttons = new boolean[numButtons];
-        this.glfwIdx = index;
-        this.frcIdx = index;
-        this.name = name;
-        this.jsType = jsType;
-        this.axes = provideAxes();
-        checkMax();
-    }
-
-    public HIDDevice(int index, int numButtons, JoystickType jsType) {
-        this(index, numButtons, GLFW.glfwGetJoystickName(index), jsType);
-    }
-
-    private void checkMax() {
-        if (frcIdx > MAX_JS_INDEX) {
-            MAX_JS_INDEX = frcIdx;
+    public HIDDevice(Controller ctrl) {
+        this.ctrl = ctrl;
+        this.idx = IndexTracker.registerNext();
+        ctrl.poll();
+        Component[] comps = ctrl.getComponents();
+        Component.Identifier[] axes = provideAxes();
+        Component.Identifier[] buttons = provideButtons();
+        this.axesPath = new int[axes.length];
+        boolean isAllBtns = buttons == null;
+        this.buttonPath = new int[isAllBtns ? deviceNumButtons() : buttons.length];
+        int aCtr = 0;
+        int bCtr = 0;
+        for (int idx = 0; idx < comps.length; idx++) {
+            Component comp = comps[idx];
+            if (comp.isAxis()) {
+                for (Component.Identifier axisId : axes) {
+                    if (comp.getIdentitifer() == axisId) {
+                        axesPath[aCtr++] = idx;
+                    }
+                }
+            } else if (comp.isButton()) {
+                if (isAllBtns) {
+                    buttonPath[bCtr++] = idx;
+                } else {
+                    for (Component.Identifier btnId : buttons) {
+                        if (comp.getIdentitifer() == btnId) {
+                            buttonPath[bCtr++] = idx;
+                        }
+                    }
+                }
+            }
         }
     }
-
-    protected abstract void doUpdate();
 
     public void update() {
-        if (!queueRemove) {
-            doUpdate();
-        }
-    }
-
-    public void updateButtons(ByteBuffer glfwBtns) {
-        if (glfwBtns != null) {
-            for (int i = 0; i < glfwBtns.limit(); i++) {
-                setButton(i, glfwBtns.get(i) == GLFW.GLFW_PRESS);
-            }
-        } else {
-            remove();
-        }
-    }
-
-    public void updateAxes(FloatBuffer glfwAxes) {
-        if (glfwAxes != null) {
-            //TODO arduino leonardo has 11 axes at -1, remove them?
-            for (HIDDevice.Axis axis : getAxes().values()) {
-                axis.setValue(glfwAxes.get(axis.getGLFWIdx()));
-            }
-        } else {
-            remove();
-        }
-    }
-
-    public void setButton(int index, boolean value) {
-        this.buttons[index] = value;
-    }
-
-    public boolean getButton(int index) {
-        return this.buttons[index];
+        ctrl.poll();
     }
 
     public boolean[] getButtons() {
+        Component[] comps = ctrl.getComponents();
+        boolean[] buttons = new boolean[usedNumButtons()];
+        for (int i = 0; i < buttons.length; i++) {
+            buttons[i] = comps[buttonPath[i]].getValue() == 1;
+        }
         return buttons;
     }
 
-    public void setFRCIdx(int index) {
-        this.frcIdx = index;
-        checkMax();
+    public void setIdx(int index) {
+        IndexTracker.unregister(idx);
+        IndexTracker.register(index);
+        this.idx = index;
     }
 
-    public int getFRCIdx() {
-        return frcIdx;
+    public int getIdx() {
+        return idx;
     }
 
-    public int getGLFWIdx() {
-        return glfwIdx;
+    // Default value null = include all buttons
+    public Component.Identifier[] provideButtons() {
+        return null;
     }
 
-    public int numButtons() {
-        return buttons.length;
+    public int usedNumButtons() {
+        return buttonPath.length;
     }
 
-    protected abstract Axes provideAxes();
-
-    public Axes getAxes() {
-        return axes;
+    public int deviceNumButtons() {
+        return ctrl.getNumButtons();
     }
 
-    public final int numAxes() {
-        return axes.size();
+    public abstract Component.Identifier[] provideAxes();
+
+    public double getAxis(int idx) {
+        return ctrl.getComponents()[axesPath[idx]].getValue();
+    }
+
+    public int usedNumAxes() {
+        return axesPath.length;
+    }
+
+    public final int deviceNumAxes() {
+        return ctrl.getNumAxes();
+    }
+
+    public double getComponentValue(Component.Identifier id) {
+        for (Component comp : ctrl.getComponents()) {
+            if (comp.getIdentitifer() == id) {
+                return comp.getValue();
+            }
+        }
+        return Integer.MAX_VALUE;
+    }
+
+    public boolean hasController(Controller ctrl) {
+        return ctrl.equals(this.ctrl);
     }
 
     public String getName() {
-        return name;
+        return ctrl.getName();
     }
 
     public void setDisabled(boolean disabled) {
@@ -123,16 +118,12 @@ public abstract class HIDDevice {
         return disabled;
     }
 
-    public JoystickType getDeviceType() {
-        return jsType;
-    }
-
-    public void remove() {
-        this.queueRemove = true;
-    }
-
     public boolean needsRemove() {
-        return queueRemove;
+        return ctrl.needsRemove();
+    }
+
+    public Controller.Type getDeviceType() {
+        return ctrl.getType();
     }
 
     @Override
@@ -140,99 +131,16 @@ public abstract class HIDDevice {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         HIDDevice hidDevice = (HIDDevice) o;
-        return glfwIdx == hidDevice.glfwIdx &&
-                name.equals(hidDevice.name);
+        return ctrl == hidDevice.ctrl;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(glfwIdx, name);
+        return Objects.hash(ctrl);
     }
 
     @Override
     public String toString() {
-        return name;
-    }
-
-    public static class Axes extends LinkedHashMap<String, Axis> {
-        private Set<String> path;
-        private boolean valuesChanged = true;
-
-        @Override
-        public Axis put(String key, Axis value) {
-            valuesChanged = true;
-            return super.put(key, value);
-        }
-
-        @Override
-        public Axis remove(Object key) {
-            valuesChanged = true;
-            return super.remove(key);
-        }
-
-        public static Axes create(Axis... axisList) {
-            Axes axes = new Axes();
-            for (Axis axis : axisList) {
-                axes.put(axis.getName(), axis);
-            }
-            return axes;
-        }
-
-        // Precalculates optimal path through FRC indices (for sending)
-        public Set<String> calcIdxPath() {
-            if (this.path == null || valuesChanged) {
-                Map<String, Integer> path = new LinkedHashMap<>();
-                for (Axis axis : values()) {
-                    int idx = axis.getFRCIdx();
-                    if (idx != -1) {
-                        path.put(axis.getName(), idx);
-                    }
-                }
-                List<Map.Entry<String, Integer>> list = new ArrayList<>(path.entrySet());
-                list.sort(Map.Entry.comparingByValue());
-
-                Map<String, Integer> result = new LinkedHashMap<>();
-                for (Map.Entry<String, Integer> entry : list) {
-                    result.put(entry.getKey(), entry.getValue());
-                }
-                this.path = result.keySet();
-                valuesChanged = false;
-            }
-            return this.path;
-        }
-    }
-
-    public static class Axis {
-        private final String name;
-        private final int glfwIdx;
-        private final int frcIdx;
-        private double value;
-
-        // -1 FRC index means do not include
-        public Axis(String name, int glfwIdx, int frcIdx) {
-            this.name = name;
-            this.glfwIdx = glfwIdx;
-            this.frcIdx = frcIdx;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public int getGLFWIdx() {
-            return glfwIdx;
-        }
-
-        public int getFRCIdx() {
-            return frcIdx;
-        }
-
-        public void setValue(double value) {
-            this.value = value;
-        }
-
-        public double getValue() {
-            return value;
-        }
+        return getName();
     }
 }

@@ -82,7 +82,6 @@ public class AutoOrderFrame extends PopupBase {
         }
         idxCtr = 0;
         EmbeddedJDEC.SKIP_BTN.setEnabled(true);
-        ControlDevices.reindexAll();
         if (valueUpdater != null) {
             valueUpdater.end();
         }
@@ -110,14 +109,14 @@ public class AutoOrderFrame extends PopupBase {
         @Override
         public void onCycle() {
             ControlDevices.updateValues();
-            for (HIDDevice device : ControlDevices.getAll().values()) {
+            for (HIDDevice device : ControlDevices.getAll()) {
                 if (devices.contains(device)) {
                     continue;
                 }
                 boolean[] btns = device.getButtons();
                 for (boolean b : btns) {
                     if (b) {
-                        device.setFRCIdx(idxCtr);
+                        device.setIdx(idxCtr);
                         EmbeddedJDEC.JS_NAMES[idxCtr++].setText(device.getName());
                         devices.add(device);
                     }

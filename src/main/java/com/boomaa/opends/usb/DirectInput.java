@@ -1,15 +1,22 @@
-package com.boomaa.opends.usb.input;
+package com.boomaa.opends.usb;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class DirectInput {
-    private final List<DirectInputDevice> devices = new ArrayList<>();
+    public static final DirectInput INSTANCE = new DirectInput();
+    private final List<DirectInputDevice> devices = new LinkedList<>();
     private final long directInputAddress;
 
-    public DirectInput() {
+    private DirectInput() {
         this.directInputAddress = create();
+        enumDevices();
+    }
+
+    private native long create();
+
+    public void enumDevices() {
         try {
             enumDevices(directInputAddress);
         } catch (IOException e) {
@@ -17,12 +24,17 @@ public class DirectInput {
         }
     }
 
-    private native long create();
-
     private native void enumDevices(long address) throws IOException;
 
     private void addDevice(long address, byte[] instanceGUID, byte[] productGUID, int devType, int devSubtype, String instanceName, String productName) {
-        devices.add(new DirectInputDevice(address, instanceGUID, productGUID, devType, devSubtype, instanceName, productName));
+        DirectInputDevice device = new DirectInputDevice(address, instanceGUID, productGUID, devType, devSubtype, instanceName, productName);
+        if (!devices.contains(device)) {
+            devices.add(device);
+        }
+    }
+
+    public void clear() {
+        devices.clear();
     }
 
     public void release() {

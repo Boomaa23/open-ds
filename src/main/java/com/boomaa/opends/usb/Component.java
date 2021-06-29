@@ -1,13 +1,22 @@
-package com.boomaa.opends.usb.input;
+package com.boomaa.opends.usb;
 
 public interface Component {
     Identifier getIdentitifer();
     double getDeadband();
     double getValue();
     String getName();
+    boolean isButton();
+    boolean isAxis();
 
-    interface Identifier extends Controller.TypeEnum {
-        @Override
+    interface Identifier {
+        int ordinal();
+
+        default int guid() {
+            return ordinal() + 1;
+        }
+
+        String name();
+
         default String getName() {
             String name = name();
             if (name.charAt(0) == '_') {
@@ -34,7 +43,7 @@ public interface Component {
     }
 
     enum Axis implements Identifier {
-        X, Y, Z, RX, RY, RZ, UNKNOWN
+        X, Y, Z, RX, RY, RZ, SLIDER, POV, UNKNOWN
     }
     
     enum Button implements Identifier {
@@ -44,11 +53,16 @@ public interface Component {
         _30, _31
     }
 
+    //TODO implement
     enum NamedButton implements Identifier {
         TRIGGER, THUMB, THUMB_2, TOP, TOP_2, PINKIE,
         BASE, BASE_2, BASE_3, BASE_4, BASE_5, BASE_6,
         A, B, C, X, Y, Z,
         LEFT_THUMB, RIGHT_THUMB, LEFT_THUMB_2, RIGHT_THUMB_2,
         SELECT, START, MODE, LEFT_THUMB_3, RIGHT_THUMB_3, UNKNOWN
+    }
+
+    enum NullIdentifier implements Identifier {
+        NONE
     }
 }

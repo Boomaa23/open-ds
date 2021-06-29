@@ -2,79 +2,78 @@ package com.boomaa.opends.usb;
 
 import com.boomaa.opends.display.PopupBase;
 import com.boomaa.opends.display.frames.JoystickFrame;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWJoystickCallback;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.List;
 
 public class ControlDevices {
-    private static Map<Integer, HIDDevice> controllers = new HashMap<>();
+    private static List<HIDDevice> controllers = new LinkedList<>();
     private static int sendDataCtr = 0;
     private static int sendDescCtr = 0;
 
     public static void init() {
-        GLFW.glfwInitHint(GLFW.GLFW_JOYSTICK_HAT_BUTTONS, GLFW.GLFW_FALSE);
-        GLFW.glfwInit();
         findAll();
-        GLFW.glfwSetJoystickCallback(GLFWJoystickCallback.create((idx, event) -> {
-            if (event == GLFW.GLFW_CONNECTED) {
-                HIDDevice device = add(idx);
-                if (PopupBase.isVisible(JoystickFrame.class)) {
-                    final int listSize = JoystickFrame.EmbeddedJDEC.LIST_MODEL.size();
-                    JoystickFrame.EmbeddedJDEC.LIST_MODEL.add(listSize, device);
-                }
-            } else if (event == GLFW.GLFW_DISCONNECTED) {
-                HIDDevice device = controllers.get(idx);
-                if (PopupBase.isVisible(JoystickFrame.class)) {
-                    final int remIdx = Math.min(device.getFRCIdx(), JoystickFrame.EmbeddedJDEC.LIST_MODEL.size() - 1);
-                    JoystickFrame.EmbeddedJDEC.LIST_MODEL.remove(remIdx);
-                }
-                device.remove();
-            }
-        }));
         updateValues();
     }
 
     public static synchronized void findAll() {
-        GLFW.glfwPollEvents();
-        for (int idx = 0; idx < GLFW.GLFW_JOYSTICK_LAST; idx++) {
-            if (GLFW.glfwJoystickPresent(idx)) {
-                add(idx);
+        DirectInput.INSTANCE.enumDevices();
+        for (Controller ctrl : DirectInput.INSTANCE.getDevices()) {
+            boolean hasHid = false;
+            for (HIDDevice hid : controllers) {
+                if (hid.hasController(ctrl)) {
+                    hasHid = true;
+                    break;
+                }
             }
-        }
-    }
-
-    private static synchronized HIDDevice add(int idx) {
-        HIDDevice device = GLFW.glfwJoystickIsGamepad(idx) ? new XboxController(idx) : new Joystick(idx);
-        controllers.put(idx, device);
-        return device;
-    }
-
-    public static synchronized void clearAll() {
-        controllers.clear();
-    }
-
-    public static synchronized void updateValues() {
-        GLFW.glfwPollEvents();
-        for (int i = 0; i <= HIDDevice.MAX_JS_INDEX; i++) {
-            HIDDevice ctrl = controllers.get(i);
-            if (ctrl != null) {
-                if (ctrl.needsRemove()) {
-                    controllers.remove(ctrl.getFRCIdx());
-                } else {
-                    ctrl.update();
+            if (!hasHid) {
+                HIDDevice hid = instantiateHID(ctrl);
+                controllers.add(hid);
+                if (PopupBase.isVisible(JoystickFrame.class)) {
+                    final int addIdx = Math.min(hid.getIdx(), JoystickFrame.EmbeddedJDEC.LIST_MODEL.size());
+                    JoystickFrame.EmbeddedJDEC.LIST_MODEL.add(addIdx, hid);
                 }
             }
         }
     }
 
-    public static synchronized void reindexAll() {
-        Map<Integer, HIDDevice> deviceMapTemp = new HashMap<>(controllers);
-        clearAll();
-        for (HIDDevice device : deviceMapTemp.values()) {
-            int devIdx = device.getFRCIdx();
-            controllers.put(devIdx, device);
+    private static synchronized HIDDevice instantiateHID(Controller ctrl) {
+        switch (ctrl.getType()) {
+            case HID_GAMEPAD:
+                return new XboxController(ctrl);
+            case HID_JOYSTICK:
+            default:
+                return new Joystick(ctrl);
+        }
+    }
+
+    public static synchronized void checkForRemoval() {
+        for (Controller ctrl : DirectInput.INSTANCE.getDevices()) {
+            if (ctrl.needsRemove()) {
+                DirectInput.INSTANCE.getDevices().remove(ctrl);
+            }
+        }
+        for (HIDDevice hid : controllers) {
+            if (hid.needsRemove()) {
+                controllers.remove(hid);
+                if (PopupBase.isVisible(JoystickFrame.class)) {
+                    IndexTracker.unregister(hid.getIdx());
+                    final int remIdx = Math.min(hid.getIdx(), JoystickFrame.EmbeddedJDEC.LIST_MODEL.size() - 1);
+                    JoystickFrame.EmbeddedJDEC.LIST_MODEL.remove(remIdx);
+                }
+            }
+        }
+    }
+
+    public static synchronized void clearAll() {
+        DirectInput.INSTANCE.clear();
+        IndexTracker.reset();
+        controllers.clear();
+    }
+
+    public static synchronized void updateValues() {
+        for (HIDDevice hid : controllers) {
+            hid.update();
         }
     }
 
@@ -82,10 +81,10 @@ public class ControlDevices {
         int out;
         if (isData) {
             out = sendDataCtr++;
-            sendDataCtr %= (HIDDevice.MAX_JS_INDEX + 1);
+            sendDataCtr %= (IndexTracker.MAX_JS_INDEX + 1);
         } else {
             out = sendDescCtr++;
-            sendDescCtr %= HIDDevice.MAX_JS_NUM;
+            sendDescCtr %= IndexTracker.MAX_JS_NUM;
         }
         return out;
     }
@@ -98,7 +97,7 @@ public class ControlDevices {
         return sendDescCtr;
     }
 
-    public static Map<Integer, HIDDevice> getAll() {
+    public static List<HIDDevice> getAll() {
         return controllers;
     }
 }
