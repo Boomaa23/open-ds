@@ -13,7 +13,7 @@ extern "C" {
  * Signature: (JI)I
  */
 JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_DirectInputDevice_enumObjects
-  (JNIEnv *, jclass, jlong, jint);
+  (JNIEnv *, jobject, jlong, jint);
 
 /*
  * Class:     com_boomaa_opends_usb_DirectInputDevice
@@ -58,7 +58,7 @@ JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_DirectInputDevice_fetchDeviceS
 /*
  * Class:     com_boomaa_opends_usb_DirectInputDevice
  * Method:    setDataFormat
- * Signature: (JI[Lcom/boomaa/opends/usb/input/DIDeviceObject;)I
+ * Signature: (JI[Lcom/boomaa/opends/usb/DIDeviceObject;)I
  */
 JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_DirectInputDevice_setDataFormat
   (JNIEnv *, jclass, jlong, jint, jobjectArray);

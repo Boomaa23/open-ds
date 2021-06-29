@@ -26,17 +26,19 @@ public class Libraries {
                 nLibExt += "dll";
                 break;
             case MACOS:
+                nLibExt += ".jnilib";
+                break;
             case UNIX:
                 nLibExt += ".so";
                 break;
             case UNSUPPORTED:
-                throw new UnsupportedOperationException("Operating system not supported. Switch to Windows/UNIX");
+                throw new UnsupportedOperationException("Operating system not supported. Switch to Windows/Linux/macOS");
         }
 
         for (String libName : NATIVE_LIBS) {
             try {
                 libName += nLibExt;
-                Files.copy(jarRoot.resolve(libName), Paths.get(tmpPath + libName), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(Libraries.class.getResourceAsStream("/" + libName), Paths.get(tmpPath + libName), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 e.printStackTrace();
             }

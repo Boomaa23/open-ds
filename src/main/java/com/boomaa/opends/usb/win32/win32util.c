@@ -18,19 +18,10 @@ static jstring sprintfJavaString(JNIEnv *env, const char *format, va_list ap) {
 
 void printfJava(JNIEnv *env, const char *format, ...) {
     jstring str;
-    jclass org_lwjgl_LWJGLUtil_class;
-    jmethodID log_method;
     va_list ap;
     va_start(ap, format);
     str = sprintfJavaString(env, format, ap);
     va_end(ap);
-    org_lwjgl_LWJGLUtil_class = (*env)->FindClass(env, "net/java/games/input/ControllerEnvironment");
-	if (org_lwjgl_LWJGLUtil_class == NULL)
-		return;
-    log_method = (*env)->GetStaticMethodID(env, org_lwjgl_LWJGLUtil_class, "log", "(Ljava/lang/String;)V");
-	if (log_method == NULL)
-		return;
-    (*env)->CallStaticVoidMethod(env, org_lwjgl_LWJGLUtil_class, log_method, str);
 }
 
 jbyteArray wrapGUID(JNIEnv *env, const GUID *guid) {
@@ -76,7 +67,7 @@ static void throwException(JNIEnv *env, const char *exception_name, const char *
 
 void throwIOException(JNIEnv *env, const char *format, ...) {
     va_list ap;
-            va_start(ap, format);
+    va_start(ap, format);
     throwException(env, "java/io/IOException", format, ap);
-            va_end(ap);
+    va_end(ap);
 }

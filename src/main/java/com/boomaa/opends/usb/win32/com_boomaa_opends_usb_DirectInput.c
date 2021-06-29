@@ -5,6 +5,12 @@
 #include <dinput.h>
 #include "com_boomaa_opends_usb_DirectInput.h"
 
+typedef struct {
+    LPDIRECTINPUT8 lpDirectInput;
+    JNIEnv *env;
+    jobject obj;
+} DIEnumContext;
+
 /*
  * Class:     com_boomaa_opends_usb_DirectInput
  * Method:    create
@@ -58,22 +64,26 @@ static BOOL CALLBACK enumDevicesCallback(LPCDIDEVICEINSTANCE inst, LPVOID contex
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_com_boomaa_opends_usb_DirectInput_enumDevices
-  (JNIEnv *env, jobject obj, jlong address) {
-    LPDIRECTINPUT8 lpDirectInput = (LPDIRECTINPUT8) (INT_PTR) address;
-    DIEnumContext context;
-    context.lpDirectInput = lpDirectInput;
-    context.env = env;
-    context.obj = obj;
-    IDirectInput8_EnumDevices(lpDirectInput, DI8DEVTYPE_JOYSTICK, enumDevicesCallback, &context, DIEDFL_ATTACHEDONLY);
-    IDirectInput8_EnumDevices(lpDirectInput, DI8DEVTYPE_GAMEPAD, enumDevicesCallback, &context, DIEDFL_ATTACHEDONLY);
+(JNIEnv* env, jobject obj, jlong address) {
+    LPDIRECTINPUT8 lpDirectInput = (LPDIRECTINPUT8)(INT_PTR)address;
+    HRESULT res;
+
+    DIEnumContext enum_context;
+    enum_context.lpDirectInput = lpDirectInput;
+    enum_context.env = env;
+    enum_context.obj = obj;
+    res = IDirectInput8_EnumDevices(lpDirectInput, DI8DEVTYPE_JOYSTICK, enumDevicesCallback, &enum_context, DIEDFL_ATTACHEDONLY);
+    if (FAILED(res)) {
+        throwIOException(env, "Failed to enumerate devices (%d)\n", res);
+    }
 }
 
 /*
  * Class:     com_boomaa_opends_usb_DirectInput
- * Method:    releaseDirectInput
+ * Method:    release
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_com_boomaa_opends_usb_DirectInput_releaseDirectInput
+JNIEXPORT void JNICALL Java_com_boomaa_opends_usb_DirectInput_release
   (JNIEnv *env, jobject obj, jlong address) {
     IDirectInput8_Release((LPDIRECTINPUT8) (INT_PTR) address);
 }

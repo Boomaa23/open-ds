@@ -12,12 +12,6 @@
 #include <initguid.h>
 #include <dinput.h>
 
-typedef struct {
-    LPDIRECTINPUT8 lpDirectInput;
-    JNIEnv *env;
-    jobject obj;
-} DIEnumContext;
-
 static jstring sprintfJavaString(JNIEnv *env, const char *format, va_list ap);
 
 void printfJava(JNIEnv *env, const char *format, ...);

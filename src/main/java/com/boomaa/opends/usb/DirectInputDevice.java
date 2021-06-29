@@ -41,7 +41,7 @@ public class DirectInputDevice extends Controller {
             }
         }
         setDataFormat(axisMode);
-        setCooperativeLevel(DIFlags.DISCL_BACKGROUND | DIFlags.DISCL_EXCLUSIVE);
+        setCooperativeLevel(DIFlags.DISCL_BACKGROUND | DIFlags.DISCL_NONEXCLUSIVE);
         acquire();
         this.deviceState = new int[objects.size()];
     }

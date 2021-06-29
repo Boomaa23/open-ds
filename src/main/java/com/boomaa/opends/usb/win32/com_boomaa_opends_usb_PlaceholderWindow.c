@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-static const TCHAR* DUMMY_WINDOW_NAME = "JInputControllerWindow";
+static const TCHAR* DUMMY_WINDOW_NAME = "OpenDSControllerWindow";
 
 static LRESULT CALLBACK ProcWindow(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
     return DefWindowProc(hWnd, message, wParam, lParam);

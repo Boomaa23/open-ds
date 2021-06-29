@@ -2,20 +2,20 @@
 ![Java CI](https://github.com/Boomaa23/open-ds/workflows/Java%20CI/badge.svg)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/Boomaa23/open-ds)
 
-A reverse-engineered lightweight FRC Driver Station alternative for Windows and Linux
+A reverse-engineered lightweight FRC Driver Station alternative for Windows, Linux, and macOS
 
-Download [here](https://boomaa23.github.io/open-ds/download.html) ([JDK 8+](https://www.oracle.com/java/technologies/javase-downloads.html) required)
+Download [here](https://boomaa23.github.io/open-ds/download.html) ([JDK 8+](https://adoptopenjdk.net/) required)
 
 Copyright (C) 2020-2021 Boomaa23
 
 ## Features
-OpenDS is a fully functional FRC Driver Station alternative for Windows 
-and UNIX-type (Linux) systems.
+OpenDS is a fully functional FIRST Robotics Competition (FRC) Driver Station 
+alternative for Windows, Linux, and macOS systems.
 All the features of the official Driver Station are implemented in OpenDS, 
 meaning teams can use it in the place of the official Driver Station 
 when testing robot features away from the competition.
 
-OpenDS is extremely lightweight (about 2MB) and does not require an 
+OpenDS is extremely lightweight (about 0.3 MB) and does not require an 
 installation of any kind, unlike the official Driver Station which 
 has a lengthy installation process and heavy install footprint.
 
@@ -48,7 +48,7 @@ rules R66 and R88. OpenDS is intended for testing use only.
     * Choose to connect or not
 * Support
     * Lightweight executable
-    * Windows and UNIX (Linux) support
+    * Windows, Linux, and macOS support
     * No install prerequisites
     * Easily modifiable for updated protocol years
     
@@ -56,9 +56,9 @@ rules R66 and R88. OpenDS is intended for testing use only.
 Download the stable jar from [here](https://boomaa23.github.io/open-ds/download.html) and run. There are no prerequisites besides having a Java installation with [JDK 8](https://www.oracle.com/java/technologies/javase-downloads.html) or newer.
 
 ### Troubleshooting
-If you run into issues, ensure that you are running a 64-bit installation of either Windows 7/8.1/10 or Linux kernel version 2.6.35 or greater.
+If you run into issues, ensure that you are running a 64-bit installation of either Windows 7/8.1/10/11, Linux kernel version 2.6.35 or greater, or macOS 10.14 or newer.
 
-For errors relating to connections or AWT, try launching from the command line (`java -jar open-ds.jar`) and observing the console output.
+Try launching from the command line (`java -jar open-ds.jar`) and observing the console output for additional details.
 
 If issues persist, please report them on the "Issues" section of the GitHub [here](https://github.com/Boomaa23/open-ds/issues) and they will be resolved as soon as possible.
 
@@ -66,8 +66,6 @@ If issues persist, please report them on the "Issues" section of the GitHub [her
 
 ## License
 OpenDS may be used without restriction for the purpose of testing robots by teams and individuals.
->*FIRST®, the FIRST® logo, FIRST® Robotics Competition (formerly also known as FRC®) are trademarks 
->of For Inspiration and Recognition of Science and Technology (FIRST®), and are used in accordance with branding guidelines*
 
 See [LICENSE.txt](https://github.com/Boomaa23/open-ds/blob/master/LICENSE.txt) for more details.
 
