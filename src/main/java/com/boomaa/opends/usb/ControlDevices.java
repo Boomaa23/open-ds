@@ -17,8 +17,8 @@ public class ControlDevices {
     }
 
     public static synchronized void findAll() {
-        DirectInput.INSTANCE.enumDevices();
-        for (Controller ctrl : DirectInput.INSTANCE.getDevices()) {
+        NativeUSBManager.getOSInstance().enumDevices();
+        for (Controller ctrl : NativeUSBManager.getOSInstance().getDevices()) {
             boolean hasHid = false;
             for (HIDDevice hid : controllers) {
                 if (hid.hasController(ctrl)) {
@@ -48,9 +48,9 @@ public class ControlDevices {
     }
 
     public static synchronized void checkForRemoval() {
-        for (Controller ctrl : DirectInput.INSTANCE.getDevices()) {
+        for (Controller ctrl : NativeUSBManager.getOSInstance().getDevices()) {
             if (ctrl.needsRemove()) {
-                DirectInput.INSTANCE.getDevices().remove(ctrl);
+                NativeUSBManager.getOSInstance().getDevices().remove(ctrl);
             }
         }
         for (HIDDevice hid : controllers) {
@@ -66,7 +66,7 @@ public class ControlDevices {
     }
 
     public static synchronized void clearAll() {
-        DirectInput.INSTANCE.clear();
+        NativeUSBManager.getOSInstance().clearDevices();
         IndexTracker.reset();
         controllers.clear();
     }

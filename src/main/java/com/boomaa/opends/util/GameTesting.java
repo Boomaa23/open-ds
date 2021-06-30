@@ -23,18 +23,18 @@ public class GameTesting {
 //        System.out.println(NumberUtils.getUInt32(decodeHexString("dac124f3")));
 
 //        System.out.println();
-        DirectInputDevice d = DirectInput.INSTANCE.getDevices().get(0);
-        int ctr = 0;
-        while (ctr < 100) {
-            d.poll();
+//        DirectInputDevice d = DirectInput.INSTANCE.getDevices().get(0);
+//        int ctr = 0;
+//        while (ctr < 100) {
+//            d.poll();
 //            ctr += d.getComponents()[0].getValue();
-            System.out.println(d.getComponents()[0].getValue());
+//            System.out.println(d.getComponents()[0].getValue());
 //            for (Component c : d.getComponents()) {
 //                if (((DIDeviceObject)c).isAxis())
 //                    System.out.println(c.getName() + ": " + c.getValue());
 //            }
-            Thread.sleep(500);
-        }
+//            Thread.sleep(500);
+//        }
         byte[] bs = new byte[] {(byte) 0x3f, (byte) 0x1c, (byte) 0x53, (byte) 0xd2};
         System.out.println(NumberUtils.getFloat(bs));
         System.out.println((float) 0x02);

@@ -2,6 +2,7 @@
 target
 open-ds.jar
 *.class
+*.o
 wireshark/*
 *.iml
 *.log

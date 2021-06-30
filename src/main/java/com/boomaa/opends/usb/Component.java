@@ -2,11 +2,13 @@ package com.boomaa.opends.usb;
 
 public interface Component {
     Identifier getIdentitifer();
-    double getDeadband();
     double getValue();
-    String getName();
     boolean isButton();
     boolean isAxis();
+
+    default String getName() {
+        return getIdentitifer().getName();
+    }
 
     interface Identifier {
         int ordinal();

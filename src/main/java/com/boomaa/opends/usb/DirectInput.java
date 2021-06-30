@@ -1,15 +1,11 @@
 package com.boomaa.opends.usb;
 
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
 
-public class DirectInput {
-    public static final DirectInput INSTANCE = new DirectInput();
-    private final List<DirectInputDevice> devices = new LinkedList<>();
+public class DirectInput extends NativeUSBManager<DirectInputDevice> {
     private final long directInputAddress;
 
-    private DirectInput() {
+    public DirectInput() {
         this.directInputAddress = create();
         enumDevices();
     }
@@ -33,10 +29,6 @@ public class DirectInput {
         }
     }
 
-    public void clear() {
-        devices.clear();
-    }
-
     public void release() {
         for (DirectInputDevice device : devices) {
             device.release();
@@ -45,8 +37,4 @@ public class DirectInput {
     }
 
     private native void release(long address);
-
-    public List<DirectInputDevice> getDevices() {
-        return devices;
-    }
 }

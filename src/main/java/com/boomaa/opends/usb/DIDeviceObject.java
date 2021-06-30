@@ -81,14 +81,13 @@ public class DIDeviceObject implements Component {
         return instance;
     }
 
-    @Override
-    public Component.Identifier getIdentitifer() {
-        return componentId;
+    public double getDeadband() {
+        return deadband;
     }
 
     @Override
-    public double getDeadband() {
-        return deadband;
+    public Component.Identifier getIdentitifer() {
+        return componentId;
     }
 
     @Override

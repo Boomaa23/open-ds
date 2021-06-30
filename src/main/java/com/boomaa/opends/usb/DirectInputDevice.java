@@ -19,7 +19,6 @@ public class DirectInputDevice extends Controller {
     private int currentFormatOffset;
 
     public DirectInputDevice(long address, byte[] instanceGUID, byte[] productGUID, int devType, int devSubtype, String instanceName, String productName) {
-        super();
         this.address = address;
         this.instanceGUID = instanceGUID;
         this.productGUID = productGUID;

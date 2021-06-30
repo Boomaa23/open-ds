@@ -3,7 +3,7 @@ package com.boomaa.opends.util;
 public enum OperatingSystem {
     WINDOWS("win", "win32"),
     MACOS("mac", "osx"),
-    UNIX("nix", "linux"),
+    UNIX("linux", "linux"),
     UNSUPPORTED("", "");
 
     private final String key;
@@ -12,6 +12,14 @@ public enum OperatingSystem {
     OperatingSystem(String key, String common) {
         this.key = key;
         this.common = common;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public String getCommonName() {
+        return common;
     }
 
     public static OperatingSystem getCurrent() {
@@ -28,7 +36,7 @@ public enum OperatingSystem {
         return getCurrent() == WINDOWS;
     }
 
-    public String getCommonName() {
-        return common;
+    public static UnsupportedOperationException unsupportedException() {
+        return new UnsupportedOperationException("Operating system not supported. Switch to Windows/Linux/macOS");
     }
 }
