@@ -1,15 +1,30 @@
 package com.boomaa.opends.usb;
 
-public abstract class Controller {
+import java.util.LinkedList;
+import java.util.List;
+
+public abstract class Controller<T extends Component> {
+    protected final List<T> objects = new LinkedList<>();
     protected int numButtons;
     protected int numAxes;
     protected boolean queueRemove;
 
     public abstract Type getType();
-    public abstract Component[] getComponents();
-    public abstract Component getComponent(Component.Identifier id);
     public abstract void poll();
     public abstract String getName();
+
+    public Component[] getComponents() {
+        return objects.toArray(new Component[0]);
+    }
+
+    public Component getComponent(Component.Identifier id) {
+        for (Component comp : objects) {
+            if (comp.getIdentitifer() == id) {
+                return comp;
+            }
+        }
+        return null;
+    }
 
     public int getNumButtons() {
         return numButtons;

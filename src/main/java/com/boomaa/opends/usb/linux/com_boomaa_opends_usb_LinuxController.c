@@ -5,7 +5,6 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
-/* Header for class com_boomaa_opends_usb_LinuxController */
 
 #ifndef _Included_com_boomaa_opends_usb_LinuxController
 #define _Included_com_boomaa_opends_usb_LinuxController

@@ -56,7 +56,7 @@ rules R66 and R88. OpenDS is intended for testing use only.
 Download the stable jar from [here](https://boomaa23.github.io/open-ds/download.html) and run. There are no prerequisites besides having a Java installation with [JDK 8](https://adoptopenjdk.net/) or newer.
 
 ### Troubleshooting
-If you run into issues, ensure that you are running a 64-bit installation of either Windows 7/8.1/10/11, Linux kernel version 2.6.35 or greater, or macOS 10.14 or newer.
+If you run into issues, ensure that you are running a 64-bit installation of either Windows 7/8.1/10/11, Linux kernel version 2.6.35 or greater, or macOS 10 or newer.
 
 Try launching from the command line (`java -jar open-ds.jar`) and observing the console output for additional details.
 

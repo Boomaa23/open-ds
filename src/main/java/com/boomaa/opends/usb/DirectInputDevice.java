@@ -6,8 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class DirectInputDevice extends Controller {
-    private final List<DIDeviceObject> objects = new ArrayList<>();
+public class DirectInputDevice extends Controller<DIDeviceObject> {
     private final int[] deviceState;
     private final long address;
     private final byte[] instanceGUID;
@@ -146,21 +145,6 @@ public class DirectInputDevice extends Controller {
     @Override
     public Type getType() {
         return devType;
-    }
-
-    @Override
-    public Component[] getComponents() {
-        return objects.toArray(new Component[0]);
-    }
-
-    @Override
-    public Component getComponent(Component.Identifier id) {
-        for (Component comp : objects) {
-            if (comp.getIdentitifer() == id) {
-                return comp;
-            }
-        }
-        return null;
     }
 
     @Override

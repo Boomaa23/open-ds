@@ -12,3 +12,6 @@ wireshark/*
 *.vcxproj.user
 **/Debug
 **/.vs
+.settings/*
+.classpath
+.project

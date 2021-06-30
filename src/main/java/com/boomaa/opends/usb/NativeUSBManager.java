@@ -29,6 +29,7 @@ public abstract class NativeUSBManager<T extends Controller> {
                     platformManager = new LinuxJoystickAPI();
                     break;
                 case MACOS:
+                    platformManager = new IOKit();
                 default:
                     throw OperatingSystem.unsupportedException();
             }

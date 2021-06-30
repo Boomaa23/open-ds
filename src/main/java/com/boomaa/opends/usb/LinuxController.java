@@ -1,10 +1,6 @@
 package com.boomaa.opends.usb;
 
-import java.util.LinkedList;
-import java.util.List;
-
-public class LinuxController extends Controller {
-    private final List<LinuxComponent> objects = new LinkedList<>();
+public class LinuxController extends Controller<LinuxComponent> {
     private final long address;
     private final int idx;
     private final String name;
@@ -18,11 +14,11 @@ public class LinuxController extends Controller {
         poll();
     }
 
-    public native long open(int idx);
+    private native long open(int idx);
 
-    public native int getNumAxes(long address);
+    private native int getNumAxes(long address);
 
-    public native int getNumButtons(long address);
+    private native int getNumButtons(long address);
 
     public int getIndex() {
         return idx;
@@ -34,22 +30,7 @@ public class LinuxController extends Controller {
         return Type.HID_JOYSTICK;
     }
 
-    @Override
-    public Component[] getComponents() {
-        return objects.toArray(new Component[0]);
-    }
-
-    @Override
-    public Component getComponent(Component.Identifier id) {
-        for (Component comp : objects) {
-            if (comp.getIdentitifer() == id) {
-                return comp;
-            }
-        }
-        return null;
-    }
-
-    public native LinuxJSEvent poll(long address);
+    private native LinuxJSEvent poll(long address);
 
     @Override
     public void poll() {
@@ -82,12 +63,12 @@ public class LinuxController extends Controller {
         return address;
     }
 
-    public native String getName(long address);
+    private native String getName(long address);
 
     @Override
     public String getName() {
         return name;
     }
 
-    public native void close(long address);
+    private native void close(long address);
 }

@@ -1,8 +1,6 @@
 #include <jni.h>
 #include <windows.h>
 
-/* Header for class com_boomaa_opends_usb_PlaceholderWindow */
-
 #ifndef _Included_com_boomaa_opends_usb_PlaceholderWindow
 #define _Included_com_boomaa_opends_usb_PlaceholderWindow
 #ifdef __cplusplus
