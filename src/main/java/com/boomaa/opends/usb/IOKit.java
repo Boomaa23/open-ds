@@ -1,10 +1,9 @@
 package com.boomaa.opends.usb;
 
 public class IOKit extends NativeUSBManager<IOKitDevice> {
-    private final long address;
+    private long address;
 
     public IOKit() {
-        this.address = createIterator();
         enumDevices();
     }
 
@@ -12,9 +11,19 @@ public class IOKit extends NativeUSBManager<IOKitDevice> {
 
     @Override
     public void enumDevices() {
+        this.address = createIterator();
         IOKitDevice dev;
         while ((dev = next(address)) != null) {
-            devices.add(dev);
+            boolean inDevices = false;
+            for (IOKitDevice loopDev : devices) {
+                if (loopDev.getAddress() == dev.getAddress()) {
+                    inDevices = true;
+                    break;
+                }
+            }
+            if (!inDevices) {
+                devices.add(dev);
+            }
         }
     }
 

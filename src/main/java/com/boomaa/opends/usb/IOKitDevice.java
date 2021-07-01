@@ -12,30 +12,42 @@ public class IOKitDevice extends Controller<IOKitElement> {
         this.ifaceAddr = ifaceAddr;
         this.properties = getDeviceProperties(address);
         open(ifaceAddr);
-        poll();
+    }
+
+    public long getAddress() {
+        return address;
     }
 
     @SuppressWarnings("unchecked")
-    private void addElements(Object[] elementProps) {
+    private void addElements(Map<String, ?> mapProps) {
+        Object[] elementProps = (Object[]) mapProps.get(IOKitFlags.kIOHIDElementKey);
         if (elementProps == null) {
             return;
         }
         for (Object elementProp : elementProps) {
             Map<String, ?> singleEP = (Map<String, ?>) elementProp;
             long cookie = (Long) singleEP.get(IOKitFlags.kIOHIDElementCookieKey);
-            int type = (Integer) singleEP.get(IOKitFlags.kIOHIDElementTypeKey);
+            Long type = (Long) singleEP.get(IOKitFlags.kIOHIDElementTypeKey);
             int min = getPropIntWithDef(singleEP, IOKitFlags.kIOHIDElementMinKey, IOKitFlags.AXIS_DEFAULT_MIN_VALUE);
             int max = getPropIntWithDef(singleEP, IOKitFlags.kIOHIDElementMaxKey, IOKitFlags.AXIS_DEFAULT_MAX_VALUE);
-            int usage = (Integer) singleEP.get(IOKitFlags.kIOHIDElementUsageKey);
-            int usagePage = (Integer) singleEP.get(IOKitFlags.kIOHIDElementUsagePageKey);
-            objects.add(new IOKitElement(cookie, type, min, max, usage, usagePage));
-            addElements(elementProps);
+            Long usage = (Long) singleEP.get(IOKitFlags.kIOHIDElementUsageKey);
+            Long usagePage = (Long) singleEP.get(IOKitFlags.kIOHIDElementUsagePageKey);
+            IOKitElement e = new IOKitElement(cookie, type.intValue(), min, max, usage.intValue(), usagePage.intValue());
+            if (e.getIdentitifer() != Component.NullIdentifier.NONE) {
+                if (e.isButton()) {
+                    super.incrementNumButtons();
+                } else if (e.isAxis()) {
+                    super.incrementNumAxes();
+                }
+                objects.add(e);
+            }
+            addElements((Map<String, ?>) elementProp);
         }
     }
     
     private static Integer getPropIntWithDef(Map<String, ?> props, String key, int def) {
-        Integer value = (Integer) props.get(key);
-        return value != null ? value : def;
+        Long value = (Long) props.get(key);
+        return value != null ? value.intValue() : def;
     }
 
     public native int open(long ifaceAddr);
@@ -50,12 +62,17 @@ public class IOKitDevice extends Controller<IOKitElement> {
 
     @Override
     public void poll() {
-        if (objects.isEmpty()) {
-            addElements((Object[]) properties.get(IOKitFlags.kIOHIDElementKey));
+        if (objects.size() == 0) {
+            addElements(properties);
         }
         for (Component comp : getComponents()) {
             IOKitElement element = (IOKitElement) comp;
-            element.setValue(getElementValue(ifaceAddr, element.getCookie()).getValue());
+            IOKitEvent e = getElementValue(ifaceAddr, element.getCookie());
+            if (e != null) {
+                element.setValue(e.getValue());
+            } else {
+                super.remove();
+            }
         }
     }
 

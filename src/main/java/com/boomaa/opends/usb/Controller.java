@@ -50,6 +50,11 @@ public abstract class Controller<T extends Component> {
         return queueRemove;
     }
 
+    @Override
+    public String toString() {
+        return getName();
+    }
+
     public enum Type {
         UNKNOWN(-1, -1),
         XINPUT_UNKNOWN(0, -1),
@@ -103,6 +108,5 @@ public abstract class Controller<T extends Component> {
             }
             return sb.toString();
         }
-
     }
 }

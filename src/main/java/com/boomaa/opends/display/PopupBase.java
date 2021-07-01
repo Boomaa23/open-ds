@@ -1,6 +1,7 @@
 package com.boomaa.opends.display;
 
 import com.boomaa.opends.display.frames.MainFrame;
+import com.boomaa.opends.util.OperatingSystem;
 
 import javax.swing.JFrame;
 import java.awt.Container;
@@ -9,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public abstract class PopupBase extends JFrame {
+    public static final double MACOS_WIDTH_SCALE = 1.1;
     protected static Map<Class<?>, PopupBase> alive = new LinkedHashMap<>();
     protected final String uuid;
     protected final Dimension dimension;
@@ -23,6 +25,9 @@ public abstract class PopupBase extends JFrame {
         this.uuid = getClass().getSimpleName();
         alive.put(getClass(), this);
         this.dimension = dimension;
+        if (OperatingSystem.getCurrent() == OperatingSystem.MACOS) {
+            dimension.setSize(dimension.getWidth() * MACOS_WIDTH_SCALE, dimension.getHeight());
+        }
         this.content = this.getContentPane();
         config();
         super.pack();

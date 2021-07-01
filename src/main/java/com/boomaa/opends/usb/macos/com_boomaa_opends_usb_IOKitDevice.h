@@ -7,6 +7,30 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+jobject newJObject(JNIEnv *, const char *, const char *, ...);
+
+static jobject createObjectFromCFObject(JNIEnv *, CFTypeRef);
+
+static jstring createStringFromCFString(JNIEnv *, CFStringRef);
+
+static jobject createDoubleObjectFromCFNumber(JNIEnv *, CFNumberRef);
+
+static jobject createLongObjectFromCFNumber(JNIEnv *, CFNumberRef);
+
+static jobject createNumberFromCFNumber(JNIEnv *, CFNumberRef);
+
+static void createArrayEntries(const void *, void *);
+
+static jobject createArrayFromCFArray(JNIEnv *, CFArrayRef);
+
+static jobject createObjectFromCFObject(JNIEnv *, CFTypeRef);
+
+static void createMapKeys(const void *, const void *, void *);
+
+jobject createMapFromCFDictionary(JNIEnv *, CFDictionaryRef);
+
+
 /*
  * Class:     com_boomaa_opends_usb_IOKitDevice
  * Method:    open

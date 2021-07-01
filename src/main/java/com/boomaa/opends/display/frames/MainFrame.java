@@ -48,7 +48,11 @@ public class MainFrame implements MainJDEC {
     }
 
     public static void layoutInit() {
-        FRAME.setPreferredSize(new Dimension(560, 320));
+        Dimension dimension = new Dimension(560, 320);
+        if (OperatingSystem.getCurrent() == OperatingSystem.MACOS) {
+            dimension.setSize(dimension.getWidth() * PopupBase.MACOS_WIDTH_SCALE, dimension.getHeight());
+        }
+        FRAME.setPreferredSize(dimension);
         LOG_BTN.addActionListener((e) -> {
             if (!PopupBase.isAlive(LogFrame.class)) {
                 new LogFrame();

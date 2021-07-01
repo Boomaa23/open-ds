@@ -7,6 +7,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 /*
  * Class:     com_boomaa_opends_usb_IOKit
  * Method:    createIterator

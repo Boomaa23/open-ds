@@ -30,6 +30,7 @@ public abstract class NativeUSBManager<T extends Controller> {
                     break;
                 case MACOS:
                     platformManager = new IOKit();
+                    break;
                 default:
                     throw OperatingSystem.unsupportedException();
             }

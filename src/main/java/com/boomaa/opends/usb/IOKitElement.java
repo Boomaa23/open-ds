@@ -17,8 +17,11 @@ public class IOKitElement implements Component {
         this.max = max;
         this.usage = usage;
         this.usagePage = usagePage;
-        this.componentId = isButton() ? Component.Button.values()[usage] :
-                Component.Axis.values()[usage - IOKitFlags.GD_USAGE_AXISMIN];
+        boolean axisValid = isAxis() && usage >= IOKitFlags.GD_USAGE_AXISMIN &&
+                usage < Axis.values().length + IOKitFlags.GD_USAGE_AXISMIN;
+        boolean buttonValid = isButton() && usage < Button.values().length;
+        this.componentId = axisValid ? Component.Axis.values()[usage - IOKitFlags.GD_USAGE_AXISMIN] :
+                buttonValid ? Component.Button.values()[usage] : Component.NullIdentifier.NONE;
     }
 
     public long getCookie() {
@@ -46,6 +49,12 @@ public class IOKitElement implements Component {
 
     @Override
     public boolean isAxis() {
-        return usagePage == IOKitFlags.UP_GENERIC_DESKTOP && type == IOKitFlags.ET_AXIS;
+        return usagePage == IOKitFlags.UP_GENERIC_DESKTOP &&
+                (type == IOKitFlags.ET_AXIS || type == IOKitFlags.ET_MISC);
+    }
+
+    @Override
+    public String toString() {
+        return getIdentitifer().getName();
     }
 }

@@ -8,12 +8,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include "com_boomaa_opends_usb_IOKitDevice.h"
 
 #ifndef _Included_com_boomaa_opends_usb_IOKit
 #define _Included_com_boomaa_opends_usb_IOKit
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 /*
  * Class:     com_boomaa_opends_usb_IOKit
  * Method:    createIterator
@@ -26,12 +28,12 @@ JNIEXPORT jlong JNICALL Java_com_boomaa_opends_usb_IOKit_createIterator
     IOReturn ioRtn = IOServiceGetMatchingServices(kIOMasterPortDefault, hidMatchDictionary, &hidObjectIterator);
 
     if (ioRtn != kIOReturnSuccess) {
-		throwIOException(env, "Failed to create iterator (%ld)\n", ioRtn);
+		printf("Failed to create iterator (%d)\n", ioRtn);
 		return -1;
 	}
 
 	if (hidObjectIterator == IO_OBJECT_NULL) {
-		throwIOException(env, "Failed to create iterator\n");
+		printf("Failed to create iterator\n");
 		return -1;
 	}
 	return (jlong) hidObjectIterator;
@@ -58,16 +60,16 @@ JNIEXPORT jobject JNICALL Java_com_boomaa_opends_usb_IOKit_next
                                                             kIOCFPlugInInterfaceID, &plugInInterface, &score);
 
     if (ioReturnValue != kIOReturnSuccess) {
-        throwIOException(env, "Couldn't create plugin for device interface (%ld)\n", ioReturnValue);
+        printf("Couldn't create plugin for device interface (%d)\n", ioReturnValue);
         IOObjectRelease(hidDevice);
         return NULL;
     }
     HRESULT plugInResult = (*plugInInterface)->QueryInterface(plugInInterface,
             CFUUIDGetUUIDBytes(kIOHIDDeviceInterfaceID),
-            (LPVOID)&hidDeviceInterface);
+            (LPVOID)&device_interface);
     (*plugInInterface)->Release(plugInInterface);
     if (plugInResult != S_OK) {
-        throwIOException(env, "Couldn't create HID class device interface (%ld)\n", plugInResult);
+        printf("Couldn't create HID class device interface (%d)\n", plugInResult);
         IOObjectRelease(hidDevice);
         return NULL;
     }

@@ -37,7 +37,7 @@ public class ControlDevices {
         }
     }
 
-    private static synchronized HIDDevice instantiateHID(Controller ctrl) {
+    private static synchronized HIDDevice instantiateHID(Controller<?> ctrl) {
         switch (ctrl.getType()) {
             case HID_GAMEPAD:
                 return new XboxController(ctrl);
@@ -48,7 +48,7 @@ public class ControlDevices {
     }
 
     public static synchronized void checkForRemoval() {
-        for (Controller ctrl : NativeUSBManager.getOSInstance().getDevices()) {
+        for (Controller<?> ctrl : NativeUSBManager.getOSInstance().getDevices()) {
             if (ctrl.needsRemove()) {
                 NativeUSBManager.getOSInstance().getDevices().remove(ctrl);
             }
