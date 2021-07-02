@@ -3,13 +3,13 @@ package com.boomaa.opends.usb;
 import java.util.Objects;
 
 public abstract class HIDDevice {
-    private final Controller ctrl;
+    private final Controller<?> ctrl;
     private int[] axesPath;
     private int[] buttonPath;
     protected int idx;
     protected boolean disabled;
 
-    public HIDDevice(Controller ctrl) {
+    public HIDDevice(Controller<?> ctrl) {
         this.ctrl = ctrl;
         this.idx = IndexTracker.registerNext();
         ctrl.poll();
@@ -102,7 +102,7 @@ public abstract class HIDDevice {
         return Integer.MAX_VALUE;
     }
 
-    public boolean hasController(Controller ctrl) {
+    public boolean hasController(Controller<?> ctrl) {
         return ctrl.equals(this.ctrl);
     }
 

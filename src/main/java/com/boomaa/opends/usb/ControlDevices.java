@@ -18,7 +18,7 @@ public class ControlDevices {
 
     public static synchronized void findAll() {
         NativeUSBManager.getOSInstance().enumDevices();
-        for (Controller ctrl : NativeUSBManager.getOSInstance().getDevices()) {
+        for (Controller<?> ctrl : NativeUSBManager.getOSInstance().getDevices()) {
             boolean hasHid = false;
             for (HIDDevice hid : controllers) {
                 if (hid.hasController(ctrl)) {

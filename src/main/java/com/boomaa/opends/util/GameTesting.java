@@ -1,8 +1,6 @@
 package com.boomaa.opends.util;
 
 import com.boomaa.opends.data.receive.parser.Parser2020;
-import com.boomaa.opends.usb.DirectInput;
-import com.boomaa.opends.usb.DirectInputDevice;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

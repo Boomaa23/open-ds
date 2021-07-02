@@ -1,7 +1,7 @@
 package com.boomaa.opends.usb;
 
 public class XboxController extends HIDDevice {
-    public XboxController(Controller ctrl) {
+    public XboxController(Controller<?> ctrl) {
         super(ctrl);
     }
 

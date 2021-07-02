@@ -1,7 +1,7 @@
 package com.boomaa.opends.usb;
 
 public class Joystick extends HIDDevice {
-    public Joystick(Controller ctrl) {
+    public Joystick(Controller<?> ctrl) {
         super(ctrl);
     }
 

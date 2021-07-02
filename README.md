@@ -15,7 +15,7 @@ All the features of the official Driver Station are implemented in OpenDS,
 meaning teams can use it in the place of the official Driver Station 
 when testing robot features away from the competition.
 
-OpenDS is extremely lightweight (less than 0.3 MB) and does not require an 
+OpenDS is extremely lightweight (about 0.25 MB) and does not require an 
 installation of any kind, unlike the official Driver Station which 
 has a lengthy installation process and heavy install footprint.
 
@@ -56,7 +56,7 @@ rules R66 and R88. OpenDS is intended for testing use only.
 Download the stable jar from [here](https://boomaa23.github.io/open-ds/download.html) and run. There are no prerequisites besides having a Java installation with [JDK 8](https://adoptopenjdk.net/) or newer.
 
 ### Troubleshooting
-If you run into issues, ensure that you are running a 64-bit installation of either Windows 7/8.1/10/11, Linux kernel version 2.6.35 or greater, or macOS 10 or newer.
+If you run into issues, ensure that you are running a 64-bit installation of either Windows 7/8.1/10/11, Linux kernel version 2.6.35 or greater, or macOS 10 (OSX) or newer.
 
 Try launching from the command line (`java -jar open-ds.jar`) and observing the console output for additional details.
 
