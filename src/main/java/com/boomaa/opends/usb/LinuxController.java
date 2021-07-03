@@ -27,7 +27,7 @@ public class LinuxController extends Controller<LinuxComponent> {
     @Override
     public Type getType() {
         //TODO add other input types
-        return Type.HID_JOYSTICK;
+        return getName().contains("X-Box") ? Type.HID_GAMEPAD : Type.HID_JOYSTICK;
     }
 
     private native LinuxJSEvent poll(long address);

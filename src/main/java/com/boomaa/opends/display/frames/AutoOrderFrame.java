@@ -109,7 +109,7 @@ public class AutoOrderFrame extends PopupBase {
         @Override
         public void onCycle() {
             ControlDevices.updateValues();
-            for (HIDDevice device : ControlDevices.getAll()) {
+            for (HIDDevice device : ControlDevices.getAll().values()) {
                 if (devices.contains(device)) {
                     continue;
                 }

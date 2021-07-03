@@ -36,6 +36,7 @@ public abstract class HIDDevice {
                     for (Component.Identifier btnId : buttons) {
                         if (comp.getIdentitifer() == btnId) {
                             buttonPath[bCtr++] = idx;
+                            break;
                         }
                     }
                 }

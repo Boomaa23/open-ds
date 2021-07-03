@@ -91,7 +91,7 @@ public class DIDeviceObject implements Component {
     }
 
     @Override
-    public double getValue() {
+    public double provideValue() {
         int value = device.getDeviceState()[formatOffset];
         if (isButton()) {
             return (value & 0x80) != 0 ? 1 : 0;

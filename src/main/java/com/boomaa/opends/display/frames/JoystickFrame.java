@@ -101,7 +101,7 @@ public class JoystickFrame extends PopupBase {
                 .setDisabled(EmbeddedJDEC.DISABLE_BTN.isSelected()));
         EmbeddedJDEC.RELOAD_BTN.addActionListener(e -> resetControllerDisplay());
         EmbeddedJDEC.CLOSE_BTN.addActionListener(e -> {
-            for (HIDDevice device : ControlDevices.getAll()) {
+            for (HIDDevice device : ControlDevices.getAll().values()) {
                 if (!device.isDisabled() && device.getIdx() >= IndexTracker.MAX_JS_NUM) {
                     MessageBox.show("Index \"" + device.getIdx()
                             + "\" for controller \"" + device.getName()
@@ -180,7 +180,7 @@ public class JoystickFrame extends PopupBase {
     }
 
     private void ctrlToDisplay() {
-        for (HIDDevice hid : ControlDevices.getAll()) {
+        for (HIDDevice hid : ControlDevices.getAll().values()) {
             EmbeddedJDEC.LIST_MODEL.add(EmbeddedJDEC.LIST_MODEL.size(), hid);
         }
     }
@@ -244,7 +244,7 @@ public class JoystickFrame extends PopupBase {
                 try {
                     int nFRCIdx = Integer.parseInt(EmbeddedJDEC.INDEX_SET.getText());
                     if (current.getIdx() != nFRCIdx) {
-                        for (HIDDevice dev : ControlDevices.getAll()) {
+                        for (HIDDevice dev : ControlDevices.getAll().values()) {
                             if (dev.getIdx() == nFRCIdx) {
                                 MessageBox.show("Duplicate index \"" + nFRCIdx + "\" for controller \"" + dev.toString()
                                         + "\"\nSetting controller \"" + dev.toString() + "\" on index \"" + dev.getIdx()
@@ -253,6 +253,7 @@ public class JoystickFrame extends PopupBase {
                             }
                         }
                         swapDeviceIndices(cListIdx, nFRCIdx);
+                        ControlDevices.reindexAll();
                     }
                 } catch (NumberFormatException ignored) {
                 }

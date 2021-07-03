@@ -1,8 +1,14 @@
 package com.boomaa.opends.usb;
 
+import com.boomaa.opends.util.NumberUtils;
+
 public interface Component {
     Identifier getIdentitifer();
-    double getValue();
+    double provideValue();
+
+    default double getValue() {
+        return NumberUtils.limit(provideValue(), -1, 1);
+    }
     boolean isButton();
     boolean isAxis();
 

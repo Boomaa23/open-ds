@@ -3,11 +3,14 @@ package com.boomaa.opends.usb;
 import com.boomaa.opends.display.PopupBase;
 import com.boomaa.opends.display.frames.JoystickFrame;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class ControlDevices {
-    private static List<HIDDevice> controllers = new LinkedList<>();
+    private static Map<Integer, HIDDevice> controllers = new LinkedHashMap<>();
     private static int sendDataCtr = 0;
     private static int sendDescCtr = 0;
 
@@ -20,7 +23,7 @@ public class ControlDevices {
         NativeUSBManager.getOSInstance().enumDevices();
         for (Controller<?> ctrl : NativeUSBManager.getOSInstance().getDevices()) {
             boolean hasHid = false;
-            for (HIDDevice hid : controllers) {
+            for (HIDDevice hid : controllers.values()) {
                 if (hid.hasController(ctrl)) {
                     hasHid = true;
                     break;
@@ -28,7 +31,7 @@ public class ControlDevices {
             }
             if (!hasHid) {
                 HIDDevice hid = instantiateHID(ctrl);
-                controllers.add(hid);
+                controllers.put(hid.getIdx(), hid);
                 if (PopupBase.isVisible(JoystickFrame.class)) {
                     final int addIdx = Math.min(hid.getIdx(), JoystickFrame.EmbeddedJDEC.LIST_MODEL.size());
                     JoystickFrame.EmbeddedJDEC.LIST_MODEL.add(addIdx, hid);
@@ -53,15 +56,24 @@ public class ControlDevices {
                 NativeUSBManager.getOSInstance().getDevices().remove(ctrl);
             }
         }
-        for (HIDDevice hid : controllers) {
+        for (HIDDevice hid : controllers.values()) {
             if (hid.needsRemove()) {
-                controllers.remove(hid);
-                if (PopupBase.isVisible(JoystickFrame.class)) {
+                controllers.remove(hid.getIdx());
+                if (PopupBase.isAlive(JoystickFrame.class)) {
                     IndexTracker.unregister(hid.getIdx());
                     final int remIdx = Math.min(hid.getIdx(), JoystickFrame.EmbeddedJDEC.LIST_MODEL.size() - 1);
                     JoystickFrame.EmbeddedJDEC.LIST_MODEL.remove(remIdx);
                 }
             }
+        }
+    }
+
+    public static synchronized void reindexAll() {
+        Map<Integer, HIDDevice> deviceMapTemp = new HashMap<>(controllers);
+        controllers.clear();
+        for (HIDDevice device : deviceMapTemp.values()) {
+            int devIdx = device.getIdx();
+            controllers.put(devIdx, device);
         }
     }
 
@@ -72,7 +84,7 @@ public class ControlDevices {
     }
 
     public static synchronized void updateValues() {
-        for (HIDDevice hid : controllers) {
+        for (HIDDevice hid : controllers.values()) {
             hid.update();
         }
     }
@@ -97,7 +109,7 @@ public class ControlDevices {
         return sendDescCtr;
     }
 
-    public static List<HIDDevice> getAll() {
+    public static Map<Integer, HIDDevice> getAll() {
         return controllers;
     }
 }

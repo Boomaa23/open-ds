@@ -40,7 +40,7 @@ public class LinuxComponent implements Component {
     }
 
     @Override
-    public double getValue() {
+    public double provideValue() {
         return value;
     }
 

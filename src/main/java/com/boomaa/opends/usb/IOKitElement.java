@@ -38,7 +38,7 @@ public class IOKitElement implements Component {
     }
 
     @Override
-    public double getValue() {
+    public double provideValue() {
         return 2 * (value - min) / (max - min) - 1;
     }
 
