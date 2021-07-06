@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+
+  <link type="text/css" rel="stylesheet" href="main.css">
+  <link type="text/css" rel="stylesheet" href="fadein.css">
+  <link type="image/png" rel="icon" href="icon.png">
+
+  <title>OpenDS</title>
+
+  <script type="text/javascript">
+    function dl() {
+      console.log("hi");
+      var request = new XMLHttpRequest();
+      var url = "https://api.github.com/repos/Boomaa23/open-ds/releases/latest";
+      request.open("GET", url, false);
+      request.send();
+      console.log(request.responseText);
+      if (request.status === 200) {
+        var json = JSON.parse(request.responseText);
+        window.location.href = json["assets"][0]["browser_download_url"];
+      } else {
+        if (window.confirm("Could not download OpenDS. Redirect to the GitHub repo?")) {
+          window.location.href = "https://github.com/Boomaa23/open-ds/releases/latest";
+        }
+      }
+    }
+  </script>
+</head>
+<body>
+  <div class="menu">
+    <ul>
+      <li class="logo"><a href="index.html"><img src="icon-min.png" height="32px"></a></li>
+      <li class="nonlogo"><a href="#download" onclick="dl()">Download</a></li>
+      <li class="nonlogo"><a href="#setup">Setup</a></li>
+      <li class="nonlogo"><a href="#features">Features</a></li>
+      <li class="nonlogo"><a href="#source">Source</a></li>
+      <li class="nonlogo"><a href="#other">Other</a></li>
+      <li class="rightlogo"><img src="icon.png" height="44px"></li>
+    </ul>
+  </div>
+
+  <div class="submenu">
+    <div class="header">OpenDS</div>
+    <p style="text-align: center">A reverse-engineered lightweight FRC Driver Station alternative for Windows, Linux, and macOS.</p>
+    <div class="content-item setup">
+      <a class="anchor" id="setup"></a>
+      <div class="subheader">Setup</div>
+      <p>Download the stable jar from <a href="#download" onclick="dl()">here</a> and run. There are no additional dependencies.</p>
+      <p>You must have Java (JDK) 8 or newer installed (download <a href="https://adoptopenjdk.net" target="_blank">here</a>) and at
+         minimum be running a 64-bit version of one of the following operating systems:</p>
+      <ul>
+        <li>Windows 7, 8.1, or 10</li>
+        <li>Linux Kernel 2.6.35 or greater</li>
+        <li>macOS 10 (OSX) or newer</li>
+      </ul>
+    </div>
+    <div class="content-item features">
+      <a class="anchor" id="features"></a>
+      <div class="subheader">Features</div>
+      <p>OpenDS is a fully functional FIRST Robotics Competition (FRC) Driver Station alternative for Windows, Linux, and macOS systems.
+        All the features of the official Driver Station are implemented in OpenDS, meaning teams can use it in the place of the official
+        Driver Station when testing robot features away from the competition.</p>
+      <p>OpenDS is extremely lightweight (about 0.25 MB) and does not require an installation of any kind, unlike the official
+        Driver Station which has a lengthy installation process and heavy install footprint.</p>
+      <p><b>NOTE</b>: OpenDS may not be used during FRC-legal competitions as per rules R66 and R88. OpenDS is intended for testing use only.</p>
+
+      <ul>
+        <li>Robot<ul>
+          <li>Enable and disable</li>
+          <li>Change mode (teleop/auto/test)</li>
+          <li>Change alliance station (1/2/3 & red/blue)</li>
+          <li>Send game data</li>
+          <li>Change team number</li>
+          <li>USB Joystick and Xbox controller input support</li>
+          <li>Restart robot code and RoboRIO</li>
+          <li>Emergency stop</li>
+        </ul></li>
+        <li>Statistics<ul>
+          <li>Robot voltage</li>
+          <li>Connections</li>
+          <li>Brownouts</li>
+          <li>Match time left (FMS)</li>
+          <li>CAN Bus</li>
+          <li>RoboRIO disk/RAM/CPU/version</li>
+          <li>Disable/Rail faults</li>
+          <li>Logging to .dslog files</li>
+        </ul></li>
+        <li>NetworkTables<ul>
+          <li>Read Shuffleboard and SmartDashboard packets</li>
+          <li>Display NetworkTables passed data</li>
+        </ul></li>
+        <li>FMS<ul>
+          <li>Connect to a offseason FMS or Cheesy Arena</li>
+          <li>Choose to connect or not</li>
+        </ul></li>
+        <li>Support<ul>
+          <li>Lightweight executable</li>
+          <li>Windows, Linux, and macOS support</li>
+          <li>No install prerequisites</li>
+          <li>Easily modifiable for updated protocol years</li>
+        </ul>
+      </ul>
+    </div>
+    <div class="content-item source">
+      <a class="anchor" id="source"></a>
+      <div class="subheader">Source</div>
+      <p>The source code for OpenDS is available on GitHub at <a href="https://github.com/Boomaa23/open-ds">https://github.com/Boomaa23/open-ds</a>.
+      <p>OpenDS may be used without restriction for the purpose of testing robots by teams and individuals. Please see <a href="https://github.com/Boomaa23/open-ds/blob/master/LICENSE.txt">the license</a> for further uses.</p>
+      <p>If you find a bug or issue with OpenDS, please report it on the "Issues" section of the GitHub <a href="https://github.com/Boomaa23/open-ds/issues">here</a>.</p>
+      <p>For protocol changes in future years, OpenDS is easily modifiable. Ports, IP addresses, display layouts, and packet creation/parsing are all re-formattable.</p>
+
+      <p>There are three main classes that need to be implemented for a new protocol year:</p>
+      <ul>
+        <li>PacketParser<ul>
+          <li>Package: <span class="code">com.boomaa.opends.data.receive.parser</span>
+          <li>Example: <a href="https://github.com/Boomaa23/open-ds/blob/master/src/main/java/com/boomaa/opends/data/receive/parser/Parser2020.java">Parser2020</a>
+          <li>Description: Parses received packet data that is not contained within tags (e.g. standard data across all packets of that type)
+          <li>Implementation: Create four classes that extend the above class, one for each connection (e.g. TCP and UDP for RoboRIO and FMS).
+              Make all four classes sub-classes of a single class <span class="code">Parser20XX</span> with the same naming scheme found in the example.
+        </ul></li>
+        <li>PacketCreator<ul>
+          <li>Package: <span class="code">com.boomaa.opends.data.send.creator</span>
+          <li>Example: <a href="https://github.com/Boomaa23/open-ds/blob/master/src/main/java/com/boomaa/opends/data/send/creator/Creator2020.java">Creator2020</a>
+          <li>Description: Creates packets to send to the RoboRIO or FMS based on GUI inputs and other status sources.
+          <li>Implementation: Create four methods in a single class. Make the class extend the abstract class <span class="code">PacketCreator</span>,
+              and implement all the methods. This is a good place to access GUI data through the JDEC.
+        </ul></li>
+        <li>ElementUpdater<ul>
+          <li>Package: <span class="code">com.boomaa.opends.display.updater</span>
+          <li>Example: <a href="https://github.com/Boomaa23/open-ds/blob/master/src/main/java/com/boomaa/opends/display/updater/Updater2020.java">Updater2020</a>
+          <li>Description: Updates the previously positioned GUI elements with data from the parsers.
+          <li>Implementation: Make a new class that extends the abstract class <span class="code">ElementUpdater</span>. This will contain methods to update the GUI from each
+              packet stream, and methods to reset the elements should connection to the remote (RoboRIO/FMS) stop.
+        </ul></li>
+      </ul>
+      <p>The <span class="code">SendTag</span> and <span class="code">ReceiveTag</span> classes should be fully updated for the additional years' sent and received
+        (from the perspective of the driver station) tags. Use <span class="code">Null[Send/Receive]Tag</span> if none, or
+        <span class="code">Ref[Send/Receive]Tag.yearOfAction(int year)</span> if it is the same as another year.
+        Consider using the <span class="code">DataBase</span> system for year-centric data storage and identification.</p>
+      <p>Make sure that naming schemes are followed. Add another integer entry to the array <span class="code">DisplayEndpoint:VALID_PROTOCOL_YEARS</span>
+        when all three main classes have been created. This will allow the selection of the new protocol by the user. Put in decreasing year order.</p>
+    </div>
+    <div id="other" class="content-item">
+      <div class="subheader">Other</div>
+      <ul>
+      <li><b>Troubleshooting:</b> Try launching from the command line (java -jar open-ds.jar) and observing the console output for additional details.
+        If issues persist, please report them on the "Issues" section of the GitHub <a href="https://github.com/Boomaa23/open-ds/issues">here</a>
+         and they will be resolved as soon as possible.</li>
+      <li><b>Acknowledgements:</b> Thank you to Jessica Creighton for the FRCture documentation and to Alex Spataru for his work on LibDS.</li>
+      <li><b>Contact:</b> cmo93003@yahoo.com</li>
+    </div>
+</div>
+</body>
+</html>

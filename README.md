@@ -4,7 +4,7 @@
 
 A reverse-engineered lightweight FRC Driver Station alternative for Windows, Linux, and macOS
 
-Download [here](https://boomaa23.github.io/open-ds/download.html) ([JDK 8+](https://adoptopenjdk.net/) required)
+Download [here](https://boomaa23.github.io/open-ds/) ([JDK 8+](https://adoptopenjdk.net/) required)
 
 Copyright (C) 2020-2021 Boomaa23
 
@@ -53,7 +53,7 @@ rules R66 and R88. OpenDS is intended for testing use only.
     * Easily modifiable for updated protocol years
     
 ## Setup
-Download the stable jar from [here](https://boomaa23.github.io/open-ds/download.html) and run. There are no prerequisites besides having a Java installation with [JDK 8](https://adoptopenjdk.net/) or newer.
+Download the stable jar from [here](https://boomaa23.github.io/open-ds/) and run. There are no prerequisites besides having a Java installation with [JDK 8](https://adoptopenjdk.net/) or newer.
 
 ### Troubleshooting
 If you run into issues, ensure that you are running a 64-bit installation of either Windows 7/8.1/10/11, Linux kernel version 2.6.35 or greater, or macOS 10 (OSX) or newer.
@@ -76,34 +76,3 @@ For protocol changes in future years, OpenDS is easily modifiable. Ports, IP add
 
 ## Acknowledgements
 Thank you to Jessica Creighton for the FRCture documentation and to Alex Spataru for his work on LibDS.
-
-
-<!-- There are four main classes that need to be implemented for a new protocol year:
-* `PacketParser`
-    * Package: `com.boomaa.opends.data.receive.parser`
-    * Example: [`Parser2020`](https://github.com/Boomaa23/open-ds/blob/master/src/main/java/com/boomaa/opends/data/receive/parser/Parser2020.java)
-    * Description: Parses received packet data that is not contained within tags (e.g. standard data across all packets of that type)
-    * Implementation: Create four classes that extend the above class, one for each connection (e.g. TCP and UDP for RoboRIO and FMS). 
-        Make all four classes sub-classes of a single class `Parser20XX` with the same naming scheme found in the example.
-* `PacketCreator`
-    * Package: `com.boomaa.opends.data.send.creator`
-    * Example: [`Creator2020`](https://github.com/Boomaa23/open-ds/blob/master/src/main/java/com/boomaa/opends/data/send/creator/Creator2020.java)
-    * Description: Creates packets to send to the RoboRIO or FMS based on GUI inputs and other status sources.
-    * Implementation: Create four methods in a single class. Make the class extend the abstract class `PacketCreator`,
-        and implement all the methods. This is a good place to access GUI data through the JDEC.
-* `LayoutPlacer`
-    * Package: `com.boomaa.opends.display.layout`
-    * Example: [`Layout2020`](https://github.com/Boomaa23/open-ds/blob/master/src/main/java/com/boomaa/opends/display/layout/Layout2020.java)
-    * Description: Places all display elements on the main JFrame (Swing) conforming to a GridBagLayout from MainJDEC.
-    * Implementation: Create a class that extends the abstract class `LayoutPlacer`. the constructor takes a `GBCPanelBuilder`, which is
-        used to position elements and then build them to the frame in a cleaner manner than the builtin `GridBagConstraints`. The method
-        `init()` should be used to position everything.
-* `ElementUpdater`
-    * Package: `com.boomaa.opends.display.updater`
-    * Example: [`Updater2020`](https://github.com/Boomaa23/open-ds/blob/master/src/main/java/com/boomaa/opends/display/updater/Updater2020.java)
-    * Description: Updates the previously positioned GUI elements with data from the parsers.
-    * Implementation: Make a new class that extends the abstract class `ElementUpdater`. This will contain methods to update the GUI from each
-        packet stream, and methods to reset the elements should connection to the remote (RoboRIO/FMS) stop.
-
-Make sure that naming schemes are followed. Add another integer entry to the array in `DisplayEndpoint:getValidProtocolYears()` 
-when all four main classes have been created. This will allow the selection of the new protocol by the user. Put it first if it should be default.-->

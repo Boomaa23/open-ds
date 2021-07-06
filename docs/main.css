@@ -1,0 +1,99 @@
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  width: 100%;
+  margin: 0;
+  font-family: Roboto, Sans-Serif;
+  background-color: #f2f2f2;
+}
+
+.menu {
+  width: 100%;
+}
+
+.submenu {
+  margin: 84px 5% 30px 5%;
+  font-size: 18px;
+}
+
+.content-item {
+  padding-top: 15px;
+}
+
+.header {
+  text-align: center;
+  font-size: 42px;
+  font-weight: bold;
+}
+
+.subheader {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.code {
+  font-family: monospace;
+}
+
+a.anchor {
+    display: block;
+    position: relative;
+    top: -80px;
+    visibility: hidden;
+}
+
+.submenu ul {
+  line-height: 1.35;
+}
+
+.menu {
+  position:fixed;
+  top:0;
+}
+
+.menu button {
+  border: none;
+  background-color: transparent;
+  outline: none;
+}
+
+.menu ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333333;
+  position: relative;
+  font-weight: 300;
+}
+
+.menu li:not(.rightlogo) {
+  float: left;
+}
+
+.menu .rightlogo {
+  float: right;
+  padding-top: 8px;
+  padding-right: 8px;
+}
+
+.menu .nonlogo {
+  margin: 0;
+  -ms-transform: translateY(15%);
+  transform: translateY(15%);
+}
+
+.menu li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+.menu li a:hover {
+  transition: 0.5s;
+  background-color: #000000;
+}
