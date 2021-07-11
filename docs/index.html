@@ -6,12 +6,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
 
   <link type="text/css" rel="stylesheet" href="main.css">
-  <link type="text/css" rel="stylesheet" href="fadein.css">
   <link type="image/png" rel="icon" href="icon.png">
 
   <title>OpenDS</title>
 
   <script type="text/javascript">
+    window.onload = function() {
+      if (window.location.hash.includes("#download")) {
+        dl();
+      }
+    };
+
     function dl() {
       console.log("hi");
       var request = new XMLHttpRequest();
@@ -33,7 +38,7 @@
 <body>
   <div class="menu">
     <ul>
-      <li class="logo"><a href="index.html"><img src="icon-min.png" height="32px"></a></li>
+      <li class="logo"><a href="#home"><img src="icon-min.png" height="32px"></a></li>
       <li class="nonlogo"><a href="#download" onclick="dl()">Download</a></li>
       <li class="nonlogo"><a href="#setup">Setup</a></li>
       <li class="nonlogo"><a href="#features">Features</a></li>
@@ -44,6 +49,7 @@
   </div>
 
   <div class="submenu">
+    <a class="anchor" id="home"></a>
     <div class="header">OpenDS</div>
     <p style="text-align: center">A reverse-engineered lightweight FRC Driver Station alternative for Windows, Linux, and macOS.</p>
     <div class="content-item setup">
@@ -53,8 +59,8 @@
       <p>You must have Java (JDK) 8 or newer installed (download <a href="https://adoptopenjdk.net" target="_blank">here</a>) and at
          minimum be running a 64-bit version of one of the following operating systems:</p>
       <ul>
-        <li>Windows 7, 8.1, or 10</li>
-        <li>Linux Kernel 2.6.35 or greater</li>
+        <li>Windows 7, 8.1, 10, or 11</li>
+        <li>Linux kernel 2.6.35 or greater</li>
         <li>macOS 10 (OSX) or newer</li>
       </ul>
     </div>
@@ -147,11 +153,13 @@
     <div id="other" class="content-item">
       <div class="subheader">Other</div>
       <ul>
-      <li><b>Troubleshooting:</b> Try launching from the command line (java -jar open-ds.jar) and observing the console output for additional details.
-        If issues persist, please report them on the "Issues" section of the GitHub <a href="https://github.com/Boomaa23/open-ds/issues">here</a>
-         and they will be resolved as soon as possible.</li>
-      <li><b>Acknowledgements:</b> Thank you to Jessica Creighton for the FRCture documentation and to Alex Spataru for his work on LibDS.</li>
-      <li><b>Contact:</b> cmo93003@yahoo.com</li>
+        <li><b>Troubleshooting:</b> Try launching from the command line (<span class="code">java -jar open-ds.jar</span>) and observing the console output for additional details.
+          If issues persist, please report them on the "Issues" section of the GitHub <a href="https://github.com/Boomaa23/open-ds/issues">here</a>
+           and they will be resolved as soon as possible.</li>
+        <li><b>Acknowledgements:</b> Thank you to Jessica Creighton for the FRCture documentation, to Alex Spataru for his work on LibDS,
+           and to the Game Technology Group at Sun Microsystems for JInput.</li>
+        <li><b>Contact:</b> cmo93003@yahoo.com</li>
+      </ul>
     </div>
 </div>
 </body>

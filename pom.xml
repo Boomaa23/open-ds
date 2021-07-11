@@ -6,7 +6,7 @@
 
     <groupId>com.boomaa</groupId>
     <artifactId>open-ds</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.2.0</version>
 
     <build>
         <plugins>
@@ -17,6 +17,18 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.boomaa.opends.display.DisplayEndpoint</mainClass>
+                        </manifest>
+                    </archive>
                 </configuration>
             </plugin>
         </plugins>

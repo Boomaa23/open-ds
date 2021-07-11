@@ -4,7 +4,7 @@
 
 A reverse-engineered lightweight FRC Driver Station alternative for Windows, Linux, and macOS
 
-Download [here](https://boomaa23.github.io/open-ds/) ([JDK 8+](https://adoptopenjdk.net/) required)
+Download [here](https://boomaa23.github.io/open-ds/#download) ([JDK 8+](https://adoptopenjdk.net/) required)
 
 Copyright (C) 2020-2021 Boomaa23
 
@@ -53,7 +53,7 @@ rules R66 and R88. OpenDS is intended for testing use only.
     * Easily modifiable for updated protocol years
     
 ## Setup
-Download the stable jar from [here](https://boomaa23.github.io/open-ds/) and run. There are no prerequisites besides having a Java installation with [JDK 8](https://adoptopenjdk.net/) or newer.
+Download the stable jar from [here](https://boomaa23.github.io/open-ds/#download) and run. There are no prerequisites besides having a Java installation with [JDK 8](https://adoptopenjdk.net/) or newer.
 
 ### Troubleshooting
 If you run into issues, ensure that you are running a 64-bit installation of either Windows 7/8.1/10/11, Linux kernel version 2.6.35 or greater, or macOS 10 (OSX) or newer.

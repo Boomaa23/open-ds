@@ -1,15 +1,10 @@
 package com.boomaa.opends.display.frames;
 
-import com.boomaa.opends.util.OperatingSystem;
-
 import javax.swing.JOptionPane;
 
 public class MessageBox {
     public static void show(String message, Type type) {
-        //TODO linux message boxes
-        if (OperatingSystem.isWindows()) {
-            JOptionPane.showMessageDialog(null, message, type.title, type.optionFlag);
-        }
+        JOptionPane.showMessageDialog(null, message, type.title, type.optionFlag);
     }
 
     public enum Type {

@@ -97,7 +97,6 @@ public class MainFrame implements MainJDEC {
         });
         RESTART_CODE_BTN.addActionListener(e -> IS_ENABLED.setSelected(false));
         TEAM_NUMBER.getDocument().addDocumentListener(new TeamNumListener());
-        TEAM_NUMBER.setText("5818"); //TODO remove after testing
         IS_ENABLED.setEnabled(false);
         createKeyAction(KeyEvent.VK_SPACE, MainJDEC.ESTOP_BTN::doClick);
         createKeyAction(KeyEvent.VK_ENTER, () -> MainJDEC.IS_ENABLED.setSelected(false));

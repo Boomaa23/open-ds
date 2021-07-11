@@ -26,7 +26,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class DisplayEndpoint implements MainJDEC {
-    public static final String CURRENT_VERSION_TAG = "v1.0.0";
+    public static final String CURRENT_VERSION_TAG = "v0.2.0";
 
     public static DSLog FILE_LOGGER = new DSLog();
     public static NTConnection NETWORK_TABLES = new NTConnection();
@@ -143,8 +143,7 @@ public class DisplayEndpoint implements MainJDEC {
         fmsUdpClock.start();
         NETWORK_TABLES.start();
         FILE_LOGGER.start();
-        //TODO remove after testing
-        //checkForUpdates();
+        checkForUpdates();
 
         while (MainJDEC.FRAME.isShowing()) {
             System.gc();
@@ -152,7 +151,7 @@ public class DisplayEndpoint implements MainJDEC {
             ControlDevices.checkForRemoval();
             ControlDevices.findAll();
             try {
-                Thread.sleep(1000);
+                Thread.sleep(2000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
