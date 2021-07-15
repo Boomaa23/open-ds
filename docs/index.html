@@ -12,15 +12,32 @@
 
   <script type="text/javascript">
     window.onload = function() {
-      if (window.location.hash.includes("#download")) {
-        dl();
+      if (window.location.hash.includes("#dl-jar")) {
+        jar_dl();
+      } else if (window.location.hash.includes("#dl-script")) {
+        script_dl();
       }
     };
 
-    function dl() {
-      console.log("hi");
+    function script_dl() {
+      var isWin = navigator.platform.toLowerCase().includes("win");
+      var url = "https://api.github.com/repos/Boomaa23/open-ds/contents/ods-" + (isWin ? "win32.cmd" : "unix.sh");
       var request = new XMLHttpRequest();
+      request.open("GET", url, false);
+      request.send();
+      if (request.status === 200) {
+        var json = JSON.parse(request.responseText);
+        var dlElement = document.getElementById("script-dl");
+        dlElement.href = "data:application/octet-stream," + encodeURIComponent(atob(json["content"]));
+        dlElement.download = "run-opends." + (isWin ? "cmd" : "sh");
+      } else {
+        dl_fail();
+      }
+    }
+
+    function jar_dl() {
       var url = "https://api.github.com/repos/Boomaa23/open-ds/releases/latest";
+      var request = new XMLHttpRequest();
       request.open("GET", url, false);
       request.send();
       console.log(request.responseText);
@@ -28,10 +45,15 @@
         var json = JSON.parse(request.responseText);
         window.location.href = json["assets"][0]["browser_download_url"];
       } else {
+        dl_fail();
+      }
+    }
+    
+    function dl_fail() {
+      console.error("Could not download OpenDS. Attempting to redirect to the GitHub repo.");
         if (window.confirm("Could not download OpenDS. Redirect to the GitHub repo?")) {
           window.location.href = "https://github.com/Boomaa23/open-ds/releases/latest";
         }
-      }
     }
   </script>
 </head>
@@ -39,7 +61,7 @@
   <div class="menu">
     <ul>
       <li class="logo"><a href="#home"><img src="icon-min.png" height="32px"></a></li>
-      <li class="nonlogo"><a href="#download" onclick="dl()">Download</a></li>
+      <li class="nonlogo"><a href="#download" onclick="jar_dl()">Download</a></li>
       <li class="nonlogo"><a href="#setup">Setup</a></li>
       <li class="nonlogo"><a href="#features">Features</a></li>
       <li class="nonlogo"><a href="#source">Source</a></li>
@@ -52,17 +74,21 @@
     <a class="anchor" id="home"></a>
     <div class="header">OpenDS</div>
     <p style="text-align: center">A reverse-engineered lightweight FRC Driver Station alternative for Windows, Linux, and macOS.</p>
-    <div class="content-item setup">
-      <a class="anchor" id="setup"></a>
-      <div class="subheader">Setup</div>
-      <p>Download the stable jar from <a href="#download" onclick="dl()">here</a> and run. There are no additional dependencies.</p>
-      <p>You must have Java (JDK) 8 or newer installed (download <a href="https://adoptopenjdk.net" target="_blank">here</a>) and at
+    <div class="content-item download">
+      <a class="anchor" id="download"></a>
+      <div class="subheader">Download</div>
+      <p>Download the stable jar from <a href="#download" onclick="jar_dl()">here</a> and run. There are no additional dependencies.</p>
+      <p>You must have Java (JRE or JDK) 8 or newer installed (download <a href="https://adoptopenjdk.net" target="_blank">here</a>) and at
          minimum be running a 64-bit version of one of the following operating systems:</p>
       <ul>
         <li>Windows 7, 8.1, 10, or 11</li>
         <li>Linux kernel 2.6.35 or greater</li>
         <li>macOS 10 (OSX) or newer</li>
       </ul>
+      <div id="run-scripts"></div>
+      <p>If you do not have Java and/or want a single install/run script, download
+        <a id="script-dl" href="#" onclick="script_dl()">this script</a> 
+        instead and use it to start OpenDS. Use the same script to re-launch OpenDS.</p>
     </div>
     <div class="content-item features">
       <a class="anchor" id="features"></a>
@@ -153,7 +179,7 @@
     <div id="other" class="content-item">
       <div class="subheader">Other</div>
       <ul>
-        <li><b>Troubleshooting:</b> Try launching from the command line (<span class="code">java -jar open-ds.jar</span>) and observing the console output for additional details.
+        <li><b>Troubleshooting:</b> Try launching from the command line (<span class="code">java -jar open-ds-vX.X.X.jar</span>) and observing the console output for additional details.
           If issues persist, please report them on the "Issues" section of the GitHub <a href="https://github.com/Boomaa23/open-ds/issues">here</a>
            and they will be resolved as soon as possible.</li>
         <li><b>Acknowledgements:</b> Thank you to Jessica Creighton for the FRCture documentation, to Alex Spataru for his work on LibDS,

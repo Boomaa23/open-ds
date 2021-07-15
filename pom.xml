@@ -6,7 +6,7 @@
 
     <groupId>com.boomaa</groupId>
     <artifactId>open-ds</artifactId>
-    <version>0.2.0</version>
+    <version>v0.2.0</version>
 
     <build>
         <plugins>
