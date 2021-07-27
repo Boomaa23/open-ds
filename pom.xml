@@ -8,6 +8,10 @@
     <artifactId>open-ds</artifactId>
     <version>v0.2.0</version>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
     <build>
         <plugins>
             <plugin>

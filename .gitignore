@@ -18,3 +18,4 @@ wireshark/*
 *.zip
 *.jar
 ods-jre*/
+*.code-workspace
