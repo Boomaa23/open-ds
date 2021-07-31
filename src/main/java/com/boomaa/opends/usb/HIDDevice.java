@@ -21,24 +21,33 @@ public abstract class HIDDevice {
         this.buttonPath = new int[isAllBtns ? deviceNumButtons() : buttons.length];
         int aCtr = 0;
         int bCtr = 0;
+        // TODO try-catch for axes/btns OOB is a workaround - fix this
         for (int idx = 0; idx < comps.length; idx++) {
             Component comp = comps[idx];
             if (comp.isAxis()) {
                 for (Component.Identifier axisId : axes) {
                     if (comp.getIdentitifer() == axisId) {
-                        axesPath[aCtr++] = idx;
-                    }
-                }
-            } else if (comp.isButton()) {
-                if (isAllBtns) {
-                    buttonPath[bCtr++] = idx;
-                } else {
-                    for (Component.Identifier btnId : buttons) {
-                        if (comp.getIdentitifer() == btnId) {
-                            buttonPath[bCtr++] = idx;
+                        try {
+                            axesPath[aCtr++] = idx;
+                        } catch (ArrayIndexOutOfBoundsException e) {
                             break;
                         }
                     }
+                }
+            } else if (comp.isButton()) {
+                try {
+                    if (isAllBtns) {
+                        buttonPath[bCtr++] = idx;
+                    } else {
+                        for (Component.Identifier btnId : buttons) {
+                            if (comp.getIdentitifer() == btnId) {
+                                buttonPath[bCtr++] = idx;
+                                break;
+                            }
+                        }
+                    }
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    break;
                 }
             }
         }
