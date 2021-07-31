@@ -185,6 +185,7 @@ public class DisplayEndpoint implements MainJDEC {
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL("https://github.com/Boomaa23/open-ds/releases/latest").openConnection();
             connection.setConnectTimeout(1000);
+            connection.setUseCaches(false);
             connection.setInstanceFollowRedirects(false);
             switch (connection.getResponseCode()) {
                 case HttpURLConnection.HTTP_MOVED_PERM:
