@@ -2,12 +2,16 @@ package com.boomaa.opends.display.frames;
 
 import com.boomaa.opends.data.holders.Protocol;
 import com.boomaa.opends.display.DisplayEndpoint;
+import com.boomaa.opends.display.GlobalKeyListener;
 import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.display.PopupBase;
 import com.boomaa.opends.display.TeamNumListener;
 import com.boomaa.opends.display.elements.GBCPanelBuilder;
 import com.boomaa.opends.networking.NetworkReloader;
 import com.boomaa.opends.util.OperatingSystem;
+import org.jnativehook.GlobalScreen;
+import org.jnativehook.NativeHookException;
+import org.jnativehook.keyboard.NativeKeyEvent;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,6 +21,8 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MainFrame implements MainJDEC {
     public static final Image ICON = Toolkit.getDefaultToolkit().getImage(MainFrame.class.getResource("/icon.png")).getScaledInstance(32, 32, Image.SCALE_SMOOTH);
@@ -30,6 +36,7 @@ public class MainFrame implements MainJDEC {
 
         TITLE.setText(TITLE.getText() + " " + DisplayEndpoint.CURRENT_VERSION_TAG);
 
+        Logger.getLogger(GlobalScreen.class.getPackage().getName()).setLevel(Level.OFF);
         layoutInit();
 
         FRAME.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -45,6 +52,11 @@ public class MainFrame implements MainJDEC {
         }
         SwingUtilities.updateComponentTreeUI(FRAME);
         FRAME.setVisible(true);
+        try {
+            GlobalScreen.registerNativeHook();
+        } catch (NativeHookException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void layoutInit() {
@@ -98,8 +110,10 @@ public class MainFrame implements MainJDEC {
         RESTART_CODE_BTN.addActionListener(e -> IS_ENABLED.setSelected(false));
         TEAM_NUMBER.getDocument().addDocumentListener(new TeamNumListener());
         IS_ENABLED.setEnabled(false);
-        createKeyAction(KeyEvent.VK_SPACE, MainJDEC.ESTOP_BTN::doClick);
-        createKeyAction(KeyEvent.VK_ENTER, () -> MainJDEC.IS_ENABLED.setSelected(false));
+
+        GlobalScreen.addNativeKeyListener(GlobalKeyListener.INSTANCE
+                .addKeyEvent(NativeKeyEvent.VC_ENTER, () -> MainJDEC.IS_ENABLED.setSelected(false))
+                .addKeyEvent(NativeKeyEvent.VC_SPACE, MainJDEC.ESTOP_BTN::doClick));
         GBCPanelBuilder endr = base.clone().setAnchor(GridBagConstraints.LINE_END).setFill(GridBagConstraints.NONE);
 
         base.clone().setPos(0, 0, 6, 1).setFill(GridBagConstraints.NONE).build(TITLE);
@@ -188,6 +202,7 @@ public class MainFrame implements MainJDEC {
         return href;
     }
 
+    @Deprecated
     public static void createKeyAction(int keyCode, Runnable action) {
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(e -> {
             if (e.getID() == KeyEvent.KEY_PRESSED && e.getKeyCode() == keyCode) {

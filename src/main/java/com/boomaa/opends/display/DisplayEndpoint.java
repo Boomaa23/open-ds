@@ -26,7 +26,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class DisplayEndpoint implements MainJDEC {
-    public static final String CURRENT_VERSION_TAG = "v0.2.0";
+    public static final String CURRENT_VERSION_TAG = "v0.2.1";
 
     public static DSLog FILE_LOGGER = new DSLog();
     public static NTConnection NETWORK_TABLES = new NTConnection();
