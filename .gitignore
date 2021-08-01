@@ -10,6 +10,7 @@ wireshark/*
 *.vcxproj.filters
 *.vcxproj.user
 **/Debug
+**/Release
 **/.vs
 .settings/*
 .classpath
