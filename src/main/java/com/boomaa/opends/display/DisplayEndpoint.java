@@ -35,7 +35,7 @@ public class DisplayEndpoint implements MainJDEC {
     public static UDPInterface FMS_UDP_INTERFACE;
     public static TCPInterface FMS_TCP_INTERFACE;
     public static InitChecker NET_IF_INIT = new InitChecker();
-    public static Integer[] VALID_PROTOCOL_YEARS = { 2021, 2020, 2016, 2015, 2014 };
+    public static Integer[] VALID_PROTOCOL_YEARS = { 2022, 2021, 2020, 2016, 2015, 2014 };
 
     private static ElementUpdater updater;
     private static PacketCreator creator;
