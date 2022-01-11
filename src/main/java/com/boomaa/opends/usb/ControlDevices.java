@@ -8,7 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class ControlDevices {
-    private static Map<Integer, HIDDevice> controllers = new LinkedHashMap<>();
+    private static final Map<Integer, HIDDevice> controllers = new LinkedHashMap<>();
     private static int sendDataCtr = 0;
     private static int sendDescCtr = 0;
 

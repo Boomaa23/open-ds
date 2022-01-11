@@ -87,8 +87,7 @@ public class NTFrame extends PopupBase {
         List<NTEntry> ntEntries = new ArrayList<>(NTStorage.ENTRIES.values());
         if (!name.isEmpty()) {
             int entryCtr = 0;
-            for (int i = 0; i < ntEntries.size(); i++) {
-                NTEntry entry = ntEntries.get(i);
+            for (NTEntry entry : ntEntries) {
                 if (entry.getTabName().equals(name) && (entry.isInShuffleboard() || entry.isInSmartDashboard()) && !entry.isInHidden()) {
                     JPanel tempPanel = new JPanel() {
                         @Override

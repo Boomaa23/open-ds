@@ -13,13 +13,16 @@ import com.boomaa.opends.usb.IndexTracker;
 import com.boomaa.opends.usb.ControlDevices;
 import com.boomaa.opends.util.NumberUtils;
 
+import java.util.Objects;
+
 public class Creator2015 extends NoTCPCreator {
     @Override
     public byte[] dsToRioUdp() {
         PacketBuilder builder = getSequenced(Remote.ROBO_RIO);
         builder.addInt(0x01);
 
-        int control = ((RobotMode) MainJDEC.ROBOT_DRIVE_MODE.getSelectedItem()).getControlFlag().getFlag();
+        Object robotMode = Objects.requireNonNull(MainJDEC.ROBOT_DRIVE_MODE.getSelectedItem());
+        int control = ((RobotMode) robotMode).getControlFlag().getFlag();
         if (MainJDEC.FMS_CONNECTION_STATUS.isDisplayed()) {
             control |= Control.FMS_CONNECTED.getFlag();
         }
@@ -33,7 +36,8 @@ public class Creator2015 extends NoTCPCreator {
 
         builder.addInt((MainJDEC.RESTART_ROBO_RIO_BTN.wasPressed() ? Request.REBOOT_ROBO_RIO.getFlag() : 0) +
                 (MainJDEC.RESTART_CODE_BTN.wasPressed() ? Request.RESTART_CODE.getFlag() : 0));
-        builder.addInt(new AllianceStation(ALLIANCE_NUM.getSelectedIndex(), ALLIANCE_COLOR.getSelectedItem().equals("Blue")).getGlobalNum());
+        builder.addInt(new AllianceStation(ALLIANCE_NUM.getSelectedIndex(),
+                Objects.equals(ALLIANCE_COLOR.getSelectedItem(), "Blue")).getGlobalNum());
 
         //TODO add proper timezone data request-passing
         if (SEQUENCE_COUNTER_RIO.getCounter() <= 10) {
@@ -73,7 +77,8 @@ public class Creator2015 extends NoTCPCreator {
         if (IS_ENABLED.isSelected()) {
             status += 0x04;
         }
-        switch ((RobotMode) ROBOT_DRIVE_MODE.getSelectedItem()) {
+        RobotMode robotMode = (RobotMode) Objects.requireNonNull(ROBOT_DRIVE_MODE.getSelectedItem());
+        switch (robotMode) {
             case TEST:
                 status += 0x01;
                 break;

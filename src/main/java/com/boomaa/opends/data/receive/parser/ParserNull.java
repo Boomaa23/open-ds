@@ -4,7 +4,7 @@ import com.boomaa.opends.data.holders.Protocol;
 import com.boomaa.opends.data.holders.Remote;
 
 public class ParserNull extends PacketParser {
-    private static ParserNull PARSER_NULL = new ParserNull();
+    private static final ParserNull PARSER_NULL = new ParserNull();
 
     private ParserNull() {
         super(new byte[0], Protocol.UDP, Remote.ROBO_RIO, 0);

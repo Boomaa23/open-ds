@@ -6,7 +6,7 @@ public class NTEntry {
     private final String path;
     private final int id;
     private final String key;
-    private String tabName;
+    private final String tabName;
     private final boolean inShuffleboard;
     private final boolean inSmartDashboard;
     private final boolean inLiveWindow;

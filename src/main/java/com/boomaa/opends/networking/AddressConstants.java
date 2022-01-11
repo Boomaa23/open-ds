@@ -24,7 +24,7 @@ public class AddressConstants {
         int teamNum = MainJDEC.TEAM_NUMBER.checkedIntParse();
         if (teamNum != -1) {
             return "roboRIO-" + teamNum +"-FRC.local";
-        } else if (MainJDEC.TEAM_NUMBER.getText().toLowerCase().equals("localhost")) {
+        } else if (MainJDEC.TEAM_NUMBER.getText().equalsIgnoreCase("localhost")) {
             return LOCALHOST;
         }
         // Default case that will always fail

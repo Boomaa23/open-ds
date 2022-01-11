@@ -21,6 +21,7 @@ import com.boomaa.opends.util.DSLog;
 import com.boomaa.opends.util.NumberUtils;
 
 import java.util.List;
+import java.util.Objects;
 
 public class Updater2020 extends ElementUpdater {
     @Override
@@ -152,7 +153,7 @@ public class Updater2020 extends ElementUpdater {
             }
         }
         if (!station.equals(new AllianceStation(ALLIANCE_NUM.getSelectedIndex() - 1,
-                ALLIANCE_COLOR.getSelectedItem().equals("Blue")))) {
+                Objects.equals(ALLIANCE_COLOR.getSelectedItem(), "Blue")))) {
             ALLIANCE_COLOR.setEnabled(true);
             ALLIANCE_COLOR.setSelectedItem(station.isBlue() ? "Blue" : "Red");
             ALLIANCE_COLOR.setEnabled(false);

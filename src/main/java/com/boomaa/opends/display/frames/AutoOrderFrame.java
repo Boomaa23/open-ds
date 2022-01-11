@@ -16,8 +16,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class AutoOrderFrame extends PopupBase {
+    private static final List<HIDDevice> devices = new LinkedList<>();
     private static int idxCtr = 0;
-    private static List<HIDDevice> devices = new LinkedList<>();
     private ValueUpdater valueUpdater;
 
     public AutoOrderFrame() {

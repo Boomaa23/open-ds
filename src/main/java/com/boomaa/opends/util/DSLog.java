@@ -17,13 +17,14 @@ import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 public class DSLog extends Clock {
     private static final long LABVIEW_UNIX_EPOCH_DIFF = -2_212_122_495L;
     public static byte[] PDP_STATS = new byte[24];
-    private static List<byte[]> eventQueue = new LinkedList<>();
-    private FileOutputStream eventsOut;
-    private FileOutputStream logOut;
+    private static final List<byte[]> eventQueue = new LinkedList<>();
+    private final FileOutputStream eventsOut;
+    private final FileOutputStream logOut;
 
     public DSLog() {
         super(19);
@@ -53,8 +54,8 @@ public class DSLog extends Clock {
                 .addBytes(secondTimestamp())
                 .addBytes(millisecondTimestamp())
                 .build();
-        writeData(logOut, header);
-        writeData(eventsOut, header);
+        writeData(Objects.requireNonNull(logOut), header);
+        writeData(Objects.requireNonNull(eventsOut), header);
     }
 
     private FileOutputStream createFile(String filepath) {

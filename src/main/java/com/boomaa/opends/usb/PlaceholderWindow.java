@@ -1,7 +1,7 @@
 package com.boomaa.opends.usb;
 
 public class PlaceholderWindow {
-    private static PlaceholderWindow INSTANCE = new PlaceholderWindow();
+    private static final PlaceholderWindow INSTANCE = new PlaceholderWindow();
     private final long hwndAddress;
 
     private PlaceholderWindow() {

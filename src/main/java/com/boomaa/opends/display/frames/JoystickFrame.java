@@ -246,8 +246,8 @@ public class JoystickFrame extends PopupBase {
                     if (current.getIdx() != nFRCIdx) {
                         for (HIDDevice dev : ControlDevices.getAll().values()) {
                             if (dev.getIdx() == nFRCIdx) {
-                                MessageBox.show("Duplicate index \"" + nFRCIdx + "\" for controller \"" + dev.toString()
-                                        + "\"\nSetting controller \"" + dev.toString() + "\" on index \"" + dev.getIdx()
+                                MessageBox.show("Duplicate index \"" + nFRCIdx + "\" for controller \"" + dev
+                                        + "\"\nSetting controller \"" + dev + "\" on index \"" + dev.getIdx()
                                         + "\"\n to new index \"" + cListIdx + "\" and making requested index change",
                                     MessageBox.Type.WARNING);
                             }

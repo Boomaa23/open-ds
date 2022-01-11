@@ -15,7 +15,7 @@ import java.util.List;
 public class Logger extends OutputStream {
     public static PrintStream OUT;
     public static JScrollPane PANE;
-    private byte[] oneByte;
+    private final byte[] oneByte;
     private Appender appender;
 
     static {

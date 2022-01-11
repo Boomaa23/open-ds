@@ -7,7 +7,7 @@ import java.nio.BufferUnderflowException;
 import java.util.Objects;
 
 public class NTPacketData {
-    private byte[] data;
+    private final byte[] data;
     private NTMessageType messageType;
     private int msgId = -1;
     private int seqNum = -1;
@@ -17,14 +17,11 @@ public class NTPacketData {
     private int usedLength;
 
     public NTPacketData(byte[] data) {
-        if (data.length < 2) {
-            usedLength = Integer.MAX_VALUE;
-        }
-        this.usedLength = 1;
+        this.usedLength = data.length < 2 ? Integer.MAX_VALUE : 1;
         this.data = data;
         try {
             this.messageType = NTMessageType.getFromFlag(NumberUtils.getUInt8(data[0]));
-            switch (messageType) {
+            switch (Objects.requireNonNull(messageType)) {
                 case kEntryAssign:
                     this.msgStr = readString(usedLength);
                     this.dataType = NTDataType.getFromFlag(NumberUtils.getUInt8(data[usedLength++]));

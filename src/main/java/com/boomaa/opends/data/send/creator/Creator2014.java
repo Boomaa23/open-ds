@@ -10,6 +10,7 @@ import com.boomaa.opends.display.RobotMode;
 import com.boomaa.opends.usb.IndexTracker;
 import com.boomaa.opends.usb.ControlDevices;
 
+import java.util.Objects;
 import java.util.zip.CRC32;
 
 public class Creator2014 extends NoTCPCreator {
@@ -22,11 +23,9 @@ public class Creator2014 extends NoTCPCreator {
         } else if (RESTART_ROBO_RIO_BTN.wasPressed()) {
             control = Request.REBOOT_ROBO_RIO.getFlag();
         } else {
+            Object robotMode = Objects.requireNonNull(ROBOT_DRIVE_MODE.getSelectedItem());
             control |= ((IS_ENABLED.isSelected() ? 0x20 : 0x00) +
-                    ((RobotMode) ROBOT_DRIVE_MODE.getSelectedItem()).getControlFlag().getFlag());
-//            if (resync) {
-//                control |= 0x04;
-//            }
+                    ((RobotMode) robotMode).getControlFlag().getFlag());
             if (FMS_CONNECTION_STATUS.isDisplayed()) {
                 control |= Control.FMS_CONNECTED.getFlag();
             }
@@ -35,7 +34,8 @@ public class Creator2014 extends NoTCPCreator {
                 .addInt(0x00) // number of computer digital inputs
                 .addInt((TEAM_NUMBER.checkedIntParse() & 0xFF00) >> 8)
                 .addInt(TEAM_NUMBER.checkedIntParse() & 0xFF);
-        AllianceStation station = new AllianceStation(ALLIANCE_NUM.getSelectedIndex(), ALLIANCE_COLOR.getSelectedItem().equals("Blue"));
+        AllianceStation station = new AllianceStation(ALLIANCE_NUM.getSelectedIndex(),
+                Objects.equals(ALLIANCE_COLOR.getSelectedItem(), "Blue"));
         builder.addInt(station.isBlue() ? 0x42 : 0x52)
                 .addInt(station.getSidedNum() + 0x30);
         if (IS_ENABLED.isSelected()) {

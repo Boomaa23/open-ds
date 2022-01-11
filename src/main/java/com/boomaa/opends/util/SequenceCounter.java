@@ -3,20 +3,24 @@ package com.boomaa.opends.util;
 public class SequenceCounter {
     private final boolean isRoundTrip;
     private final int offset;
+    private final boolean isNullCounter;
     private short counter;
 
-    public SequenceCounter(boolean isRoundTrip, int offset) {
+    public SequenceCounter(boolean isRoundTrip, int offset, boolean isNullCounter) {
         this.isRoundTrip = isRoundTrip;
         this.offset = offset;
+        this.isNullCounter = isNullCounter;
         reset();
     }
 
     public SequenceCounter(boolean isRoundTrip) {
-        this(isRoundTrip, 0);
+        this(isRoundTrip, 0, false);
     }
 
     public SequenceCounter increment() {
-        counter += isRoundTrip ? 2 : 1;
+        if (!isNullCounter) {
+            counter += isRoundTrip ? 2 : 1;
+        }
         return this;
     }
 

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Objects;
 
 public class Libraries {
     private static final String[] NATIVE_LIBS = new String[] {
@@ -36,7 +37,7 @@ public class Libraries {
         for (String libName : NATIVE_LIBS) {
             try {
                 libName += nLibExt;
-                Files.copy(Libraries.class.getResourceAsStream("/" + libName),
+                Files.copy(Objects.requireNonNull(Libraries.class.getResourceAsStream("/" + libName)),
                     Paths.get(tmpPath + libName), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 e.printStackTrace();

@@ -36,7 +36,7 @@ public class TagValueMap<T> extends LinkedHashMap<String, T> {
     public String toLogString(boolean addTimestamp) {
         StringBuilder sb = new StringBuilder();
         if (addTimestamp) {
-            sb.append(Calendar.getInstance().getTime().toString()).append("> ");
+            sb.append(Calendar.getInstance().getTime()).append("> ");
         }
         for (Map.Entry<String, T> entry : this.entrySet()) {
             sb.append(entry.getKey()).append(": ").append(entry.getValue()).append(", ");

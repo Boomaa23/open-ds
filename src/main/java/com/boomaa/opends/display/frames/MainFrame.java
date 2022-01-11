@@ -108,6 +108,8 @@ public class MainFrame implements MainJDEC {
             reload.start();
         });
         RESTART_CODE_BTN.addActionListener(e -> IS_ENABLED.setSelected(false));
+        //TODO remove after testing
+        TEAM_NUMBER.setText("localhost");
         TEAM_NUMBER.getDocument().addDocumentListener(new TeamNumListener());
         IS_ENABLED.setEnabled(false);
 

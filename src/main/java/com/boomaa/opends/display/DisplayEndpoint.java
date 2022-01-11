@@ -39,9 +39,9 @@ public class DisplayEndpoint implements MainJDEC {
 
     private static ElementUpdater updater;
     private static PacketCreator creator;
-    private static ProtocolClass parserClass = new ProtocolClass("com.boomaa.opends.data.receive.parser.Parser");
-    private static ProtocolClass creatorClass = new ProtocolClass("com.boomaa.opends.data.send.creator.Creator");
-    private static ProtocolClass updaterClass = new ProtocolClass("com.boomaa.opends.display.updater.Updater");
+    private static final ProtocolClass parserClass = new ProtocolClass("com.boomaa.opends.data.receive.parser.Parser");
+    private static final ProtocolClass creatorClass = new ProtocolClass("com.boomaa.opends.data.send.creator.Creator");
+    private static final ProtocolClass updaterClass = new ProtocolClass("com.boomaa.opends.display.updater.Updater");
 
     private static final Clock rioTcpClock = new Clock("rioTcp", 20) {
         @Override
@@ -151,6 +151,7 @@ public class DisplayEndpoint implements MainJDEC {
             ControlDevices.checkForRemoval();
             ControlDevices.findAll();
             try {
+                //TODO improve clock logic
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
                 e.printStackTrace();

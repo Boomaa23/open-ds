@@ -22,6 +22,7 @@ public abstract class Clock extends Thread {
 
     @Override
     public void run() {
+        //TODO fix busy-waiting (improve clock logic/efficiency)
         while (!done) {
             try {
                 Thread.sleep(msToCycle);

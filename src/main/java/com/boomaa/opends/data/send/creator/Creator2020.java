@@ -15,6 +15,8 @@ import com.boomaa.opends.usb.IndexTracker;
 import com.boomaa.opends.util.NumberUtils;
 import com.boomaa.opends.util.PacketCounters;
 
+import java.util.Objects;
+
 public class Creator2020 extends PacketCreator {
     @Override
     public byte[] dsToRioUdp() {
@@ -23,7 +25,7 @@ public class Creator2020 extends PacketCreator {
         int control = (ESTOP_BTN.wasPressed() ? Control.ESTOP.getFlag() : 0)
                 + (DisplayEndpoint.NET_IF_INIT.isOrInit(Remote.FMS) ? Control.FMS_CONNECTED.getFlag() : 0)
                 + (IS_ENABLED.isSelected() ? Control.ENABLED.getFlag() : 0)
-                + ((RobotMode) ROBOT_DRIVE_MODE.getSelectedItem()).getControlFlag().getFlag();
+                + ((RobotMode) Objects.requireNonNull(ROBOT_DRIVE_MODE.getSelectedItem())).getControlFlag().getFlag();
         builder.addInt(control);
         int request = Request.DS_CONNECTED.getFlag();
         if (RESTART_ROBO_RIO_BTN.wasPressed()) {
@@ -33,7 +35,8 @@ public class Creator2020 extends PacketCreator {
             request += Request.RESTART_CODE.getFlag();
         }
         builder.addInt(request);
-        builder.addInt(new AllianceStation(ALLIANCE_NUM.getSelectedIndex(), ALLIANCE_COLOR.getSelectedItem().equals("Blue")).getGlobalNum());
+        builder.addInt(new AllianceStation(ALLIANCE_NUM.getSelectedIndex(),
+                Objects.equals(ALLIANCE_COLOR.getSelectedItem(), "Blue")).getGlobalNum());
 
         if (SEQUENCE_COUNTER_RIO.getCounter() <= 10) {
             builder.addBytes(SendTag.DATE.getBytes());
@@ -82,7 +85,7 @@ public class Creator2020 extends PacketCreator {
         if (IS_ENABLED.isSelected()) {
             status += 0x04;
         }
-        switch ((RobotMode) ROBOT_DRIVE_MODE.getSelectedItem()) {
+        switch ((RobotMode) Objects.requireNonNull(ROBOT_DRIVE_MODE.getSelectedItem())) {
             case TEST:
                 status += 0x01;
                 break;

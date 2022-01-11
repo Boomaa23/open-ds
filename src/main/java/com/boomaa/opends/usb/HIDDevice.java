@@ -4,8 +4,8 @@ import java.util.Objects;
 
 public abstract class HIDDevice {
     private final Controller<?> ctrl;
-    private int[] axesPath;
-    private int[] buttonPath;
+    private final int[] axesPath;
+    private final int[] buttonPath;
     protected int idx;
     protected boolean disabled;
 
