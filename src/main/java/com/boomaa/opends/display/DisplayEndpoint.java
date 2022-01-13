@@ -200,8 +200,8 @@ public class DisplayEndpoint implements MainJDEC {
                     }
                     break;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ignored) {
+            System.err.println("WARNING: OpenDS update check failed. Ignore this warning if connected to a robot.");
         }
     }
 }
