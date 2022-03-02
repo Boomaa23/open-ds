@@ -16,7 +16,26 @@ $ProgressPreference = 'SilentlyContinue';
 $jre_ver = "11";
 
 $dl_basename = "ods-jre" + $jre_ver;
-$gh_latest_release = Invoke-RestMethod -Uri "https://api.github.com/repos/Boomaa23/open-ds/releases/latest";
+if (((Test-NetConnection "api.github.com" -Port 80 -InformationLevel "Quiet").TcpTestSucceeded) -ne $true) {
+    $found_jar = Get-Childitem -Path ./open*.jar;
+    Write-Host "Could not detect an internet connection.";
+    if ($found_jar) {
+        Write-Host "Found local open-ds installation.";
+        $installed_java_ver = Get-Command java;
+        if ($installed_java_ver -Match "java.exe") {
+            Write-Host "Java installation found. Running local open-ds copy."
+            Start-Process -WindowStyle Hidden java -ArgumentList '-jar', $found_jar;
+        } else {
+            Write-Host "No Java installation detected on the PATH.";
+        }
+    } else {
+        Write-Host "No open-ds installation found. Exiting.";
+    }
+    exit
+}
+
+$gh_url = "https://api.github.com/repos/Boomaa23/open-ds/releases/latest";
+$gh_latest_release = Invoke-RestMethod -Uri $gh_url;
 $ods_jar_name = "open-ds-" + $gh_latest_release.tag_name + ".jar";
 $jre_loc = $pwd.Path + '/' + $dl_basename;
 
