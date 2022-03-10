@@ -1,17 +1,18 @@
 package com.boomaa.opends.util;
 
 public enum OperatingSystem {
-    WINDOWS("win", "win32"),
-    MACOS("mac", "osx"),
-    UNIX("linux", "linux"),
-    UNSUPPORTED("", "");
+    WINDOWS("win", "win32", "dll"),
+    MACOS("mac", "osx", "jnilib"),
+    UNIX("linux", "linux", "so");
 
     private final String key;
     private final String common;
+    private final String nativeExt;
 
-    OperatingSystem(String key, String common) {
+    OperatingSystem(String key, String common, String nativeExt) {
         this.key = key;
         this.common = common;
+        this.nativeExt = nativeExt;
     }
 
     public String getKey() {
@@ -22,6 +23,10 @@ public enum OperatingSystem {
         return common;
     }
 
+    public String getNativeExt() {
+        return nativeExt;
+    }
+
     public static OperatingSystem getCurrent() {
         String search = System.getProperty("os.name").toLowerCase();
         for (OperatingSystem os : OperatingSystem.values()) {
@@ -29,14 +34,10 @@ public enum OperatingSystem {
                 return os;
             }
         }
-        return OperatingSystem.UNSUPPORTED;
+        throw new NativeSystemError("Unsupported operating system " + search);
     }
 
     public static boolean isWindows() {
         return getCurrent() == WINDOWS;
-    }
-
-    public static UnsupportedOperationException unsupportedException() {
-        return new UnsupportedOperationException("Operating system not supported. Switch to Windows/Linux/macOS");
     }
 }

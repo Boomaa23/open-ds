@@ -1,10 +1,10 @@
 package com.boomaa.opends.util;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Objects;
 
 public class Libraries {
     private static final String[] NATIVE_LIBS = new String[] {
@@ -19,26 +19,17 @@ public class Libraries {
         }
 
         OperatingSystem os = OperatingSystem.getCurrent();
-        String nLibExt = "-" + os.getCommonName() + ".";
-        switch (OperatingSystem.getCurrent())  {
-            case WINDOWS:
-                nLibExt += "dll";
-                break;
-            case MACOS:
-                nLibExt += "jnilib";
-                break;
-            case UNIX:
-                nLibExt += "so";
-                break;
-            case UNSUPPORTED:
-                throw OperatingSystem.unsupportedException();
-        }
+        Architecture arch = Architecture.getCurrent();
+        String nLibExt = "-" + os.getCommonName() + "-" + arch.toString() + "." + os.getNativeExt();
 
         for (String libName : NATIVE_LIBS) {
             try {
                 libName += nLibExt;
-                Files.copy(Objects.requireNonNull(Libraries.class.getResourceAsStream("/" + libName)),
-                    Paths.get(tmpPath + libName), StandardCopyOption.REPLACE_EXISTING);
+                InputStream libData = Libraries.class.getResourceAsStream("/" + libName);
+                if (libData == null) {
+                    throw new NativeSystemError("Could not find native file (invalid system configuration): " + libName);
+                }
+                Files.copy(libData, Paths.get(tmpPath + libName), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 e.printStackTrace();
             }

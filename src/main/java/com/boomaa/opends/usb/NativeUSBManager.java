@@ -1,5 +1,6 @@
 package com.boomaa.opends.usb;
 
+import com.boomaa.opends.util.NativeSystemError;
 import com.boomaa.opends.util.OperatingSystem;
 
 import java.util.LinkedList;
@@ -32,7 +33,7 @@ public abstract class NativeUSBManager<T extends Controller<?>> {
                     platformManager = new IOKit();
                     break;
                 default:
-                    throw OperatingSystem.unsupportedException();
+                    throw new NativeSystemError("Platform USB manager cannot be loaded due to invalid OS");
             }
         }
         return platformManager;
