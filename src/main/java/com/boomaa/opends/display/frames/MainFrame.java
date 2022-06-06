@@ -4,6 +4,7 @@ import com.boomaa.opends.data.holders.Protocol;
 import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.display.GlobalKeyListener;
 import com.boomaa.opends.display.MainJDEC;
+import com.boomaa.opends.display.MultiKeyEvent;
 import com.boomaa.opends.display.PopupBase;
 import com.boomaa.opends.display.TeamNumListener;
 import com.boomaa.opends.display.elements.GBCPanelBuilder;
@@ -108,14 +109,15 @@ public class MainFrame implements MainJDEC {
             reload.start();
         });
         RESTART_CODE_BTN.addActionListener(e -> IS_ENABLED.setSelected(false));
-        //TODO remove after testing
-        TEAM_NUMBER.setText("localhost");
         TEAM_NUMBER.getDocument().addDocumentListener(new TeamNumListener());
         IS_ENABLED.setEnabled(false);
 
         GlobalScreen.addNativeKeyListener(GlobalKeyListener.INSTANCE
                 .addKeyEvent(NativeKeyEvent.VC_ENTER, () -> MainJDEC.IS_ENABLED.setSelected(false))
-                .addKeyEvent(NativeKeyEvent.VC_SPACE, MainJDEC.ESTOP_BTN::doClick));
+                .addKeyEvent(NativeKeyEvent.VC_SPACE, MainJDEC.ESTOP_BTN::doClick)
+                .addMultiKeyEvent(new MultiKeyEvent(() -> MainJDEC.IS_ENABLED.setSelected(MainJDEC.IS_ENABLED.isEnabled()),
+                        NativeKeyEvent.VC_OPEN_BRACKET, NativeKeyEvent.VC_CLOSE_BRACKET, NativeKeyEvent.VC_BACK_SLASH))
+        );
         GBCPanelBuilder endr = base.clone().setAnchor(GridBagConstraints.LINE_END).setFill(GridBagConstraints.NONE);
 
         base.clone().setPos(0, 0, 6, 1).setFill(GridBagConstraints.NONE).build(TITLE);
