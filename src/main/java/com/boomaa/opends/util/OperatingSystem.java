@@ -37,6 +37,15 @@ public enum OperatingSystem {
         throw new NativeSystemError("Unsupported operating system " + search);
     }
 
+    public static String getTempFolder() {
+        String tmpPath = System.getProperty("java.io.tmpdir");
+        String fSep = System.getProperty("file.separator");
+        if (!tmpPath.endsWith(fSep)) {
+            tmpPath += fSep;
+        }
+        return tmpPath;
+    }
+
     public static boolean isWindows() {
         return getCurrent() == WINDOWS;
     }

@@ -7,6 +7,7 @@ import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.display.MultiKeyEvent;
 import com.boomaa.opends.display.PopupBase;
 import com.boomaa.opends.display.TeamNumListener;
+import com.boomaa.opends.display.TeamNumPersist;
 import com.boomaa.opends.display.elements.GBCPanelBuilder;
 import com.boomaa.opends.networking.NetworkReloader;
 import com.boomaa.opends.util.OperatingSystem;
@@ -109,6 +110,8 @@ public class MainFrame implements MainJDEC {
             reload.start();
         });
         RESTART_CODE_BTN.addActionListener(e -> IS_ENABLED.setSelected(false));
+        TEAM_NUMBER.setText(TeamNumPersist.load());
+
         TEAM_NUMBER.getDocument().addDocumentListener(new TeamNumListener());
         IS_ENABLED.setEnabled(false);
 

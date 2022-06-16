@@ -12,11 +12,7 @@ public class Libraries {
     };
 
     public static void init() {
-        String tmpPath = System.getProperty("java.io.tmpdir");
-        String fSep = System.getProperty("file.separator");
-        if (!tmpPath.endsWith(fSep)) {
-            tmpPath += fSep;
-        }
+        String tmpPath = OperatingSystem.getTempFolder();
 
         OperatingSystem os = OperatingSystem.getCurrent();
         Architecture arch = Architecture.getCurrent();

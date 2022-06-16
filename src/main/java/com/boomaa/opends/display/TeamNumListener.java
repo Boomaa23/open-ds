@@ -27,5 +27,6 @@ public class TeamNumListener implements DocumentListener {
         DisplayEndpoint.NET_IF_INIT.set(false, Remote.ROBO_RIO, Protocol.TCP);
         DisplayEndpoint.NET_IF_INIT.set(false, Remote.FMS, Protocol.UDP);
         DisplayEndpoint.NET_IF_INIT.set(false, Remote.FMS, Protocol.TCP);
+        TeamNumPersist.save(MainJDEC.TEAM_NUMBER.getText());
     }
 }
