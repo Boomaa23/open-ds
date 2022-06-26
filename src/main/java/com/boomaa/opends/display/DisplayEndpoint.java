@@ -134,7 +134,7 @@ public class DisplayEndpoint implements MainJDEC {
     public static void main(String[] args) {
         Libraries.init();
         ControlDevices.init();
-        MainFrame.display();
+        MainFrame.display(args);
         doProtocolUpdate();
         PROTOCOL_YEAR.addActionListener((e) -> doProtocolUpdate());
         rioTcpClock.start();

@@ -11,6 +11,7 @@ import com.boomaa.opends.display.TeamNumPersist;
 import com.boomaa.opends.display.elements.GBCPanelBuilder;
 import com.boomaa.opends.networking.NetworkReloader;
 import com.boomaa.opends.util.OperatingSystem;
+import com.boomaa.opends.util.Parameter;
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
 import org.jnativehook.keyboard.NativeKeyEvent;
@@ -32,13 +33,15 @@ public class MainFrame implements MainJDEC {
     private static final GBCPanelBuilder base = new GBCPanelBuilder(CONTENT).setInsets(new Insets(5, 5, 5, 5)).setFill(GridBagConstraints.BOTH).setAnchor(GridBagConstraints.CENTER);
     public static NTFrame NT_FRAME;
 
-    public static void display() {
+    public static void display(String[] args) {
         FRAME.setIconImage(MainFrame.ICON);
         CONTENT.setLayout(new GridBagLayout());
 
         TITLE.setText(TITLE.getText() + " " + DisplayEndpoint.CURRENT_VERSION_TAG);
 
         Logger.getLogger(GlobalScreen.class.getPackage().getName()).setLevel(Level.OFF);
+        listenerInit();
+        valueInit(args);
         layoutInit();
 
         FRAME.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -61,12 +64,19 @@ public class MainFrame implements MainJDEC {
         }
     }
 
-    public static void layoutInit() {
-        Dimension dimension = new Dimension(560, 320);
-        if (OperatingSystem.getCurrent() == OperatingSystem.MACOS) {
-            dimension.setSize(dimension.getWidth() * PopupBase.MACOS_WIDTH_SCALE, dimension.getHeight());
+    private static void valueInit(String[] args) {
+        IS_ENABLED.setEnabled(false);
+
+        String prevTeamNum = TeamNumPersist.load();
+        if (!prevTeamNum.trim().isEmpty()) {
+            TEAM_NUMBER.setText(prevTeamNum);
         }
-        FRAME.setPreferredSize(dimension);
+
+        Parameter.parseArgs(args);
+        Parameter.applyJDECLinks();
+    }
+
+    private static void listenerInit() {
         LOG_BTN.addActionListener((e) -> {
             if (!PopupBase.isAlive(LogFrame.class)) {
                 new LogFrame();
@@ -110,10 +120,8 @@ public class MainFrame implements MainJDEC {
             reload.start();
         });
         RESTART_CODE_BTN.addActionListener(e -> IS_ENABLED.setSelected(false));
-        TEAM_NUMBER.setText(TeamNumPersist.load());
 
         TEAM_NUMBER.getDocument().addDocumentListener(new TeamNumListener());
-        IS_ENABLED.setEnabled(false);
 
         GlobalScreen.addNativeKeyListener(GlobalKeyListener.INSTANCE
                 .addKeyEvent(NativeKeyEvent.VC_ENTER, () -> MainJDEC.IS_ENABLED.setSelected(false))
@@ -121,6 +129,15 @@ public class MainFrame implements MainJDEC {
                 .addMultiKeyEvent(new MultiKeyEvent(() -> MainJDEC.IS_ENABLED.setSelected(MainJDEC.IS_ENABLED.isEnabled()),
                         NativeKeyEvent.VC_OPEN_BRACKET, NativeKeyEvent.VC_CLOSE_BRACKET, NativeKeyEvent.VC_BACK_SLASH))
         );
+    }
+
+    private static void layoutInit() {
+        Dimension dimension = new Dimension(560, 320);
+        if (OperatingSystem.getCurrent() == OperatingSystem.MACOS) {
+            dimension.setSize(dimension.getWidth() * PopupBase.MACOS_WIDTH_SCALE, dimension.getHeight());
+        }
+        FRAME.setPreferredSize(dimension);
+
         GBCPanelBuilder endr = base.clone().setAnchor(GridBagConstraints.LINE_END).setFill(GridBagConstraints.NONE);
 
         base.clone().setPos(0, 0, 6, 1).setFill(GridBagConstraints.NONE).build(TITLE);

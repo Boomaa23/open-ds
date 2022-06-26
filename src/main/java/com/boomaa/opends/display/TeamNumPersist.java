@@ -26,6 +26,9 @@ public class TeamNumPersist {
     }
 
     public static void save(String teamNum) {
+        if (teamNum.equals("Team Number")) {
+            return;
+        }
         File cached = getCachedFile();
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(cached, false));
