@@ -91,7 +91,7 @@ public enum Parameter {
                 try {
                     int ioFlag = argsList.indexOf(flag);
                     String value = argsList.get(ioFlag + 1);
-                    if (p.getOptions().contains(value)) {
+                    if (p.getOptions().size() == 0 || p.getOptions().contains(value)) {
                         if (ptype == Type.INTEGER) {
                             p.setValue(Integer.parseInt(value));
                         } else {
