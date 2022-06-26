@@ -19,6 +19,7 @@ import com.boomaa.opends.util.Clock;
 import com.boomaa.opends.util.DSLog;
 import com.boomaa.opends.util.InitChecker;
 import com.boomaa.opends.util.Libraries;
+import com.boomaa.opends.util.Parameter;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -132,9 +133,10 @@ public class DisplayEndpoint implements MainJDEC {
     };
 
     public static void main(String[] args) {
+        Parameter.parseArgs(args);
         Libraries.init();
         ControlDevices.init();
-        MainFrame.display(args);
+        MainFrame.display();
         doProtocolUpdate();
         PROTOCOL_YEAR.addActionListener((e) -> doProtocolUpdate());
         rioTcpClock.start();

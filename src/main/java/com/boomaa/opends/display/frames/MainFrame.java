@@ -33,7 +33,7 @@ public class MainFrame implements MainJDEC {
     private static final GBCPanelBuilder base = new GBCPanelBuilder(CONTENT).setInsets(new Insets(5, 5, 5, 5)).setFill(GridBagConstraints.BOTH).setAnchor(GridBagConstraints.CENTER);
     public static NTFrame NT_FRAME;
 
-    public static void display(String[] args) {
+    public static void display() {
         FRAME.setIconImage(MainFrame.ICON);
         CONTENT.setLayout(new GridBagLayout());
 
@@ -41,7 +41,7 @@ public class MainFrame implements MainJDEC {
 
         Logger.getLogger(GlobalScreen.class.getPackage().getName()).setLevel(Level.OFF);
         listenerInit();
-        valueInit(args);
+        valueInit();
         layoutInit();
 
         FRAME.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -64,15 +64,15 @@ public class MainFrame implements MainJDEC {
         }
     }
 
-    private static void valueInit(String[] args) {
+    private static void valueInit() {
         IS_ENABLED.setEnabled(false);
 
+        TeamNumPersist.init();
         String prevTeamNum = TeamNumPersist.load();
         if (!prevTeamNum.trim().isEmpty()) {
             TEAM_NUMBER.setText(prevTeamNum);
         }
 
-        Parameter.parseArgs(args);
         Parameter.applyJDECLinks();
     }
 

@@ -1,6 +1,7 @@
 package com.boomaa.opends.display;
 
 import com.boomaa.opends.util.OperatingSystem;
+import com.boomaa.opends.util.Parameter;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -11,7 +12,16 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class TeamNumPersist {
-    private static final String CONF_FILE_NAME = "ods-teamnum.conf";
+    private static String confFile = "ods-teamnum.conf";
+    private static boolean hasInit = false;
+
+    public static void init() {
+        if (Parameter.TEAM_PERSIST_FILE.isPresent()) {
+            confFile = Parameter.TEAM_PERSIST_FILE.getStringValue();
+        }
+        confFile = OperatingSystem.getTempFolder() + confFile;
+        hasInit = true;
+    }
 
     public static String load() {
         File cached = getCachedFile();
@@ -26,7 +36,7 @@ public class TeamNumPersist {
     }
 
     public static void save(String teamNum) {
-        if (teamNum.equals("Team Number")) {
+        if (!hasInit || teamNum.equals("Team Number")) {
             return;
         }
         File cached = getCachedFile();
@@ -40,6 +50,6 @@ public class TeamNumPersist {
     }
 
     private static File getCachedFile() {
-        return new File(OperatingSystem.getTempFolder() + CONF_FILE_NAME);
+        return new File(confFile);
     }
 }

@@ -19,7 +19,8 @@ public enum Parameter {
     PROTOCOL_YEAR("--protocol-year", Type.INTEGER, MainJDEC.PROTOCOL_YEAR, getProtocolYears()),
     ROBOT_DRIVE_MODE("--robot-mode", Type.STRING, MainJDEC.ROBOT_DRIVE_MODE, getRobotModes()),
     TEAM_NUMBER("--team-num", Type.INTEGER, MainJDEC.TEAM_NUMBER),
-    USB("--usb", Type.BOOLEAN, MainJDEC.USB_CONNECT);
+    USB("--usb", Type.BOOLEAN, MainJDEC.USB_CONNECT),
+    TEAM_PERSIST_FILE("--tpf", Type.STRING, null);
 
     private final String flag;
     private final Type type;

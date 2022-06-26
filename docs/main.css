@@ -97,3 +97,7 @@ a.anchor {
   transition: 0.5s;
   background-color: #000000;
 }
+
+#param-table {
+  width: 100%;
+}

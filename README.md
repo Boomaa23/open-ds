@@ -51,6 +51,7 @@ rules R66 and R88. OpenDS is intended for testing use only.
     * Windows, Linux, and macOS support
     * No install prerequisites
     * Easily modifiable for updated protocol years
+    * Command-line (CLI) parameters
     
 ## Setup
 Download the stable jar from [here](https://boomaa23.github.io/open-ds/#dl-jar) and run. There are no prerequisites besides having a Java installation with [JRE 8](https://adoptopenjdk.net/) or newer. The JRE is included with any installation of the same JDK version.
