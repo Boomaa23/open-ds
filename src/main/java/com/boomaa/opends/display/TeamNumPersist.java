@@ -36,8 +36,11 @@ public class TeamNumPersist {
     }
 
     public static void save(String teamNum) {
-        if (!hasInit || teamNum.equals("Team Number")) {
+        if (!hasInit) {
             return;
+        }
+        if (teamNum.equals("Team Number")) {
+            teamNum = "";
         }
         File cached = getCachedFile();
         try {

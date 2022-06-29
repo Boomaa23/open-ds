@@ -20,7 +20,8 @@ public enum Parameter {
     ROBOT_DRIVE_MODE("--robot-mode", Type.STRING, MainJDEC.ROBOT_DRIVE_MODE, getRobotModes()),
     TEAM_NUMBER("--team-num", Type.INTEGER, MainJDEC.TEAM_NUMBER),
     USB("--usb", Type.BOOLEAN, MainJDEC.USB_CONNECT),
-    TEAM_PERSIST_FILE("--tpf", Type.STRING, null);
+    TEAM_PERSIST_FILE("--tpf", Type.STRING, null),
+    DISABLE_HOTKEYS("--disable-hotkeys", Type.BOOLEAN, null);
 
     private final String flag;
     private final Type type;
@@ -111,20 +112,21 @@ public enum Parameter {
     public static void applyJDECLinks() {
         for (Parameter p : Parameter.values()) {
             JComponent jdecLink = p.getJDECLink();
-            if (p.isPresent() && jdecLink != null) {
-                if (jdecLink instanceof JCheckBox) {
-                    ((JCheckBox) jdecLink).setSelected(true);
-                } else if (jdecLink instanceof JComboBox) {
-                    JComboBox<?> jcb = ((JComboBox<?>) jdecLink);
-                    for (int i = 0; i < jcb.getItemCount(); i++) {
-                        if (jcb.getItemAt(i).toString().equals(p.getStringValue())) {
-                            jcb.setSelectedIndex(i);
-                            break;
-                        }
+            if (p.isPresent() && jdecLink == null) {
+                continue;
+            }
+            if (jdecLink instanceof JCheckBox) {
+                ((JCheckBox) jdecLink).setSelected(true);
+            } else if (jdecLink instanceof JComboBox) {
+                JComboBox<?> jcb = ((JComboBox<?>) jdecLink);
+                for (int i = 0; i < jcb.getItemCount(); i++) {
+                    if (jcb.getItemAt(i).toString().equals(p.getStringValue())) {
+                        jcb.setSelectedIndex(i);
+                        break;
                     }
-                } else if (jdecLink instanceof JTextField) {
-                    ((JTextField) jdecLink).setText(p.getStringValue());
                 }
+            } else if (jdecLink instanceof JTextField) {
+                ((JTextField) jdecLink).setText(p.getStringValue());
             }
         }
     }

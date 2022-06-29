@@ -123,12 +123,14 @@ public class MainFrame implements MainJDEC {
 
         TEAM_NUMBER.getDocument().addDocumentListener(new TeamNumListener());
 
-        GlobalScreen.addNativeKeyListener(GlobalKeyListener.INSTANCE
-                .addKeyEvent(NativeKeyEvent.VC_ENTER, () -> MainJDEC.IS_ENABLED.setSelected(false))
-                .addKeyEvent(NativeKeyEvent.VC_SPACE, MainJDEC.ESTOP_BTN::doClick)
-                .addMultiKeyEvent(new MultiKeyEvent(() -> MainJDEC.IS_ENABLED.setSelected(MainJDEC.IS_ENABLED.isEnabled()),
-                        NativeKeyEvent.VC_OPEN_BRACKET, NativeKeyEvent.VC_CLOSE_BRACKET, NativeKeyEvent.VC_BACK_SLASH))
-        );
+        if (!Parameter.DISABLE_HOTKEYS.isPresent()) {
+            GlobalScreen.addNativeKeyListener(GlobalKeyListener.INSTANCE
+                    .addKeyEvent(NativeKeyEvent.VC_ENTER, () -> MainJDEC.IS_ENABLED.setSelected(false))
+                    .addKeyEvent(NativeKeyEvent.VC_SPACE, MainJDEC.ESTOP_BTN::doClick)
+                    .addMultiKeyEvent(new MultiKeyEvent(() -> MainJDEC.IS_ENABLED.setSelected(MainJDEC.IS_ENABLED.isEnabled()),
+                            NativeKeyEvent.VC_OPEN_BRACKET, NativeKeyEvent.VC_CLOSE_BRACKET, NativeKeyEvent.VC_BACK_SLASH))
+            );
+        }
     }
 
     private static void layoutInit() {
