@@ -1,6 +1,5 @@
-package com.boomaa.opends.display.frames;
+package com.boomaa.opends.display.tabs;
 
-import com.boomaa.opends.display.PopupBase;
 import com.boomaa.opends.display.elements.GBCPanelBuilder;
 import com.boomaa.opends.networktables.NTEntry;
 import com.boomaa.opends.networktables.NTStorage;
@@ -19,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class NTFrame extends PopupBase {
+public class NTTab extends TabBase {
     private static final Insets stdInsets = new Insets(5, 5, 5, 5);
     private static final Border emptyBorder = new EmptyBorder(5, 5, 5, 5);
     private static final int borderRadius = 5;
@@ -33,15 +32,10 @@ public class NTFrame extends PopupBase {
     private JPanel tabsPanel;
     private String currentTab;
 
-    public NTFrame() {
-        super("Shuffleboard", new Dimension(800, 450));
-    }
-
     @Override
     public void config() {
-        super.config();
-        content.setLayout(new GridBagLayout());
-        this.base = new GBCPanelBuilder(content).setFill(GridBagConstraints.BOTH).setAnchor(GridBagConstraints.CENTER).setInsets(stdInsets);
+        super.setLayout(new GridBagLayout());
+        this.base = new GBCPanelBuilder(this).setFill(GridBagConstraints.BOTH).setAnchor(GridBagConstraints.CENTER).setInsets(stdInsets);
         this.entryDisplayWrapper = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
         int lineHeight = 30;
@@ -56,14 +50,14 @@ public class NTFrame extends PopupBase {
             populateTabsBar();
         });
 
-        Dimension mainDim = new Dimension(125, lineHeight);
+        Dimension mainDim = new Dimension(100, lineHeight);
         leftMenubar.setPreferredSize(mainDim);
         rightMenubar.setPreferredSize(mainDim);
         base.clone().setPos(6, 0, 1, 1).setFill(GridBagConstraints.NONE).build(leftMenubar);
         base.clone().setPos(7, 0, 1, 1).setFill(GridBagConstraints.NONE).build(rightMenubar);
 
         tabsPanel = new JPanel();
-        tabsPanel.setPreferredSize(new Dimension(700, lineHeight));
+        tabsPanel.setPreferredSize(new Dimension(440, lineHeight));
         tabsPanel.setLayout(new GridBagLayout());
         entryDisplay = new JPanel();
         entryDisplay.setLayout(new GridBagLayout());
@@ -118,20 +112,18 @@ public class NTFrame extends PopupBase {
         entryDisplay.repaint();
         entryDisplay.revalidate();
         entryDisplayWrapper.setViewportView(entryDisplay);
-        entryDisplayWrapper.setPreferredSize(new Dimension(760, 300));
+        entryDisplayWrapper.setPreferredSize(new Dimension(400, 220));
         entryDisplayWrapper.getVerticalScrollBar().setUnitIncrement(10);
         base.clone().setPos(0, 1, 8, 5).build(entryDisplayWrapper);
         entryDisplayWrapper.repaint();
         entryDisplayWrapper.revalidate();
-        content.repaint();
-        content.revalidate();
         super.repaint();
         super.revalidate();
     }
 
     public void populateTabsBar() {
         displayedEntries.clear();
-        content.remove(tabsPanel);
+        super.remove(tabsPanel);
         tabsPanel.removeAll();
         GBCPanelBuilder gbc = new GBCPanelBuilder(tabsPanel).setInsets(stdInsets);
         for (int i = tabStartIndex; i < tabWidth + tabStartIndex; i++) {
@@ -143,8 +135,6 @@ public class NTFrame extends PopupBase {
         base.clone().setPos(0, 0, 6, 1).build(tabsPanel);
         tabsPanel.repaint();
         tabsPanel.revalidate();
-        content.repaint();
-        content.revalidate();
         super.repaint();
         super.revalidate();
     }

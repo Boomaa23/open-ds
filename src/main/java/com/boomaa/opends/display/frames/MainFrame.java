@@ -5,10 +5,12 @@ import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.display.GlobalKeyListener;
 import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.display.MultiKeyEvent;
-import com.boomaa.opends.display.PopupBase;
 import com.boomaa.opends.display.TeamNumListener;
 import com.boomaa.opends.display.TeamNumPersist;
 import com.boomaa.opends.display.elements.GBCPanelBuilder;
+import com.boomaa.opends.display.tabs.JoystickTab;
+import com.boomaa.opends.display.tabs.NTTab;
+import com.boomaa.opends.display.tabs.TabChangeListener;
 import com.boomaa.opends.networking.NetworkReloader;
 import com.boomaa.opends.util.OperatingSystem;
 import com.boomaa.opends.util.Parameter;
@@ -30,8 +32,8 @@ import java.util.logging.Logger;
 public class MainFrame implements MainJDEC {
     public static final Image ICON = Toolkit.getDefaultToolkit().getImage(MainFrame.class.getResource("/icon.png")).getScaledInstance(32, 32, Image.SCALE_SMOOTH);
     public static final Image ICON_MIN = Toolkit.getDefaultToolkit().getImage(MainFrame.class.getResource("/icon-min.png"));
-    private static final GBCPanelBuilder base = new GBCPanelBuilder(CONTENT).setInsets(new Insets(5, 5, 5, 5)).setFill(GridBagConstraints.BOTH).setAnchor(GridBagConstraints.CENTER);
-    public static NTFrame NT_FRAME;
+    private static final GBCPanelBuilder base = new GBCPanelBuilder(TAB_CONTAINER).setInsets(new Insets(5, 5, 5, 5)).setFill(GridBagConstraints.BOTH).setAnchor(GridBagConstraints.CENTER);
+    public static NTTab NT_FRAME;
 
     public static void display() {
         FRAME.setIconImage(MainFrame.ICON);
@@ -57,10 +59,12 @@ public class MainFrame implements MainJDEC {
         }
         SwingUtilities.updateComponentTreeUI(FRAME);
         FRAME.setVisible(true);
-        try {
-            GlobalScreen.registerNativeHook();
-        } catch (NativeHookException e) {
-            e.printStackTrace();
+        if (!Parameter.DISABLE_HOTKEYS.isPresent()) {
+            try {
+                GlobalScreen.registerNativeHook();
+            } catch (NativeHookException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -77,36 +81,8 @@ public class MainFrame implements MainJDEC {
     }
 
     private static void listenerInit() {
-        LOG_BTN.addActionListener((e) -> {
-            if (!PopupBase.isAlive(LogFrame.class)) {
-                new LogFrame();
-            } else {
-                PopupBase.getAlive(LogFrame.class).reopen();
-            }
-        });
-        JS_BTN.addActionListener((e) -> {
-            MainJDEC.IS_ENABLED.setSelected(false);
-            MainJDEC.IS_ENABLED.setEnabled(false);
-            if (!PopupBase.isAlive(JoystickFrame.class)) {
-                new JoystickFrame();
-            } else {
-                PopupBase.getAlive(JoystickFrame.class).reopen();
-            }
-        });
-        STATS_BTN.addActionListener((e) -> {
-            if (!PopupBase.isAlive(StatsFrame.class)) {
-                new StatsFrame();
-            } else {
-                PopupBase.getAlive(StatsFrame.class).reopen();
-            }
-        });
-        NT_BTN.addActionListener((e) -> {
-            if (!PopupBase.isAlive(NTFrame.class)) {
-                NT_FRAME = new NTFrame();
-            } else {
-                PopupBase.getAlive(NTFrame.class).reopen();
-            }
-        });
+        TAB.addChangeListener(TabChangeListener.getInstance());
+
         USB_CONNECT.addActionListener((e) -> {
             Thread reload = new Thread() {
                 @Override
@@ -134,9 +110,19 @@ public class MainFrame implements MainJDEC {
     }
 
     private static void layoutInit() {
-        Dimension dimension = new Dimension(560, 320);
+        UIManager.getDefaults().put("TabbedPane.contentBorderInsets", new Insets(0,0,0,0));
+        UIManager.getDefaults().put("TabbedPane.tabsOverlapBorder", true);
+
+        TAB.addTab("Control", TAB_CONTAINER);
+        TAB.addTab("Joysticks", JS_TAB);
+        TAB.addTab("Shuffleboard", NT_TAB);
+        TAB.addTab("Statistics", STATS_TAB);
+        TAB.addTab("Log", LOG_TAB);
+        FRAME.add(TAB);
+
+        Dimension dimension = new Dimension(560, 350);
         if (OperatingSystem.getCurrent() == OperatingSystem.MACOS) {
-            dimension.setSize(dimension.getWidth() * PopupBase.MACOS_WIDTH_SCALE, dimension.getHeight());
+            dimension.setSize(dimension.getWidth() * FrameBase.MACOS_WIDTH_SCALE, dimension.getHeight());
         }
         FRAME.setPreferredSize(dimension);
 
@@ -156,18 +142,14 @@ public class MainFrame implements MainJDEC {
         base.clone().setPos(1, 5, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(TEAM_NUMBER);
         endr.clone().setPos(0, 6, 1, 1).build(new JLabel("Game Data:"));
         base.clone().setPos(1, 6, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(GAME_DATA);
-        endr.clone().setPos(0, 7, 1, 1).build(new JLabel("Protocol Year:"));
-        base.clone().setPos(1, 7, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(PROTOCOL_YEAR);
+        endr.clone().setPos(2, 6, 1, 1).build(new JLabel("Protocol Year:"));
+        base.clone().setPos(3, 6, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(PROTOCOL_YEAR);
 
         base.clone().setPos(2, 2, 2, 1).build(RESTART_CODE_BTN);
         base.clone().setPos(2, 3, 2, 1).build(RESTART_ROBO_RIO_BTN);
         base.clone().setPos(2, 4, 2, 1).build(ESTOP_BTN);
-        base.clone().setPos(2, 5, 1, 1).build(JS_BTN);
-        base.clone().setPos(3, 5, 1, 1).build(STATS_BTN);
-        base.clone().setPos(2, 6, 1, 1).build(NT_BTN);
-        base.clone().setPos(3, 6, 1, 1).build(LOG_BTN);
-        base.clone().setPos(2, 7, 1, 1).build(FMS_CONNECT);
-        base.clone().setPos(3, 7, 1, 1).build(USB_CONNECT);
+        base.clone().setPos(2, 5, 1, 1).build(FMS_CONNECT);
+        base.clone().setPos(3, 5, 1, 1).build(USB_CONNECT);
 
         base.clone().setPos(4, 2, 2, 1).setFill(GridBagConstraints.NONE).build(BAT_VOLTAGE);
         endr.clone().setPos(4, 3, 1, 1).build(new JLabel("Robot:"));

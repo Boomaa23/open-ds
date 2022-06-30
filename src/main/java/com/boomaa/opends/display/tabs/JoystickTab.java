@@ -1,10 +1,13 @@
-package com.boomaa.opends.display.frames;
+package com.boomaa.opends.display.tabs;
 
 import com.boomaa.opends.display.MainJDEC;
-import com.boomaa.opends.display.PopupBase;
+import com.boomaa.opends.display.frames.FrameBase;
 import com.boomaa.opends.display.elements.GBCPanelBuilder;
 import com.boomaa.opends.display.elements.HideableLabel;
 import com.boomaa.opends.display.elements.StickyButton;
+import com.boomaa.opends.display.frames.AutoOrderFrame;
+import com.boomaa.opends.display.frames.MessageBox;
+import com.boomaa.opends.display.frames.ReassignAxes;
 import com.boomaa.opends.usb.Component;
 import com.boomaa.opends.usb.HIDDevice;
 import com.boomaa.opends.usb.IndexTracker;
@@ -20,19 +23,16 @@ import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JoystickFrame extends PopupBase {
+public class JoystickTab extends TabBase {
     private static final int BTN_PER_ROW = 16;
     private ValueUpdater valueUpdater;
 
-    public JoystickFrame() {
-        super("Joysticks", new Dimension(520, 275));
+    public JoystickTab() {
+        super(new Dimension(520, 275));
     }
 
     @Override
     public void config() {
-        super.config();
-        super.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-
         EmbeddedJDEC.DISABLE_BTN.setVerticalTextPosition(SwingConstants.TOP);
         EmbeddedJDEC.DISABLE_BTN.setHorizontalTextPosition(SwingConstants.CENTER);
 
@@ -89,67 +89,60 @@ public class JoystickFrame extends PopupBase {
             swapDeviceIndices(idx, idx + 1);
         });
         EmbeddedJDEC.AUTO_ORDER_BTN.addActionListener(e -> {
-            if (!PopupBase.isAlive(AutoOrderFrame.class)) {
+            if (!FrameBase.isAlive(AutoOrderFrame.class)) {
                 new AutoOrderFrame();
             } else {
-                PopupBase.getAlive(AutoOrderFrame.class).reopen();
+                FrameBase.getAlive(AutoOrderFrame.class).reopen();
             }
         });
         EmbeddedJDEC.REASSIGN_AXES_BTN.addActionListener(e -> {
-            if (!PopupBase.isAlive(ReassignAxes.class)) {
+            if (!FrameBase.isAlive(ReassignAxes.class)) {
                 new ReassignAxes();
             } else {
-                PopupBase.getAlive(ReassignAxes.class).reopen();
+                FrameBase.getAlive(ReassignAxes.class).reopen();
             }
         });
         EmbeddedJDEC.DISABLE_BTN.addActionListener(e -> EmbeddedJDEC.LIST.getSelectedValue()
                 .setDisabled(EmbeddedJDEC.DISABLE_BTN.isSelected()));
         EmbeddedJDEC.RELOAD_BTN.addActionListener(e -> resetControllerDisplay());
-        EmbeddedJDEC.CLOSE_BTN.addActionListener(e -> {
-            for (HIDDevice device : ControlDevices.getAll().values()) {
-                if (!device.isDisabled() && device.getIdx() >= IndexTracker.MAX_JS_NUM) {
-                    MessageBox.show("Index \"" + device.getIdx()
-                            + "\" for controller \"" + device.getName()
-                            + "\"\n greater than maximum enabled joystick index of \""
-                            + (IndexTracker.MAX_JS_NUM - 1) + "\"", MessageBox.Type.ERROR);
-                    return;
-                }
-            }
-            MainJDEC.IS_ENABLED.setEnabled(true);
-            this.dispose();
-        });
 
-        content.setLayout(new GridBagLayout());
-        GBCPanelBuilder base = new GBCPanelBuilder(content).setFill(GridBagConstraints.BOTH).setAnchor(GridBagConstraints.CENTER).setInsets(new Insets(5, 5, 5, 5));
-        GBCPanelBuilder end = base.clone().setFill(GridBagConstraints.NONE).setAnchor(GridBagConstraints.LINE_END);
+        super.setLayout(new GridBagLayout());
+        GBCPanelBuilder base = new GBCPanelBuilder(this)
+                .setFill(GridBagConstraints.BOTH)
+                .setAnchor(GridBagConstraints.CENTER)
+                .setInsets(new Insets(5, 5, 5, 5));
+        GBCPanelBuilder end = base.clone()
+                .setFill(GridBagConstraints.NONE)
+                .setAnchor(GridBagConstraints.LINE_END);
 
         base.clone().setPos(0, 0, 1, 1).setFill(GridBagConstraints.NONE).build(new JLabel("Index"));
         base.clone().setPos(0, 1, 1, 1).setFill(GridBagConstraints.NONE).build(EmbeddedJDEC.INDEX_SET);
-        base.clone().setPos(0, 2, 1, 1).build(EmbeddedJDEC.RELOAD_BTN);
 
         base.clone().setPos(1, 0, 2, 3).build(EmbeddedJDEC.LIST_SCR);
-
-        end.clone().setPos(4, 0, 1, 1).build(new JLabel("X: "));
-        end.clone().setPos(4, 1, 1, 1).build(new JLabel("Y: "));
-        end.clone().setPos(4, 2, 1, 1).build(new JLabel("Z: "));
-        end.clone().setPos(6, 0, 1, 1).build(new JLabel("RX: "));
-        end.clone().setPos(6, 1, 1, 1).build(new JLabel("RY: "));
-
-        base.clone().setPos(5, 0, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.VAL_X);
-        base.clone().setPos(5, 1, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.VAL_Y);
-        base.clone().setPos(5, 2, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.VAL_Z);
-        base.clone().setPos(7, 0, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.VAL_RX);
-        base.clone().setPos(7, 1, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.VAL_RY);
-        base.clone().setPos(6, 2, 2, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.REASSIGN_AXES_BTN);
 
         base.clone().setPos(3, 0, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.UP_BTN);
         base.clone().setPos(3, 1, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.DOWN_BTN);
         base.clone().setPos(3, 2, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.DISABLE_BTN);
 
-        base.clone().setPos(0, 3, 7, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.BUTTON_GRID);
+        base.clone().setPos(4, 0, 1, 1).build(EmbeddedJDEC.RELOAD_BTN);
+        base.clone().setPos(4, 1, 1, 1).build(EmbeddedJDEC.AUTO_ORDER_BTN);
+        base.clone().setPos(4, 2, 1, 1).build(EmbeddedJDEC.REASSIGN_AXES_BTN);
 
-        base.clone().setPos(0, 4, 1, 1).build(EmbeddedJDEC.AUTO_ORDER_BTN);
-        base.clone().setPos(1, 4, 7, 1).build(EmbeddedJDEC.CLOSE_BTN);
+        end.clone().setPos(5, 0, 1, 1).build(new JLabel("X: "));
+        end.clone().setPos(5, 1, 1, 1).build(new JLabel("Y: "));
+        end.clone().setPos(5, 2, 1, 1).build(new JLabel("Z: "));
+        end.clone().setPos(7, 0, 1, 1).build(new JLabel("RX: "));
+        end.clone().setPos(7, 1, 1, 1).build(new JLabel("RY: "));
+        end.clone().setPos(7, 2, 1, 1).build(new JLabel("RZ: "));
+
+        base.clone().setPos(6, 0, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.VAL_X);
+        base.clone().setPos(6, 1, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.VAL_Y);
+        base.clone().setPos(6, 2, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.VAL_Z);
+        base.clone().setPos(8, 0, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.VAL_RX);
+        base.clone().setPos(8, 1, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.VAL_RY);
+        base.clone().setPos(8, 2, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.VAL_RZ);
+
+        base.clone().setPos(2, 3, 6, 2).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.BUTTON_GRID);
 
         EmbeddedJDEC.BUTTON_GRID.setLayout(new GridBagLayout());
 
@@ -191,21 +184,6 @@ public class JoystickFrame extends PopupBase {
         }
     }
 
-    @Override
-    public void reopen() {
-        valueUpdater = new ValueUpdater();
-        valueUpdater.start();
-        super.reopen();
-    }
-
-    @Override
-    public void dispose() {
-        if (valueUpdater != null) {
-            valueUpdater.end();
-        }
-        super.dispose();
-    }
-
     public interface EmbeddedJDEC {
         DefaultListModel<HIDDevice> LIST_MODEL = new DefaultListModel<>();
         JList<HIDDevice> LIST = new JList<>(LIST_MODEL);
@@ -216,12 +194,12 @@ public class JoystickFrame extends PopupBase {
         HideableLabel VAL_Z = new HideableLabel(true);
         HideableLabel VAL_RX = new HideableLabel(true);
         HideableLabel VAL_RY = new HideableLabel(true);
+        HideableLabel VAL_RZ = new HideableLabel(true);
 
         JTextField INDEX_SET = new JTextField("");
         JButton RELOAD_BTN = new JButton("↻");
         JButton AUTO_ORDER_BTN = new JButton("Auto");
-        JButton REASSIGN_AXES_BTN = new JButton("<html><div text-align:center>Reassign<br />Axes</div></html>");
-        StickyButton CLOSE_BTN = new StickyButton("Close", 5);
+        JButton REASSIGN_AXES_BTN = new JButton("Axes");
 
         JButton UP_BTN = new JButton("↑");
         JButton DOWN_BTN = new JButton("↓");
@@ -239,7 +217,7 @@ public class JoystickFrame extends PopupBase {
 
         @Override
         public void onCycle() {
-            if (!PopupBase.getAlive(JoystickFrame.class).isVisible() || PopupBase.isVisible(AutoOrderFrame.class)) {
+            if (!TabBase.isVisible(JoystickTab.class) && !FrameBase.isVisible(AutoOrderFrame.class)) {
                 return;
             }
             HIDDevice current = EmbeddedJDEC.LIST.getSelectedValue();
@@ -250,7 +228,11 @@ public class JoystickFrame extends PopupBase {
                 ControlDevices.updateValues();
                 try {
                     int nFRCIdx = Integer.parseInt(EmbeddedJDEC.INDEX_SET.getText());
-                    if (current.getIdx() != nFRCIdx) {
+                    if (nFRCIdx >= IndexTracker.MAX_JS_NUM) {
+                        MessageBox.show("New index " + nFRCIdx + " greater than maximum index of 6."
+                                + " Not performing change.", MessageBox.Type.ERROR);
+                        EmbeddedJDEC.INDEX_SET.setText(String.valueOf(cListIdx));
+                    } else if (current.getIdx() != nFRCIdx) {
                         for (HIDDevice dev : ControlDevices.getAll().values()) {
                             if (dev.getIdx() == nFRCIdx) {
                                 MessageBox.show("Duplicate index \"" + nFRCIdx + "\" for controller \"" + dev
@@ -269,6 +251,7 @@ public class JoystickFrame extends PopupBase {
                 setAxisValue(current, EmbeddedJDEC.VAL_Z, Component.Axis.Z);
                 setAxisValue(current, EmbeddedJDEC.VAL_RX, Component.Axis.RX);
                 setAxisValue(current, EmbeddedJDEC.VAL_RY, Component.Axis.RY);
+                setAxisValue(current, EmbeddedJDEC.VAL_RZ, Component.Axis.RZ);
                 boolean[] buttons = current.getButtons();
                 for (int i = 0; i < buttons.length && i < EmbeddedJDEC.BUTTONS.size(); i++) {
                     EmbeddedJDEC.BUTTONS.get(i).setSelected(buttons[i]);
@@ -279,6 +262,7 @@ public class JoystickFrame extends PopupBase {
                 EmbeddedJDEC.VAL_Z.setText(" N/A");
                 EmbeddedJDEC.VAL_RX.setText(" N/A");
                 EmbeddedJDEC.VAL_RY.setText(" N/A");
+                EmbeddedJDEC.VAL_RZ.setText(" N/A");
             }
             EmbeddedJDEC.BUTTON_GRID.revalidate();
         }

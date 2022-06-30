@@ -1,7 +1,7 @@
 package com.boomaa.opends.display.frames;
 
-import com.boomaa.opends.display.PopupBase;
 import com.boomaa.opends.display.elements.GBCPanelBuilder;
+import com.boomaa.opends.display.tabs.JoystickTab;
 import com.boomaa.opends.usb.HIDDevice;
 import com.boomaa.opends.usb.ControlDevices;
 import com.boomaa.opends.util.Clock;
@@ -15,7 +15,7 @@ import java.awt.Insets;
 import java.util.LinkedList;
 import java.util.List;
 
-public class AutoOrderFrame extends PopupBase {
+public class AutoOrderFrame extends FrameBase {
     private static final List<HIDDevice> devices = new LinkedList<>();
     private static int idxCtr = 0;
     private ValueUpdater valueUpdater;
@@ -39,9 +39,9 @@ public class AutoOrderFrame extends PopupBase {
         }
 
         EmbeddedJDEC.DONE_BTN.addActionListener(e -> {
-            JoystickFrame.EmbeddedJDEC.LIST_MODEL.clear();
+            JoystickTab.EmbeddedJDEC.LIST_MODEL.clear();
             for (HIDDevice device : devices) {
-                JoystickFrame.EmbeddedJDEC.LIST_MODEL.add(JoystickFrame.EmbeddedJDEC.LIST_MODEL.size(), device);
+                JoystickTab.EmbeddedJDEC.LIST_MODEL.add(JoystickTab.EmbeddedJDEC.LIST_MODEL.size(), device);
             }
             this.dispose();
         });

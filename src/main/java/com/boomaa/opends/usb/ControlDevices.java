@@ -1,7 +1,8 @@
 package com.boomaa.opends.usb;
 
-import com.boomaa.opends.display.PopupBase;
-import com.boomaa.opends.display.frames.JoystickFrame;
+import com.boomaa.opends.display.frames.FrameBase;
+import com.boomaa.opends.display.tabs.JoystickTab;
+import com.boomaa.opends.display.tabs.TabBase;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -30,10 +31,8 @@ public class ControlDevices {
             if (!hasHid) {
                 HIDDevice hid = new HIDDevice(ctrl);
                 controllers.put(hid.getIdx(), hid);
-                if (PopupBase.isVisible(JoystickFrame.class)) {
-                    final int addIdx = Math.min(hid.getIdx(), JoystickFrame.EmbeddedJDEC.LIST_MODEL.size());
-                    JoystickFrame.EmbeddedJDEC.LIST_MODEL.add(addIdx, hid);
-                }
+                final int addIdx = Math.min(hid.getIdx(), JoystickTab.EmbeddedJDEC.LIST_MODEL.size());
+                JoystickTab.EmbeddedJDEC.LIST_MODEL.add(addIdx, hid);
             }
         }
     }
@@ -47,11 +46,9 @@ public class ControlDevices {
         for (HIDDevice hid : controllers.values()) {
             if (hid.needsRemove()) {
                 controllers.remove(hid.getIdx());
-                if (PopupBase.isAlive(JoystickFrame.class)) {
-                    IndexTracker.unregister(hid.getIdx());
-                    final int remIdx = Math.min(hid.getIdx(), JoystickFrame.EmbeddedJDEC.LIST_MODEL.size() - 1);
-                    JoystickFrame.EmbeddedJDEC.LIST_MODEL.remove(remIdx);
-                }
+                IndexTracker.unregister(hid.getIdx());
+                final int remIdx = Math.min(hid.getIdx(), JoystickTab.EmbeddedJDEC.LIST_MODEL.size() - 1);
+                JoystickTab.EmbeddedJDEC.LIST_MODEL.remove(remIdx);
             }
         }
     }

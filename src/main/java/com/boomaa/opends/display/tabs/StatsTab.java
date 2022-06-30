@@ -1,7 +1,7 @@
-package com.boomaa.opends.display.frames;
+package com.boomaa.opends.display.tabs;
 
 import com.boomaa.opends.data.StatsFields;
-import com.boomaa.opends.display.PopupBase;
+import com.boomaa.opends.display.frames.FrameBase;
 import com.boomaa.opends.display.elements.ColorCellRenderer;
 
 import javax.swing.JScrollPane;
@@ -12,17 +12,15 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.Dimension;
 
-public class StatsFrame extends PopupBase {
+public class StatsTab extends TabBase {
     public static final DefaultTableModel TABLE_MODEL = new DefaultTableModel(new String[0][], new String[] { "", "Key", "Value" });
 
-    public StatsFrame() {
-        super("Statistics", new Dimension(395, 250));
+    public StatsTab() {
+        super(new Dimension(395, 270));
     }
 
     @Override
     public void config() {
-        super.config();
-
         StatsFields[] allFields = StatsFields.values();
         for (StatsFields field : allFields) {
             TABLE_MODEL.addRow(new Object[] { field.getSection(), field.getKey(), field.getValue() });
@@ -44,10 +42,9 @@ public class StatsFrame extends PopupBase {
         JScrollPane scroll = new JScrollPane(table);
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        content.add(scroll);
+        scroll.setPreferredSize(super.dimension);
+        super.add(scroll);
 
-        content.repaint();
-        content.revalidate();
         super.repaint();
         super.revalidate();
     }
