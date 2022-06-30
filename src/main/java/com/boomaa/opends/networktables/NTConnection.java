@@ -62,7 +62,7 @@ public class NTConnection extends Clock {
         if (data != null && data.length != 0) {
             int i = 0;
             while (i < data.length) {
-                byte[] slicedData = ArrayUtils.sliceArr(data, i);
+                byte[] slicedData = ArrayUtils.slice(data, i);
                 if (i == data.length - 1 && CUTOFF_DATA.length != 0) {
                     byte[] mergedData = new byte[slicedData.length + CUTOFF_DATA.length];
                     for (int j = 0; j < mergedData.length; j++) {

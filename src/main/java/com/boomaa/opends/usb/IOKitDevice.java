@@ -65,8 +65,7 @@ public class IOKitDevice extends Controller<IOKitElement> {
         if (objects.size() == 0) {
             addElements(properties);
         }
-        for (Component comp : getComponents()) {
-            IOKitElement element = (IOKitElement) comp;
+        for (IOKitElement element : getComponents()) {
             IOKitEvent e = getElementValue(ifaceAddr, element.getCookie());
             if (e != null) {
                 element.setValue(e.getValue());

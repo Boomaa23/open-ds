@@ -112,7 +112,7 @@ public enum Parameter {
     public static void applyJDECLinks() {
         for (Parameter p : Parameter.values()) {
             JComponent jdecLink = p.getJDECLink();
-            if (p.isPresent() && jdecLink == null) {
+            if (!p.isPresent() || jdecLink == null) {
                 continue;
             }
             if (jdecLink instanceof JCheckBox) {

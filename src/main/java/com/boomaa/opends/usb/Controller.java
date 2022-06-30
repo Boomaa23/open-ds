@@ -13,17 +13,8 @@ public abstract class Controller<T extends Component> {
     public abstract void poll();
     public abstract String getName();
 
-    public Component[] getComponents() {
-        return objects.toArray(new Component[0]);
-    }
-
-    public Component getComponent(Component.Identifier id) {
-        for (Component comp : objects) {
-            if (comp.getIdentitifer() == id) {
-                return comp;
-            }
-        }
-        return null;
+    public List<T> getComponents() {
+        return objects;
     }
 
     public int getNumButtons() {

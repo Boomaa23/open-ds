@@ -4,13 +4,13 @@ import com.boomaa.opends.data.UsageReporting;
 import com.boomaa.opends.data.holders.Date;
 import com.boomaa.opends.data.holders.Protocol;
 import com.boomaa.opends.data.holders.Remote;
+import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.display.RobotMode;
 import com.boomaa.opends.networking.WlanConnection;
 import com.boomaa.opends.usb.Controller;
 import com.boomaa.opends.usb.HIDDevice;
 import com.boomaa.opends.usb.ControlDevices;
-import com.boomaa.opends.usb.XboxController;
 import com.boomaa.opends.util.NumberUtils;
 
 import java.lang.management.ManagementFactory;
@@ -36,8 +36,8 @@ public enum SendTag {
                 if (dev != null && !dev.isDisabled()) {
                     dev.update();
                     builder.addInt(dev.usedNumAxes()); //3 axes
-                    for (int i = 0; i < dev.usedNumAxes(); i++) {
-                        builder.addInt(NumberUtils.dblToInt8(dev.getAxis(i)));
+                    for (Integer axisIdx : dev.getAxesMapping().values()) {
+                        builder.addInt(NumberUtils.dblToInt8(dev.getComponent(axisIdx).getValue()));
                     }
                     builder.addInt(dev.usedNumButtons())
                             .addBytes(NumberUtils.packBools(dev.getButtons()))
@@ -77,14 +77,14 @@ public enum SendTag {
                 HIDDevice dev = ControlDevices.getAll().get(ControlDevices.iterateSend(false));
                 if (dev != null && !dev.isDisabled()) {
                     builder.addInt(dev.getIdx())
-                            .addInt(dev instanceof XboxController ? 1 : 0) //isXbox
+                            .addInt(dev.getDeviceType() == Controller.Type.HID_GAMEPAD ? 1 : 0) //isXbox
                             .addInt(dev.getDeviceType().getFRCFlag());
                     String name = dev.getName();
                     builder.addInt(name.length())
                             .addBytes(name.getBytes())
                             .addInt(dev.usedNumAxes()); //numAxes
-                    for (int i = 0; i < dev.usedNumAxes(); i++) {
-                        builder.addInt(NumberUtils.dblToInt8(dev.getAxis(i)));
+                    for (Integer axisIdx : dev.getAxesMapping().values()) {
+                        builder.addInt(NumberUtils.dblToInt8(dev.getComponent(axisIdx).getValue()));
                     }
                     builder.addInt(dev.usedNumButtons())
                             .addInt(0); //povCount
@@ -331,6 +331,9 @@ public enum SendTag {
         this.protocol = protocol;
         this.remote = remote;
         this.values = values;
+        if (values.length != DisplayEndpoint.VALID_PROTOCOL_YEARS.length) {
+            throw new IllegalArgumentException("Send tag " + name() + " has a mismatched number of year-values");
+        }
     }
 
     public int getFlag() {

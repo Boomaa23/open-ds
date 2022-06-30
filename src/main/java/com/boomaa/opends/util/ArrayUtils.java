@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ArrayUtils {
-    public static byte[] sliceArr(byte[] array, int start, int end) {
+    public static byte[] slice(byte[] array, int start, int end) {
         try {
             byte[] out = new byte[end - start];
             System.arraycopy(array, start, out, 0, out.length);
@@ -16,18 +16,18 @@ public class ArrayUtils {
         return new byte[0];
     }
 
-    public static byte[] sliceArr(byte[] array, int start) {
-        return sliceArr(array, start, array.length);
+    public static byte[] slice(byte[] array, int start) {
+        return slice(array, start, array.length);
     }
 
-    public static int[] sliceArr(int[] array, int start, int end) {
+    public static int[] slice(int[] array, int start, int end) {
         int[] out = new int[end - start];
         System.arraycopy(array, start, out, 0, out.length);
         return out;
     }
 
-    public static int[] sliceArr(int[] array, int start) {
-        return sliceArr(array, start, array.length);
+    public static int[] slice(int[] array, int start) {
+        return slice(array, start, array.length);
     }
 
     public static byte[] byteListUnbox(List<Byte> bytes) {

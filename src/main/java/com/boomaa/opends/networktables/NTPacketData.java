@@ -7,6 +7,7 @@ import java.nio.BufferUnderflowException;
 import java.util.Objects;
 
 public class NTPacketData {
+    private static final int[] CLEAR_ENTRIES_CHECK = new int[] { 0xD0, 0x6C, 0xB2, 0x7A };
     private final byte[] data;
     private NTMessageType messageType;
     private int msgId = -1;
@@ -65,12 +66,11 @@ public class NTPacketData {
                     NTStorage.ENTRIES.remove(msgId);
                     break;
                 case kClearEntries:
-                    final int[] checkAgainst = new int[] {0xD0, 0x6C, 0xB2, 0x7A};
-                    byte[] received = ArrayUtils.sliceArr(data, usedLength, usedLength + 4);
+                    byte[] received = ArrayUtils.slice(data, usedLength, usedLength + 4);
                     usedLength += 4;
                     boolean doReset = true;
-                    for (int i = 0; i < checkAgainst.length; i++) {
-                        if (received[i] != (byte) checkAgainst[i]) {
+                    for (int i = 0; i < CLEAR_ENTRIES_CHECK.length; i++) {
+                        if (received[i] != (byte) CLEAR_ENTRIES_CHECK[i]) {
                             doReset = false;
                             break;
                         }
@@ -91,7 +91,7 @@ public class NTPacketData {
 
     private int extractUInt16(int start) {
         usedLength += 2;
-        return NumberUtils.getUInt16(ArrayUtils.sliceArr(data, start, start + 2));
+        return NumberUtils.getUInt16(ArrayUtils.slice(data, start, start + 2));
     }
 
     private Object extractValue(int start) {
@@ -125,18 +125,18 @@ public class NTPacketData {
     private double readDouble(int start) {
         usedLength += 8;
         try {
-            return NumberUtils.getDouble(ArrayUtils.sliceArr(data, start, start + 8));
+            return NumberUtils.getDouble(ArrayUtils.slice(data, start, start + 8));
         } catch (BufferUnderflowException ignored) {
             return 0;
         }
     }
 
     private String readString(int start) {
-        int strLen = NumberUtils.decodeULEB128(ArrayUtils.sliceArr(data, start));
+        int strLen = NumberUtils.decodeULEB128(ArrayUtils.slice(data, start));
         int encLen = NumberUtils.sizeULEB128(strLen);
         usedLength += strLen + encLen;
         start += encLen;
-        return new String(ArrayUtils.sliceArr(data, start, start + strLen));
+        return new String(ArrayUtils.slice(data, start, start + strLen));
     }
 
     public NTMessageType getMessageType() {

@@ -13,7 +13,7 @@ public class Parser2020 {
         }
 
         public int getSequenceNum() {
-            return NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 0, 2));
+            return NumberUtils.getUInt16(ArrayUtils.slice(packet, 0, 2));
         }
 
         public int getCommVersion() {
@@ -49,7 +49,7 @@ public class Parser2020 {
 
         @Override
         public int getTagSize(int index) {
-            return NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, index, index + 2));
+            return NumberUtils.getUInt16(ArrayUtils.slice(packet, index, index + 2));
         }
     }
 
@@ -59,7 +59,7 @@ public class Parser2020 {
         }
 
         public int getSequenceNum() {
-            return NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 0, 2));
+            return NumberUtils.getUInt16(ArrayUtils.slice(packet, 0, 2));
         }
 
         public int getCommVersion() {
@@ -89,7 +89,7 @@ public class Parser2020 {
         }
 
         public int getMatchNumber() {
-            return NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 7, 9));
+            return NumberUtils.getUInt16(ArrayUtils.slice(packet, 7, 9));
         }
 
         public int getPlayNumber() {
@@ -97,11 +97,11 @@ public class Parser2020 {
         }
 
         public Date getDate() {
-            return Date.fromRecvBytes(ArrayUtils.sliceArr(packet, 10, 20));
+            return Date.fromRecvBytes(ArrayUtils.slice(packet, 10, 20));
         }
 
         public int getRemainingTime() {
-            return NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 20, 22));
+            return NumberUtils.getUInt16(ArrayUtils.slice(packet, 20, 22));
         }
 
         @Override
@@ -117,7 +117,7 @@ public class Parser2020 {
 
         @Override
         public int getTagSize(int index) {
-            return NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, index, index + 2));
+            return NumberUtils.getUInt16(ArrayUtils.slice(packet, index, index + 2));
         }
     }
 }

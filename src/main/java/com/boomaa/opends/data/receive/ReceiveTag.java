@@ -17,14 +17,14 @@ public enum ReceiveTag {
             (ReceiveTagAction<String>) (packet, size) -> {
                 TagValueMap<String> map = new TagValueMap<>();
                 if (size >= 6) {
-                    byte[] outBytes = ArrayUtils.sliceArr(packet, 0, 4);
+                    byte[] outBytes = ArrayUtils.slice(packet, 0, 4);
                     StringBuilder sb = new StringBuilder();
                     for (byte b : outBytes) {
                         sb.append(Integer.toBinaryString(b));
                     }
                     map.addTo("Output", sb.toString())
-                            .addTo("Left Rumble", String.valueOf(NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 4, 6))))
-                            .addTo("Right Rumble", String.valueOf(NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 6, 8))));
+                            .addTo("Left Rumble", String.valueOf(NumberUtils.getUInt16(ArrayUtils.slice(packet, 4, 6))))
+                            .addTo("Right Rumble", String.valueOf(NumberUtils.getUInt16(ArrayUtils.slice(packet, 6, 8))));
                 } else {
                     map.addTo("Output", "none").addTo("Left Rumble", "none").addTo("Right Rumble", "none");
                 }
@@ -38,8 +38,8 @@ public enum ReceiveTag {
             RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<Integer>) (packet, size) -> new TagValueMap<Integer>()
-                .addTo("Block", NumberUtils.getUInt32(ArrayUtils.sliceArr(packet, 0, 4)))
-                .addTo("Free Space", NumberUtils.getUInt32(ArrayUtils.sliceArr(packet, 4, 8))),
+                .addTo("Block", NumberUtils.getUInt32(ArrayUtils.slice(packet, 0, 4)))
+                .addTo("Free Space", NumberUtils.getUInt32(ArrayUtils.slice(packet, 4, 8))),
             RefRecieveTag.yearOfAction(2015),
             (ReceiveTagAction<Integer>) (packet, size) ->
                     TagValueMap.singleton("Utilization %", (int) packet[0]),
@@ -53,10 +53,10 @@ public enum ReceiveTag {
                 TagValueMap<Float> map = new TagValueMap<Float>().addTo("Number of CPUs", numCpus);
                 int c = 1;
                 for (int n = 0; n < numCpus; n++) {
-                    map.addTo("CPU " + n + " Time Critical %", NumberUtils.getFloat(ArrayUtils.sliceArr(packet, c, c += 4)))
-                            .addTo("CPU " + n + " Above Normal %", NumberUtils.getFloat(ArrayUtils.sliceArr(packet, c, c += 4)))
-                            .addTo("CPU " + n + " Normal %", NumberUtils.getFloat(ArrayUtils.sliceArr(packet, c, c += 4)))
-                            .addTo("CPU " + n + " Low %", NumberUtils.getFloat(ArrayUtils.sliceArr(packet, c, c += 4)));
+                    map.addTo("CPU " + n + " Time Critical %", NumberUtils.getFloat(ArrayUtils.slice(packet, c, c += 4)))
+                            .addTo("CPU " + n + " Above Normal %", NumberUtils.getFloat(ArrayUtils.slice(packet, c, c += 4)))
+                            .addTo("CPU " + n + " Normal %", NumberUtils.getFloat(ArrayUtils.slice(packet, c, c += 4)))
+                            .addTo("CPU " + n + " Low %", NumberUtils.getFloat(ArrayUtils.slice(packet, c, c += 4)));
                 }
                 return map;
             },
@@ -72,7 +72,7 @@ public enum ReceiveTag {
             RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<Double>) (packet, size) -> {
-                DSLog.PDP_STATS = ArrayUtils.sliceArr(packet, 1);
+                DSLog.PDP_STATS = ArrayUtils.slice(packet, 1);
                 TagValueMap<Double> map = new TagValueMap<>();
                 StringBuilder binaryBuilder = new StringBuilder();
                 for (int i = 1; i < packet.length - 3; i++) {
@@ -86,7 +86,7 @@ public enum ReceiveTag {
                 int pdpNum = 0;
                 double totalCurrent = 0;
                 for (int bitCtr = 0; bitCtr <= binary.length - 10; bitCtr += 10) {
-                    double portCurrent = NumberUtils.getUInt10(ArrayUtils.sliceArr(binary, bitCtr, bitCtr + 10)) / 8.0;
+                    double portCurrent = NumberUtils.getUInt10(ArrayUtils.slice(binary, bitCtr, bitCtr + 10)) / 8.0;
                     totalCurrent += portCurrent;
                     map.addTo("Port " + ((pdpNum < 10) ? "0" : "") + pdpNum + " Current", portCurrent);
                     bitCtr += (++pdpNum == 6 || pdpNum == 12) ? 4 : 0;
@@ -115,9 +115,9 @@ public enum ReceiveTag {
             RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<Float>) (packet, size) -> new TagValueMap<Float>()
-                .addTo("Utilization %", NumberUtils.getFloat(ArrayUtils.sliceArr(packet, 0, 4)))
-                .addTo("Bus Off", (float) NumberUtils.getUInt32(ArrayUtils.sliceArr(packet, 4, 8)))
-                .addTo("TX Full", (float) NumberUtils.getUInt32(ArrayUtils.sliceArr(packet, 8, 12)))
+                .addTo("Utilization %", NumberUtils.getFloat(ArrayUtils.slice(packet, 0, 4)))
+                .addTo("Bus Off", (float) NumberUtils.getUInt32(ArrayUtils.slice(packet, 4, 8)))
+                .addTo("TX Full", (float) NumberUtils.getUInt32(ArrayUtils.slice(packet, 8, 12)))
                 .addTo("RX Errors", (float) packet[12])
                 .addTo("TX Errors", (float) packet[13]),
             RefRecieveTag.yearOfAction(2015),
@@ -147,8 +147,8 @@ public enum ReceiveTag {
             RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<Integer>) (packet, size) -> new TagValueMap<Integer>()
-                .addTo("Comms", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 0, 2)))
-                .addTo("12V", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 2, 4))),
+                .addTo("Comms", NumberUtils.getUInt16(ArrayUtils.slice(packet, 0, 2)))
+                .addTo("12V", NumberUtils.getUInt16(ArrayUtils.slice(packet, 2, 4))),
             NullReceiveTag.getInstance(),
             NullReceiveTag.getInstance(),
             NullReceiveTag.getInstance()
@@ -179,7 +179,7 @@ public enum ReceiveTag {
                 }
                 map.put("Device Type", devType);
                 map.put("ID", String.valueOf(packet[3]));
-                String[] nameAndVer = NumberUtils.getNLengthStrs(ArrayUtils.sliceArr(packet, 4), 1, true);
+                String[] nameAndVer = NumberUtils.getNLengthStrs(ArrayUtils.slice(packet, 4), 1, true);
                 map.put("Name", nameAndVer[0]);
                 map.put("Version", nameAndVer[1]);
                 return map;
@@ -193,15 +193,15 @@ public enum ReceiveTag {
             RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<String>) (packet, size) -> {
                 TagValueMap<String> map = new TagValueMap<String>()
-                        .addTo("Timestamp", String.valueOf(NumberUtils.getFloat(ArrayUtils.sliceArr(packet, 0 ,4))))
-                        .addTo("Sequence Num", String.valueOf(NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 4, 6))))
-                        .addTo("Error Code", String.valueOf(NumberUtils.getInt32(ArrayUtils.sliceArr(packet, 8, 12))));
+                        .addTo("Timestamp", String.valueOf(NumberUtils.getFloat(ArrayUtils.slice(packet, 0 ,4))))
+                        .addTo("Sequence Num", String.valueOf(NumberUtils.getUInt16(ArrayUtils.slice(packet, 4, 6))))
+                        .addTo("Error Code", String.valueOf(NumberUtils.getInt32(ArrayUtils.slice(packet, 8, 12))));
                 if (NumberUtils.hasPlacedBit(packet[12], 7)) {
                     map.addTo("Flag", "Error");
                 } else if (NumberUtils.hasPlacedBit(packet[12], 6)) {
                     map.addTo("Flag", "isLVcode");
                 }
-                String[] detLocCall = NumberUtils.getNLengthStrs(ArrayUtils.sliceArr(packet, 13), 2, true);
+                String[] detLocCall = NumberUtils.getNLengthStrs(ArrayUtils.slice(packet, 13), 2, true);
                 if (detLocCall.length >= 2) {
                     map.addTo("Details", detLocCall[0]);
                     map.addTo("Location", detLocCall[1]);
@@ -217,9 +217,9 @@ public enum ReceiveTag {
             RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<String>) (packet, size) -> new TagValueMap<String>()
-                .addTo("Timestamp", String.valueOf(NumberUtils.getFloat(ArrayUtils.sliceArr(packet, 0 ,4))))
-                .addTo("Sequence Num", String.valueOf(NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 4, 6))))
-                .addTo("Message", new String(ArrayUtils.sliceArr(packet, 6))),
+                .addTo("Timestamp", String.valueOf(NumberUtils.getFloat(ArrayUtils.slice(packet, 0 ,4))))
+                .addTo("Sequence Num", String.valueOf(NumberUtils.getUInt16(ArrayUtils.slice(packet, 4, 6))))
+                .addTo("Message", new String(ArrayUtils.slice(packet, 6))),
             NullReceiveTag.getInstance(),
             NullReceiveTag.getInstance(),
             NullReceiveTag.getInstance()
@@ -259,7 +259,7 @@ public enum ReceiveTag {
             RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<String>) (packet, size) ->
-                TagValueMap.singleton("Event Name", new String(ArrayUtils.sliceArr(packet, 1))),
+                TagValueMap.singleton("Event Name", new String(ArrayUtils.slice(packet, 1))),
             NullReceiveTag.getInstance(),
             NullReceiveTag.getInstance(),
             NullReceiveTag.getInstance()
@@ -279,7 +279,7 @@ public enum ReceiveTag {
             RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<Integer>) (packet, size) ->
                 TagValueMap.singleton("Challenge Value", NumberUtils.getUInt16(
-                    ArrayUtils.sliceArr(packet, packet.length - 2, packet.length))),
+                    ArrayUtils.slice(packet, packet.length - 2, packet.length))),
             NullReceiveTag.getInstance(),
             NullReceiveTag.getInstance(),
             NullReceiveTag.getInstance()

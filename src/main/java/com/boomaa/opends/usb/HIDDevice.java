@@ -1,11 +1,13 @@
 package com.boomaa.opends.usb;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
-public abstract class HIDDevice {
+public class HIDDevice {
     private final Controller<?> ctrl;
-    private final int[] axesPath;
-    private final int[] buttonPath;
+    private final ComponentTracker axesTracker;
+    private final ComponentTracker buttonTracker;
     protected int idx;
     protected boolean disabled;
 
@@ -13,55 +15,50 @@ public abstract class HIDDevice {
         this.ctrl = ctrl;
         this.idx = IndexTracker.registerNext();
         ctrl.poll();
-        Component[] comps = ctrl.getComponents();
-        Component.Identifier[] axes = provideAxes();
-        Component.Identifier[] buttons = provideButtons();
-        this.axesPath = new int[axes.length];
-        boolean isAllBtns = buttons == null;
-        this.buttonPath = new int[isAllBtns ? deviceNumButtons() : buttons.length];
-        int aCtr = 0;
-        int bCtr = 0;
-        // TODO try-catch for axes/btns OOB is a workaround - fix this
-        for (int idx = 0; idx < comps.length; idx++) {
-            Component comp = comps[idx];
+
+        this.axesTracker = new ComponentTracker();
+        this.buttonTracker = new ComponentTracker();
+        List<? extends Component> comps = ctrl.getComponents();
+        for (int i = 0; i < comps.size(); i++) {
+            Component comp = comps.get(i);
+            Component.Identifier id = comp.getIdentitifer();
             if (comp.isAxis()) {
-                for (Component.Identifier axisId : axes) {
-                    if (comp.getIdentitifer() == axisId) {
-                        try {
-                            axesPath[aCtr++] = idx;
-                        } catch (ArrayIndexOutOfBoundsException e) {
-                            break;
-                        }
-                    }
-                }
+                axesTracker.track(id, i);
             } else if (comp.isButton()) {
-                try {
-                    if (isAllBtns) {
-                        buttonPath[bCtr++] = idx;
-                    } else {
-                        for (Component.Identifier btnId : buttons) {
-                            if (comp.getIdentitifer() == btnId) {
-                                buttonPath[bCtr++] = idx;
-                                break;
-                            }
-                        }
-                    }
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    break;
-                }
+                buttonTracker.track(id, i);
             }
         }
+
+        axesTracker.map(Component.Axis.X, Component.Axis.X)
+                .map(Component.Axis.Y, Component.Axis.Y)
+                .map(Component.Axis.Z, Component.Axis.RZ)
+                .map(Component.Axis.RX, Component.Axis.RX)
+                .map(Component.Axis.RY, Component.Axis.RY);
+        buttonTracker.mapAllSelf(Component.Button.values());
     }
 
     public void update() {
         ctrl.poll();
     }
 
+    public Component getComponent(int compIdx) {
+        try {
+            return ctrl.getComponents().get(compIdx);
+        } catch (IndexOutOfBoundsException e) {
+            return null;
+        }
+    }
+
+    public Component getComponent(Component.Identifier id) {
+        return getComponent(id instanceof Component.Axis ? axesTracker.getIndex(id) : buttonTracker.getIndex(id));
+    }
+
     public boolean[] getButtons() {
-        Component[] comps = ctrl.getComponents();
+        List<? extends Component> comps = ctrl.getComponents();
         boolean[] buttons = new boolean[usedNumButtons()];
-        for (int i = 0; i < buttons.length; i++) {
-            buttons[i] = comps[buttonPath[i]].getValue() == 1;
+        int btnIdx = 0;
+        for (Integer compIdx : buttonTracker.getDirectMap().values()) {
+            buttons[btnIdx++] = comps.get(compIdx).getValue() == 1;
         }
         return buttons;
     }
@@ -76,40 +73,29 @@ public abstract class HIDDevice {
         return idx;
     }
 
-    // Default value null = include all buttons
-    public Component.Identifier[] provideButtons() {
-        return null;
-    }
-
     public int usedNumButtons() {
-        return buttonPath.length;
+        return buttonTracker.numMapped();
     }
 
     public int deviceNumButtons() {
         return ctrl.getNumButtons();
     }
 
-    public abstract Component.Identifier[] provideAxes();
+    public Map<Component.Identifier, Integer> getAxesMapping() {
+        return axesTracker.getDirectMap();
+    }
 
-    public double getAxis(int idx) {
-        return ctrl.getComponents()[axesPath[idx]].getValue();
+    public double getAxis(Component.Identifier id) {
+        Component comp = getComponent(id);
+        return comp == null ? Integer.MAX_VALUE : comp.getValue();
     }
 
     public int usedNumAxes() {
-        return axesPath.length;
+        return axesTracker.numMapped();
     }
 
     public final int deviceNumAxes() {
         return ctrl.getNumAxes();
-    }
-
-    public double getComponentValue(Component.Identifier id) {
-        for (Component comp : ctrl.getComponents()) {
-            if (comp.getIdentitifer() == id) {
-                return comp.getValue();
-            }
-        }
-        return Integer.MAX_VALUE;
     }
 
     public boolean hasController(Controller<?> ctrl) {

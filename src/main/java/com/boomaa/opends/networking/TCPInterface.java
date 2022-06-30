@@ -49,7 +49,7 @@ public class TCPInterface {
         if (numRead == -1) {
             numRead = out.length;
         }
-        out = ArrayUtils.sliceArr(out, 0, numRead);
+        out = ArrayUtils.slice(out, 0, numRead);
         return out;
     }
 

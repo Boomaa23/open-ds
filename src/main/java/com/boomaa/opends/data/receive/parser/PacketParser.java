@@ -51,7 +51,7 @@ public abstract class PacketParser {
             return tagValues;
         }
         if (tagStartIndex < packet.length) {
-            byte[] tagPacket = ArrayUtils.sliceArr(packet, tagStartIndex);
+            byte[] tagPacket = ArrayUtils.slice(packet, tagStartIndex);
             int c = 0;
             int size;
             while (true) {
@@ -67,7 +67,7 @@ public abstract class PacketParser {
                         if (action instanceof RefRecieveTag) {
                             action = tag.getActions()[((RefRecieveTag) action).getIndex()];
                         }
-                        this.tagValues.add(action.getValue(ArrayUtils.sliceArr(tagPacket, c + 2, c + size + 1), size).setBaseTag(tag));
+                        this.tagValues.add(action.getValue(ArrayUtils.slice(tagPacket, c + 2, c + size + 1), size).setBaseTag(tag));
                     }
                 }
                 c += size + 1;

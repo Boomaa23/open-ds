@@ -251,7 +251,7 @@ public class NumberUtils {
                 }
                 i++;
             } else {
-                String rawValue = new String(ArrayUtils.sliceArr(bytes, i, i + n));
+                String rawValue = new String(ArrayUtils.slice(bytes, i, i + n));
                 if (strictASCII) {
                     StringBuilder sb = new StringBuilder();
                     char[] valChar = rawValue.toCharArray();

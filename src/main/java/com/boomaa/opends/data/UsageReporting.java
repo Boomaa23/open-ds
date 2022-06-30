@@ -11,8 +11,8 @@ public class UsageReporting {
     public static TagValueMap<String> decode(byte[] bytes, int size) {
         RECEIVED_USAGE = bytes;
         TagValueMap<String> map = new TagValueMap<>();
-        map.addTo("Team Num", new String(ArrayUtils.sliceArr(bytes, 0, 2)));
-        char[] asChars = new String(ArrayUtils.sliceArr(bytes, 3)).toCharArray();
+        map.addTo("Team Num", new String(ArrayUtils.slice(bytes, 0, 2)));
+        char[] asChars = new String(ArrayUtils.slice(bytes, 3)).toCharArray();
         String numAssoc = null;
         Mapping mapping = null;
         int namingCounter = 0;

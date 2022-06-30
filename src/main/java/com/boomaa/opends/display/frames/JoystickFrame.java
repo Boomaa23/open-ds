@@ -8,9 +8,7 @@ import com.boomaa.opends.display.elements.StickyButton;
 import com.boomaa.opends.usb.Component;
 import com.boomaa.opends.usb.HIDDevice;
 import com.boomaa.opends.usb.IndexTracker;
-import com.boomaa.opends.usb.Joystick;
 import com.boomaa.opends.usb.ControlDevices;
-import com.boomaa.opends.usb.XboxController;
 import com.boomaa.opends.util.Clock;
 import com.boomaa.opends.util.NumberUtils;
 
@@ -97,6 +95,13 @@ public class JoystickFrame extends PopupBase {
                 PopupBase.getAlive(AutoOrderFrame.class).reopen();
             }
         });
+        EmbeddedJDEC.REASSIGN_AXES_BTN.addActionListener(e -> {
+            if (!PopupBase.isAlive(ReassignAxes.class)) {
+                new ReassignAxes();
+            } else {
+                PopupBase.getAlive(ReassignAxes.class).reopen();
+            }
+        });
         EmbeddedJDEC.DISABLE_BTN.addActionListener(e -> EmbeddedJDEC.LIST.getSelectedValue()
                 .setDisabled(EmbeddedJDEC.DISABLE_BTN.isSelected()));
         EmbeddedJDEC.RELOAD_BTN.addActionListener(e -> resetControllerDisplay());
@@ -135,6 +140,7 @@ public class JoystickFrame extends PopupBase {
         base.clone().setPos(5, 2, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.VAL_Z);
         base.clone().setPos(7, 0, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.VAL_RX);
         base.clone().setPos(7, 1, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.VAL_RY);
+        base.clone().setPos(6, 2, 2, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.REASSIGN_AXES_BTN);
 
         base.clone().setPos(3, 0, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.UP_BTN);
         base.clone().setPos(3, 1, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(EmbeddedJDEC.DOWN_BTN);
@@ -214,6 +220,7 @@ public class JoystickFrame extends PopupBase {
         JTextField INDEX_SET = new JTextField("");
         JButton RELOAD_BTN = new JButton("↻");
         JButton AUTO_ORDER_BTN = new JButton("Auto");
+        JButton REASSIGN_AXES_BTN = new JButton("<html><div text-align:center>Reassign<br />Axes</div></html>");
         StickyButton CLOSE_BTN = new StickyButton("Close", 5);
 
         JButton UP_BTN = new JButton("↑");
@@ -257,21 +264,11 @@ public class JoystickFrame extends PopupBase {
                     }
                 } catch (NumberFormatException ignored) {
                 }
-                if (current instanceof Joystick) {
-                    Joystick js = (Joystick) current;
-                    EmbeddedJDEC.VAL_X.setText(NumberUtils.roundTo(js.getComponentValue(Component.Axis.X), 2));
-                    EmbeddedJDEC.VAL_Y.setText(NumberUtils.roundTo(js.getComponentValue(Component.Axis.Y), 2));
-                    EmbeddedJDEC.VAL_Z.setText(NumberUtils.roundTo(js.getComponentValue(Component.Axis.RZ), 2));
-                    EmbeddedJDEC.VAL_RX.setText(" N/A");
-                    EmbeddedJDEC.VAL_RY.setText(" N/A");
-                } else if (current instanceof XboxController) {
-                    XboxController xbox = (XboxController) current;
-                    EmbeddedJDEC.VAL_X.setText(NumberUtils.roundTo(xbox.getComponentValue(Component.Axis.X), 2));
-                    EmbeddedJDEC.VAL_Y.setText(NumberUtils.roundTo(xbox.getComponentValue(Component.Axis.Y), 2));
-                    EmbeddedJDEC.VAL_RX.setText(NumberUtils.roundTo(xbox.getComponentValue(Component.Axis.RX), 2));
-                    EmbeddedJDEC.VAL_RY.setText(NumberUtils.roundTo(xbox.getComponentValue(Component.Axis.RY), 2));
-                    EmbeddedJDEC.VAL_Z.setText(" N/A");
-                }
+                setAxisValue(current, EmbeddedJDEC.VAL_X, Component.Axis.X);
+                setAxisValue(current, EmbeddedJDEC.VAL_Y, Component.Axis.Y);
+                setAxisValue(current, EmbeddedJDEC.VAL_Z, Component.Axis.Z);
+                setAxisValue(current, EmbeddedJDEC.VAL_RX, Component.Axis.RX);
+                setAxisValue(current, EmbeddedJDEC.VAL_RY, Component.Axis.RY);
                 boolean[] buttons = current.getButtons();
                 for (int i = 0; i < buttons.length && i < EmbeddedJDEC.BUTTONS.size(); i++) {
                     EmbeddedJDEC.BUTTONS.get(i).setSelected(buttons[i]);
@@ -284,6 +281,11 @@ public class JoystickFrame extends PopupBase {
                 EmbeddedJDEC.VAL_RY.setText(" N/A");
             }
             EmbeddedJDEC.BUTTON_GRID.revalidate();
+        }
+
+        private void setAxisValue(HIDDevice device, JLabel label, Component.Axis axis) {
+            double value = device.getAxis(axis);
+            label.setText(value != Integer.MAX_VALUE ? String.valueOf(NumberUtils.roundTo(value, 2)) : " N/A");
         }
     }
 }

@@ -76,7 +76,7 @@ public class Date {
     public static Date fromRecvBytes(byte[] bytes) {
         return new Date(
                 bytes[9] + 1900, bytes[8], bytes[7], bytes[6], bytes[5], bytes[4],
-                NumberUtils.getUInt32(ArrayUtils.sliceArr(bytes, 0, 4))
+                NumberUtils.getUInt32(ArrayUtils.slice(bytes, 0, 4))
         );
     }
 

@@ -28,23 +28,13 @@ public class ControlDevices {
                 }
             }
             if (!hasHid) {
-                HIDDevice hid = instantiateHID(ctrl);
+                HIDDevice hid = new HIDDevice(ctrl);
                 controllers.put(hid.getIdx(), hid);
                 if (PopupBase.isVisible(JoystickFrame.class)) {
                     final int addIdx = Math.min(hid.getIdx(), JoystickFrame.EmbeddedJDEC.LIST_MODEL.size());
                     JoystickFrame.EmbeddedJDEC.LIST_MODEL.add(addIdx, hid);
                 }
             }
-        }
-    }
-
-    private static synchronized HIDDevice instantiateHID(Controller<?> ctrl) {
-        switch (ctrl.getType()) {
-            case HID_GAMEPAD:
-                return new XboxController(ctrl);
-            case HID_JOYSTICK:
-            default:
-                return new Joystick(ctrl);
         }
     }
 
