@@ -1,10 +1,10 @@
 package com.boomaa.opends.usb;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public class HIDDevice {
+    public static final int DEFAULT_AXIS_MAX = 6;
     private final Controller<?> ctrl;
     private final ComponentTracker axesTracker;
     private final ComponentTracker buttonTracker;
@@ -33,7 +33,8 @@ public class HIDDevice {
                 .map(Component.Axis.Y, Component.Axis.Y)
                 .map(Component.Axis.Z, Component.Axis.RZ)
                 .map(Component.Axis.RX, Component.Axis.RX)
-                .map(Component.Axis.RY, Component.Axis.RY);
+                .map(Component.Axis.RY, Component.Axis.RY)
+                .map(Component.Axis.RZ, Component.Axis.Z);
         buttonTracker.mapAllSelf(Component.Button.values());
     }
 
@@ -51,6 +52,10 @@ public class HIDDevice {
 
     public Component getComponent(Component.Identifier id) {
         return getComponent(id instanceof Component.Axis ? axesTracker.getIndex(id) : buttonTracker.getIndex(id));
+    }
+
+    public ComponentTracker getButtonTracker() {
+        return buttonTracker;
     }
 
     public boolean[] getButtons() {
@@ -81,8 +86,8 @@ public class HIDDevice {
         return ctrl.getNumButtons();
     }
 
-    public Map<Component.Identifier, Integer> getAxesMapping() {
-        return axesTracker.getDirectMap();
+    public ComponentTracker getAxesTracker() {
+        return axesTracker;
     }
 
     public double getAxis(Component.Identifier id) {

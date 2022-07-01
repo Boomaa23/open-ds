@@ -1,7 +1,6 @@
 package com.boomaa.opends.display.tabs;
 
 import com.boomaa.opends.display.Logger;
-import com.boomaa.opends.display.frames.FrameBase;
 
 import java.awt.Dimension;
 

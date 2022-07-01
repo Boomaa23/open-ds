@@ -8,6 +8,7 @@ import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.display.RobotMode;
 import com.boomaa.opends.networking.WlanConnection;
+import com.boomaa.opends.usb.Component;
 import com.boomaa.opends.usb.Controller;
 import com.boomaa.opends.usb.HIDDevice;
 import com.boomaa.opends.usb.ControlDevices;
@@ -17,6 +18,7 @@ import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 
 public enum SendTag {
     COUNTDOWN(0x07, Protocol.UDP, Remote.ROBO_RIO,
@@ -35,9 +37,16 @@ public enum SendTag {
                 HIDDevice dev = ControlDevices.getAll().get(ControlDevices.iterateSend(true));
                 if (dev != null && !dev.isDisabled()) {
                     dev.update();
-                    builder.addInt(dev.usedNumAxes()); //3 axes
-                    for (Integer axisIdx : dev.getAxesMapping().values()) {
-                        builder.addInt(NumberUtils.dblToInt8(dev.getComponent(axisIdx).getValue()));
+                    builder.addInt(HIDDevice.DEFAULT_AXIS_MAX); // numAxes
+                    Map<Component.Identifier, Integer> axesMap = dev.getAxesTracker().getDirectMap();
+                    for (int i = 0; i < HIDDevice.DEFAULT_AXIS_MAX; i++) {
+                        Component.Identifier id = Component.Axis.values()[i];
+                        if (axesMap.containsKey(id)) {
+                            Component comp = dev.getComponent(axesMap.get(id));
+                            builder.addInt(NumberUtils.dblToInt8(comp.getValue()));
+                        } else {
+                            builder.addInt(0);
+                        }
                     }
                     builder.addInt(dev.usedNumButtons())
                             .addBytes(NumberUtils.packBools(dev.getButtons()))
@@ -74,7 +83,8 @@ public enum SendTag {
             RefSendTag.yearOfAction(2020),
             () -> {
                 PacketBuilder builder = new PacketBuilder();
-                HIDDevice dev = ControlDevices.getAll().get(ControlDevices.iterateSend(false));
+                int idx = ControlDevices.iterateSend(false);
+                HIDDevice dev = ControlDevices.getAll().get(idx);
                 if (dev != null && !dev.isDisabled()) {
                     builder.addInt(dev.getIdx())
                             .addInt(dev.getDeviceType() == Controller.Type.HID_GAMEPAD ? 1 : 0) //isXbox
@@ -82,15 +92,17 @@ public enum SendTag {
                     String name = dev.getName();
                     builder.addInt(name.length())
                             .addBytes(name.getBytes())
-                            .addInt(dev.usedNumAxes()); //numAxes
-                    for (Integer axisIdx : dev.getAxesMapping().values()) {
-                        builder.addInt(NumberUtils.dblToInt8(dev.getComponent(axisIdx).getValue()));
+                            .addInt(HIDDevice.DEFAULT_AXIS_MAX); //numAxes
+                    for (int i = 0; i < HIDDevice.DEFAULT_AXIS_MAX; i++) {
+                        builder.addInt(i % 3); //axesTypes
                     }
                     builder.addInt(dev.usedNumButtons())
                             .addInt(0); //povCount
                 } else {
-                    builder.addInt(ControlDevices.getDescIndex()).addInt(0)
-                            .addInt(Controller.Type.UNKNOWN.getFRCFlag()).pad(0, 4);
+                    builder.addInt(idx)
+                            .addInt(0) //isXbox
+                            .addInt(Controller.Type.UNKNOWN.getFRCFlag())
+                            .pad(0, 4);
                 }
                 return builder.build();
             },

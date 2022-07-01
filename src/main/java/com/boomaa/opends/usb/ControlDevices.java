@@ -1,8 +1,6 @@
 package com.boomaa.opends.usb;
 
-import com.boomaa.opends.display.frames.FrameBase;
 import com.boomaa.opends.display.tabs.JoystickTab;
-import com.boomaa.opends.display.tabs.TabBase;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;

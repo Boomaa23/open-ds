@@ -8,7 +8,6 @@ import com.boomaa.opends.display.MultiKeyEvent;
 import com.boomaa.opends.display.TeamNumListener;
 import com.boomaa.opends.display.TeamNumPersist;
 import com.boomaa.opends.display.elements.GBCPanelBuilder;
-import com.boomaa.opends.display.tabs.JoystickTab;
 import com.boomaa.opends.display.tabs.NTTab;
 import com.boomaa.opends.display.tabs.TabChangeListener;
 import com.boomaa.opends.networking.NetworkReloader;
@@ -121,8 +120,8 @@ public class MainFrame implements MainJDEC {
         FRAME.add(TAB);
 
         Dimension dimension = new Dimension(560, 350);
-        if (OperatingSystem.getCurrent() == OperatingSystem.MACOS) {
-            dimension.setSize(dimension.getWidth() * FrameBase.MACOS_WIDTH_SCALE, dimension.getHeight());
+        if (!OperatingSystem.isWindows()) {
+            dimension.setSize(dimension.getWidth() * FrameBase.NONWINDOWS_WIDTH_SCALE, dimension.getHeight());
         }
         FRAME.setPreferredSize(dimension);
 

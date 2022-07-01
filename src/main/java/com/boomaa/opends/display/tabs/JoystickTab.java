@@ -4,10 +4,9 @@ import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.display.frames.FrameBase;
 import com.boomaa.opends.display.elements.GBCPanelBuilder;
 import com.boomaa.opends.display.elements.HideableLabel;
-import com.boomaa.opends.display.elements.StickyButton;
 import com.boomaa.opends.display.frames.AutoOrderFrame;
 import com.boomaa.opends.display.frames.MessageBox;
-import com.boomaa.opends.display.frames.ReassignAxes;
+import com.boomaa.opends.display.frames.ReassignAxesFrame;
 import com.boomaa.opends.usb.Component;
 import com.boomaa.opends.usb.HIDDevice;
 import com.boomaa.opends.usb.IndexTracker;
@@ -48,6 +47,7 @@ public class JoystickTab extends TabBase {
         EmbeddedJDEC.DOWN_BTN.setEnabled(false);
         EmbeddedJDEC.DISABLE_BTN.setEnabled(false);
         EmbeddedJDEC.INDEX_SET.setEnabled(false);
+        EmbeddedJDEC.REASSIGN_AXES_BTN.setEnabled(false);
         EmbeddedJDEC.INDEX_SET.setColumns(4);
 
         EmbeddedJDEC.LIST.getSelectionModel().addListSelectionListener((e) -> {
@@ -96,10 +96,10 @@ public class JoystickTab extends TabBase {
             }
         });
         EmbeddedJDEC.REASSIGN_AXES_BTN.addActionListener(e -> {
-            if (!FrameBase.isAlive(ReassignAxes.class)) {
-                new ReassignAxes();
+            if (!FrameBase.isAlive(ReassignAxesFrame.class)) {
+                new ReassignAxesFrame();
             } else {
-                FrameBase.getAlive(ReassignAxes.class).reopen();
+                FrameBase.getAlive(ReassignAxesFrame.class).reopen();
             }
         });
         EmbeddedJDEC.DISABLE_BTN.addActionListener(e -> EmbeddedJDEC.LIST.getSelectedValue()
@@ -225,6 +225,7 @@ public class JoystickTab extends TabBase {
             if (current != null) {
                 EmbeddedJDEC.UP_BTN.setEnabled(cListIdx != 0);
                 EmbeddedJDEC.DOWN_BTN.setEnabled(cListIdx != EmbeddedJDEC.LIST_MODEL.size() - 1);
+                EmbeddedJDEC.REASSIGN_AXES_BTN.setEnabled(true);
                 ControlDevices.updateValues();
                 try {
                     int nFRCIdx = Integer.parseInt(EmbeddedJDEC.INDEX_SET.getText());
@@ -241,6 +242,7 @@ public class JoystickTab extends TabBase {
                                     MessageBox.Type.WARNING);
                             }
                         }
+                        MainJDEC.IS_ENABLED.setSelected(false);
                         swapDeviceIndices(cListIdx, nFRCIdx);
                         ControlDevices.reindexAll();
                     }
@@ -263,6 +265,10 @@ public class JoystickTab extends TabBase {
                 EmbeddedJDEC.VAL_RX.setText(" N/A");
                 EmbeddedJDEC.VAL_RY.setText(" N/A");
                 EmbeddedJDEC.VAL_RZ.setText(" N/A");
+
+                EmbeddedJDEC.REASSIGN_AXES_BTN.setEnabled(false);
+                EmbeddedJDEC.UP_BTN.setEnabled(false);
+                EmbeddedJDEC.DOWN_BTN.setEnabled(false);
             }
             EmbeddedJDEC.BUTTON_GRID.revalidate();
         }

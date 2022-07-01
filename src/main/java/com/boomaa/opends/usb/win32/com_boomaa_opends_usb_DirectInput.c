@@ -72,7 +72,7 @@ JNIEXPORT void JNICALL Java_com_boomaa_opends_usb_DirectInput_enumDevices
     enum_context.lpDirectInput = lpDirectInput;
     enum_context.env = env;
     enum_context.obj = obj;
-    res = IDirectInput8_EnumDevices(lpDirectInput, DI8DEVTYPE_JOYSTICK, enumDevicesCallback, &enum_context, DIEDFL_ATTACHEDONLY);
+    res = IDirectInput8_EnumDevices(lpDirectInput, DI8DEVCLASS_GAMECTRL, enumDevicesCallback, &enum_context, DIEDFL_ATTACHEDONLY);
     if (FAILED(res)) {
         throwIOException(env, "Failed to enumerate devices (%d)\n", res);
     }

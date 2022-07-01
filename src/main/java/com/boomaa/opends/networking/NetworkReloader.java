@@ -32,7 +32,7 @@ public class NetworkReloader extends DisplayEndpoint {
                     RIO_TCP_INTERFACE.close();
                     RIO_TCP_INTERFACE = null;
                 }
-                RIO_TCP_INTERFACE = new TCPInterface(rioIp, rioPorts.getTcp());
+                RIO_TCP_INTERFACE = new TCPInterface(rioIp, rioPorts.getTcp(), 1000);
             }
             NET_IF_INIT.set(true, Remote.ROBO_RIO, protocol);
         } catch (NumberFormatException | IOException ignored) {

@@ -1,7 +1,6 @@
 package com.boomaa.opends.display.tabs;
 
 import com.boomaa.opends.data.StatsFields;
-import com.boomaa.opends.display.frames.FrameBase;
 import com.boomaa.opends.display.elements.ColorCellRenderer;
 
 import javax.swing.JScrollPane;

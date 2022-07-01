@@ -47,7 +47,10 @@ public class AutoOrderFrame extends FrameBase {
         });
 
         content.setLayout(new GridBagLayout());
-        GBCPanelBuilder base = new GBCPanelBuilder(content).setFill(GridBagConstraints.BOTH).setAnchor(GridBagConstraints.CENTER).setInsets(new Insets(5, 5, 5, 5));
+        GBCPanelBuilder base = new GBCPanelBuilder(content)
+                .setFill(GridBagConstraints.BOTH)
+                .setAnchor(GridBagConstraints.CENTER)
+                .setInsets(new Insets(5, 5, 5, 5));
 
         base.clone().setPos(0, 0, 6, 1).build(new JLabel("Press a button on each joystick in ascending index order"));
 
