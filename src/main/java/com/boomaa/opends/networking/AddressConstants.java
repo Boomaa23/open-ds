@@ -8,17 +8,24 @@ public class AddressConstants {
     public static final String FMS_IP = "10.0.100.5";
     private static final PortTriple FMS_PORTS_2020 = new PortTriple(1750, 1160, 1121);
     private static final PortQuad RIO_PORTS_2020 = new PortQuad(1740, 1110, 1150, 1735);
+    private static PortTriple fmsPorts;
+    private static PortQuad rioPorts;
+
+    public static void reloadProtocol() {
+        fmsPorts = (PortTriple) getProtoYearValue("FMS_PORTS");
+        rioPorts = (PortQuad) getProtoYearValue("RIO_PORTS");
+    }
 
     public static PortTriple getFMSPorts() {
-        return (PortTriple) getProtoYearValue("FMS_PORTS");
+        return fmsPorts;
     }
 
     public static PortQuad getRioPorts() {
-        return (PortQuad) getProtoYearValue("RIO_PORTS");
+        return rioPorts;
     }
 
-    public static String getRioAddress(boolean isUSB) throws NumberFormatException {
-        if (isUSB) {
+    public static String getRioAddress() throws NumberFormatException {
+        if (MainJDEC.USB_CONNECT.isSelected()) {
             return USB_RIO_IP;
         }
         int teamNum = MainJDEC.TEAM_NUMBER.checkedIntParse();

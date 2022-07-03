@@ -24,11 +24,7 @@ public abstract class Clock extends Thread {
     public void run() {
         //TODO fix busy-waiting (improve clock logic/efficiency)
         while (!done) {
-            try {
-                Thread.sleep(msToCycle);
-            } catch (InterruptedException ignored) {
-                break;
-            }
+            Clock.sleep(msToCycle);
             onCycle();
         }
         super.run();
@@ -40,5 +36,13 @@ public abstract class Clock extends Thread {
 
     public boolean isDone() {
         return done;
+    }
+
+    public static void sleep(long ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

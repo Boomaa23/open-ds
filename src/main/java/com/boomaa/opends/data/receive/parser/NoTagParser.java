@@ -4,8 +4,8 @@ import com.boomaa.opends.data.holders.Protocol;
 import com.boomaa.opends.data.holders.Remote;
 
 public class NoTagParser extends PacketParser {
-    public NoTagParser(byte[] packet, Protocol protocol, Remote remote) {
-        super(packet, protocol, remote, 0);
+    public NoTagParser(byte[] packet, Remote remote, Protocol protocol) {
+        super(packet, remote, protocol, 0);
     }
 
     @Override

@@ -9,7 +9,7 @@ import java.util.List;
 public class Parser2020 {
     public static class RioToDsUdp extends PacketParser {
         public RioToDsUdp(byte[] packet) {
-            super(packet, Protocol.UDP, Remote.ROBO_RIO, 8);
+            super(packet, Remote.ROBO_RIO, Protocol.UDP, 8);
         }
 
         public int getSequenceNum() {
@@ -44,7 +44,7 @@ public class Parser2020 {
 
     public static class RioToDsTcp extends PacketParser {
         public RioToDsTcp(byte[] packet) {
-            super(packet, Protocol.TCP, Remote.ROBO_RIO, 0);
+            super(packet, Remote.ROBO_RIO, Protocol.TCP, 0);
         }
 
         @Override
@@ -55,7 +55,7 @@ public class Parser2020 {
 
     public static class FmsToDsUdp extends PacketParser {
         public FmsToDsUdp(byte[] packet) {
-            super(packet, Protocol.UDP, Remote.FMS, 23);
+            super(packet, Remote.FMS, Protocol.UDP, 23);
         }
 
         public int getSequenceNum() {
@@ -112,7 +112,7 @@ public class Parser2020 {
 
     public static class FmsToDsTcp extends PacketParser {
         public FmsToDsTcp(byte[] packet) {
-            super(packet, Protocol.TCP, Remote.FMS, 0);
+            super(packet, Remote.FMS, Protocol.TCP, 0);
         }
 
         @Override

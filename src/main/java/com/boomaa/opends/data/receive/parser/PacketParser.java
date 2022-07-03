@@ -18,26 +18,27 @@ import java.util.List;
 
 public abstract class PacketParser {
     protected final byte[] packet;
-    protected final Protocol protocol;
     protected final Remote remote;
+    protected final Protocol protocol;
+
     protected final int tagStartIndex;
     protected final SequenceCounter packetCounter;
     protected final TVMList tagValues = new TVMList();
 
-    public PacketParser(byte[] packet, Protocol protocol, Remote remote, int tagStartIndex) {
+    public PacketParser(byte[] packet, Remote remote, Protocol protocol, int tagStartIndex) {
         this.packet = packet;
-        this.protocol = protocol;
         this.remote = remote;
+        this.protocol = protocol;
         this.tagStartIndex = tagStartIndex;
         this.packetCounter = PacketCounters.get(remote, protocol);
     }
 
-    public Protocol getProtocol() {
-        return protocol;
-    }
-
     public Remote getRemote() {
         return remote;
+    }
+
+    public Protocol getProtocol() {
+        return protocol;
     }
 
     public SequenceCounter getPacketCounter() {
@@ -55,10 +56,8 @@ public abstract class PacketParser {
             int c = 0;
             int size;
             while (true) {
-                try {
-                    size = getTagSize(c + tagStartIndex);
-                    byte check = tagPacket[c + 1];
-                } catch (ArrayIndexOutOfBoundsException e) {
+                size = getTagSize(c + tagStartIndex);
+                if (c + 1 >= tagPacket.length || c + 1 < 0) {
                     break;
                 }
                 for (ReceiveTag tag : ReceiveTag.values()) {

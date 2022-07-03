@@ -7,7 +7,7 @@ public class ParserNull extends PacketParser {
     private static final ParserNull PARSER_NULL = new ParserNull();
 
     private ParserNull() {
-        super(new byte[0], Protocol.UDP, Remote.ROBO_RIO, 0);
+        super(new byte[0], Remote.ROBO_RIO, Protocol.UDP, 0);
     }
 
     @Override

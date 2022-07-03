@@ -10,7 +10,7 @@ import java.util.List;
 public class Parser2014 {
     public static class RioToDsUdp extends NoTagParser {
         public RioToDsUdp(byte[] packet) {
-            super(packet, Protocol.UDP, Remote.ROBO_RIO);
+            super(packet, Remote.ROBO_RIO, Protocol.UDP);
         }
 
         public double getBatteryVoltage() {
@@ -25,13 +25,13 @@ public class Parser2014 {
     // No TCP connections in LibDS
     public static class RioToDsTcp extends NoTagParser {
         public RioToDsTcp(byte[] packet) {
-            super(packet, Protocol.TCP, Remote.ROBO_RIO);
+            super(packet, Remote.ROBO_RIO, Protocol.TCP);
         }
     }
 
     public static class FmsToDsUdp extends NoTagParser {
         public FmsToDsUdp(byte[] packet) {
-            super(packet, Protocol.UDP, Remote.FMS);
+            super(packet, Remote.FMS, Protocol.UDP);
         }
 
         public List<Control> getControl() {
@@ -46,7 +46,7 @@ public class Parser2014 {
     // No TCP connections in LibDS
     public static class FmsToDsTcp extends NoTagParser {
         public FmsToDsTcp(byte[] packet) {
-            super(packet, Protocol.TCP, Remote.FMS);
+            super(packet, Remote.FMS, Protocol.TCP);
         }
     }
 }

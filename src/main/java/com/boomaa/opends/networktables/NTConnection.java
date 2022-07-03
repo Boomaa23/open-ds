@@ -1,8 +1,7 @@
 package com.boomaa.opends.networktables;
 
-import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.networking.AddressConstants;
-import com.boomaa.opends.networking.NetworkReloader;
+import com.boomaa.opends.networking.NetworkClock;
 import com.boomaa.opends.networking.TCPInterface;
 import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.Clock;
@@ -32,11 +31,14 @@ public class NTConnection extends Clock {
             reloadConnection();
         } else {
             if (doReconnectSend) {
-                decodeInput(connection.doInteract(CLIENT_HELLO));
-                decodeInput(connection.doInteract(CLIENT_HELLO_COMPLETE));
+                connection.write(CLIENT_HELLO);
+                decodeInput(connection.read());
+                connection.write(CLIENT_HELLO_COMPLETE);
+                decodeInput(connection.read());
                 doReconnectSend = false;
             }
-            decodeInput(connection.doInteract(KEEP_ALIVE));
+            connection.write(KEEP_ALIVE);
+            decodeInput(connection.read());
         }
     }
 
@@ -44,16 +46,12 @@ public class NTConnection extends Clock {
         if (connection != null) {
             connection.close();
         }
-        String rioIp = AddressConstants.getRioAddress(MainJDEC.USB_CONNECT.isSelected());
+        String rioIp = AddressConstants.getRioAddress();
         try {
-            NetworkReloader.exceptionPingTest(rioIp);
-            connection = new TCPInterface(rioIp, AddressConstants.getRioPorts().getShuffleboard());
+            NetworkClock.exceptionPingTest(rioIp);
+            connection = new TCPInterface(rioIp, AddressConstants.getRioPorts().getShuffleboard(), -1);
         } catch (IOException e) {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e0) {
-                e0.printStackTrace();
-            }
+            Clock.sleep(500);
         }
         doReconnectSend = true;
     }

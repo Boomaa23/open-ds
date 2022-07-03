@@ -3,7 +3,7 @@ package com.boomaa.opends.networking;
 import java.io.IOException;
 import java.net.*;
 
-public class UDPInterface {
+public class UDPInterface implements NetworkInterface {
     private DatagramSocket clientSocket;
     private DatagramSocket serverSocket;
     private InetAddress ip;
@@ -11,34 +11,38 @@ public class UDPInterface {
     private int bufSize = 1024;
     private boolean closed;
 
-    public UDPInterface(String clientIp, int clientPort, int serverPort) throws SocketException {
+    public UDPInterface(String clientIp, int clientPort, int serverPort, int timeout) throws SocketException {
         try {
             this.ip = InetAddress.getByName(clientIp);
             this.clientPort = clientPort;
             this.clientSocket = new DatagramSocket();
             this.serverSocket = new DatagramSocket(serverPort);
-            clientSocket.setSoTimeout(1000);
-            serverSocket.setSoTimeout(1000);
+            if (timeout != -1) {
+                clientSocket.setSoTimeout(timeout);
+                serverSocket.setSoTimeout(timeout);
+            }
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
     }
 
-    public void doSend(byte[] data) {
+    public UDPInterface(String clientIp, int clientPort, int serverPort) throws SocketException {
+        this(clientIp, clientPort, serverPort, 1000);
+    }
+
+    @Override
+    public void write(byte[] data) {
         if (!closed) {
-            doSendAssumedOpen(data);
+            try {
+                clientSocket.send(new DatagramPacket(data, data.length, ip, clientPort));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    protected void doSendAssumedOpen(byte[] data) {
-        try {
-            clientSocket.send(new DatagramPacket(data, data.length, ip, clientPort));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public byte[] doReceieve() {
+    @Override
+    public byte[] read() {
         byte[] buffer = new byte[bufSize];
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
         try {
@@ -59,12 +63,14 @@ public class UDPInterface {
         this.bufSize = bufSize;
     }
 
+    @Override
     public void close() {
         closed = true;
         clientSocket.close();
         serverSocket.close();
     }
 
+    @Override
     public boolean isClosed() {
         return closed;
     }

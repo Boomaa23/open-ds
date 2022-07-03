@@ -12,7 +12,7 @@ import java.util.List;
 public class Parser2015 {
     public static class RioToDsUdp extends PacketParser {
         public RioToDsUdp(byte[] packet) {
-            super(packet, Protocol.UDP, Remote.ROBO_RIO, 8);
+            super(packet, Remote.ROBO_RIO, Protocol.UDP, 8);
         }
 
         public List<Control> getControl() {
@@ -44,13 +44,13 @@ public class Parser2015 {
     // No TCP connections in LibDS
     public static class RioToDsTcp extends NoTagParser {
         public RioToDsTcp(byte[] packet) {
-            super(packet, Protocol.TCP, Remote.ROBO_RIO);
+            super(packet, Remote.ROBO_RIO, Protocol.TCP);
         }
     }
 
     public static class FmsToDsUdp extends NoTagParser {
         public FmsToDsUdp(byte[] packet) {
-            super(packet, Protocol.UDP, Remote.FMS);
+            super(packet, Remote.FMS, Protocol.UDP);
         }
 
         public List<Control> getControl() {
@@ -65,7 +65,7 @@ public class Parser2015 {
     // No TCP connections in LibDS
     public static class FmsToDsTcp extends NoTagParser {
         public FmsToDsTcp(byte[] packet) {
-            super(packet, Protocol.TCP, Remote.FMS);
+            super(packet, Remote.FMS, Protocol.TCP);
         }
     }
 }

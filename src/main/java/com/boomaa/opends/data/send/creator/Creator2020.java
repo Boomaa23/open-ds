@@ -95,9 +95,13 @@ public class Creator2020 extends PacketCreator {
         }
         builder.addInt(status);
 
-        String teamStr = TEAM_NUMBER.getText();
-        if (teamStr != null && !teamStr.isEmpty()) {
-            builder.addBytes(NumberUtils.intToBytePair(Integer.parseInt(teamStr)));
+        try {
+            String teamStr = TEAM_NUMBER.getText();
+            if (teamStr != null && !teamStr.isEmpty()) {
+                builder.addBytes(NumberUtils.intToBytePair(Integer.parseInt(teamStr)));
+            }
+        } catch (NumberFormatException ignored) {
+            builder.addInt(0).addInt(0);
         }
         double bat = Double.parseDouble(BAT_VOLTAGE.getText().replaceAll(" V", ""));
         int b1 = (int) bat;

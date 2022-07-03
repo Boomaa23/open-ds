@@ -9,7 +9,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 
-public class TCPInterface {
+public class TCPInterface implements NetworkInterface {
     private Socket socket;
     private InputStream in;
     private boolean closed;
@@ -37,12 +37,17 @@ public class TCPInterface {
         }
     }
 
-    // No socket timeout by default
     public TCPInterface(String ip, int port) throws SocketException {
-        this(ip, port, -1);
+        this(ip, port, 1000);
     }
 
-    public byte[] read() throws IOException {
+    @Override
+    public byte[] read() {
+        Object out = checkAction((v) -> internalRead(), null);
+        return out != null ? (byte[]) out : null;
+    }
+
+    private byte[] internalRead() throws IOException {
         //TODO change to 1500 (ethernet max MTU) for non-testing
         byte[] out = new byte[65535];
         int numRead = in.read(out);
@@ -53,10 +58,17 @@ public class TCPInterface {
         return out;
     }
 
-    public byte[] doInteract(byte[] data) {
+    @Override
+    public void write(byte[] data) {
+        checkAction((d) -> {
+            socket.getOutputStream().write(d);
+            return null;
+        }, data);
+    }
+
+    public <T> Object checkAction(NetworkAction<T> func, T param) {
         try {
-            socket.getOutputStream().write(data);
-            return read();
+            return func.apply(param);
         } catch (SocketException e) {
             close();
             return null;
@@ -69,6 +81,7 @@ public class TCPInterface {
         return null;
     }
 
+    @Override
     public void close() {
         try {
             if (socket != null) {
@@ -83,7 +96,12 @@ public class TCPInterface {
         this.closed = true;
     }
 
+    @Override
     public boolean isClosed() {
         return closed;
+    }
+
+    private interface NetworkAction<T> {
+        Object apply(T t) throws IOException;
     }
 }

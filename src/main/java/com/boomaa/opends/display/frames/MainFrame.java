@@ -1,6 +1,5 @@
 package com.boomaa.opends.display.frames;
 
-import com.boomaa.opends.data.holders.Protocol;
 import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.display.GlobalKeyListener;
 import com.boomaa.opends.display.MainJDEC;
@@ -10,7 +9,6 @@ import com.boomaa.opends.display.TeamNumPersist;
 import com.boomaa.opends.display.elements.GBCPanelBuilder;
 import com.boomaa.opends.display.tabs.NTTab;
 import com.boomaa.opends.display.tabs.TabChangeListener;
-import com.boomaa.opends.networking.NetworkReloader;
 import com.boomaa.opends.util.OperatingSystem;
 import com.boomaa.opends.util.Parameter;
 import org.jnativehook.GlobalScreen;
@@ -80,21 +78,23 @@ public class MainFrame implements MainJDEC {
     }
 
     private static void listenerInit() {
+        PROTOCOL_YEAR.addActionListener((e) -> DisplayEndpoint.doProtocolUpdate());
         TAB.addChangeListener(TabChangeListener.getInstance());
 
         USB_CONNECT.addActionListener((e) -> {
             Thread reload = new Thread() {
                 @Override
                 public void run() {
-                    NetworkReloader.reloadRio(Protocol.UDP);
-                    NetworkReloader.reloadRio(Protocol.TCP);
+                    DisplayEndpoint.RIO_UDP_CLOCK.reloadInterface();
+                    DisplayEndpoint.RIO_TCP_CLOCK.reloadInterface();
                     super.run();
                     interrupt();
                 }
             };
             reload.start();
         });
-        RESTART_CODE_BTN.addActionListener(e -> IS_ENABLED.setSelected(false));
+        RESTART_CODE_BTN.addActionListener((e) -> IS_ENABLED.setSelected(false));
+        ESTOP_BTN.addActionListener((e) -> IS_ENABLED.setSelected(false));
 
         TEAM_NUMBER.getDocument().addDocumentListener(new TeamNumListener());
 
