@@ -1,5 +1,6 @@
 package com.boomaa.opends.networktables;
 
+import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.display.frames.MainFrame;
 
 public class NTEntry {
@@ -36,9 +37,7 @@ public class NTEntry {
         this.inHidden = key.startsWith(".") || path.contains("CameraPublisher") || tabName.equals("FMSInfo") || path.contains("SendableChooser");
         if (!NTStorage.TABS.contains(tabName) && !inHidden && !tabName.startsWith(".")) {
             NTStorage.TABS.add(tabName);
-            if (MainFrame.NT_FRAME != null) {
-                MainFrame.NT_FRAME.populateTabsBar();
-            }
+            MainJDEC.NT_TAB.populateTabsBar();
         }
         displayQueue(this);
     }
@@ -97,8 +96,6 @@ public class NTEntry {
     }
 
     public static void displayQueue(NTEntry entry) {
-        if (MainFrame.NT_FRAME != null) {
-            MainFrame.NT_FRAME.updateValue(entry);
-        }
+        MainJDEC.NT_TAB.updateValue(entry);
     }
 }

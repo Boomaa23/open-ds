@@ -1,7 +1,9 @@
 package com.boomaa.opends.display.tabs;
 
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import java.awt.Dimension;
+import java.awt.Graphics;
 
 public abstract class TabBase extends JPanel {
     private static Class<? extends TabBase> visible;

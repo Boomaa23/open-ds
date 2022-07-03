@@ -21,7 +21,9 @@ public enum Parameter {
     TEAM_NUMBER("--team-num", Type.INTEGER, MainJDEC.TEAM_NUMBER),
     USB("--usb", Type.BOOLEAN, MainJDEC.USB_CONNECT),
     TEAM_PERSIST_FILE("--tpf", Type.STRING, null),
-    DISABLE_HOTKEYS("--disable-hotkeys", Type.BOOLEAN, null);
+    DISABLE_HOTKEYS("--disable-hotkeys", Type.BOOLEAN, null),
+    DISABLE_NETTABLES("--disable-nettables", Type.BOOLEAN, null),
+    DISABLE_LOG("--disable-log", Type.BOOLEAN, null);
 
     private final String flag;
     private final Type type;

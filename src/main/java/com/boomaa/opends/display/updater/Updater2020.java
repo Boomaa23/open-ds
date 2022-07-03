@@ -19,6 +19,7 @@ import com.boomaa.opends.display.tabs.JoystickTab;
 import com.boomaa.opends.display.tabs.TabBase;
 import com.boomaa.opends.util.DSLog;
 import com.boomaa.opends.util.NumberUtils;
+import com.boomaa.opends.util.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -45,18 +46,18 @@ public class Updater2020 extends ElementUpdater {
             ROBOT_CONNECTION_STATUS.forceHide();
         }
 
-        BAT_VOLTAGE.setText(NumberUtils.padDouble(NumberUtils.roundTo(rioUdp.getBatteryVoltage(), 2), 2) + " V");
+        BAT_VOLTAGE.setText(StringUtils.padDouble(NumberUtils.roundTo(rioUdp.getBatteryVoltage(), 2), 2) + " V");
 
         if (tagMap.size() > 0) {
             TVMList dinf = tagMap.getMatching(ReceiveTag.DISK_INFO);
             if (!dinf.isEmpty()) {
                 TagValueMap<?> diskInfo = dinf.first();
-                StatsFields.DISK_SPACE.updateTableValue(NumberUtils.bytesHumanReadable((Integer) diskInfo.get("Free Space")));
+                StatsFields.DISK_SPACE.updateTableValue(StringUtils.bytesHumanReadable((Integer) diskInfo.get("Free Space")));
             }
             TVMList rinf = tagMap.getMatching(ReceiveTag.RAM_INFO);
             if (!rinf.isEmpty()) {
                 TagValueMap<?> ramInfo = rinf.first();
-                StatsFields.RAM_SPACE.updateTableValue(NumberUtils.bytesHumanReadable((Integer) ramInfo.get("Free Space")));
+                StatsFields.RAM_SPACE.updateTableValue(StringUtils.bytesHumanReadable((Integer) ramInfo.get("Free Space")));
             }
             TVMList cif = tagMap.getMatching(ReceiveTag.CPU_INFO);
             if (!cif.isEmpty()) {

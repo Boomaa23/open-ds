@@ -1,5 +1,7 @@
 package com.boomaa.opends.data.send;
 
+import com.boomaa.opends.util.ArrayUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,10 +60,6 @@ public class PacketBuilder {
     }
 
     public byte[] build() {
-        byte[] out = new byte[packet.size()];
-        for (int i = 0; i < out.length; i++) {
-            out[i] = packet.get(i);
-        }
-        return out;
+        return ArrayUtils.byteListUnbox(packet);
     }
 }

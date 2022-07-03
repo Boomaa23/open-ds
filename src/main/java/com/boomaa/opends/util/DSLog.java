@@ -1,7 +1,6 @@
 package com.boomaa.opends.util;
 
 import com.boomaa.opends.data.StatsFields;
-import com.boomaa.opends.data.holders.Date;
 import com.boomaa.opends.data.holders.Remote;
 import com.boomaa.opends.data.send.PacketBuilder;
 import com.boomaa.opends.display.DisplayEndpoint;
@@ -14,13 +13,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Calendar;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
 public class DSLog extends Clock {
     private static final long LABVIEW_UNIX_EPOCH_DIFF = -2_212_122_495L;
+    private static final DateTimeFormatter TS_FORMAT = DateTimeFormatter.ofPattern("yyyy_MM_dd HH_mm_ss EEE");
     public static byte[] PDP_STATS = new byte[24];
     private static final List<byte[]> eventQueue = new LinkedList<>();
     private final FileOutputStream eventsOut;
@@ -28,22 +29,15 @@ public class DSLog extends Clock {
 
     public DSLog() {
         super(19);
+        //TODO fix
         // 19ms != 20ms, intentional to sync events w/ log
-        Calendar date = Calendar.getInstance();
-        String weekday = Date.DayMap.getFromInt(date.get(Calendar.DAY_OF_WEEK) - 1).name();
         String folderName = OperatingSystem.isWindows() ? "C:\\Users\\Public\\Documents\\FRC\\Log Files\\"
                 : System.getProperty("user.home") + "/opends/";
         File folder = new File(folderName);
         if (!folder.isDirectory()) {
             folder.mkdirs();
         }
-        String filepath = folderName + date.get(Calendar.YEAR) + "_" +
-                NumberUtils.padInt(date.get(Calendar.MONTH) + 1, 2) + "_" +
-                NumberUtils.padInt(date.get(Calendar.DAY_OF_MONTH), 2) + " " +
-                NumberUtils.padInt(date.get(Calendar.HOUR_OF_DAY), 2) + "_" +
-                NumberUtils.padInt(date.get(Calendar.MINUTE), 2) + "_" +
-                NumberUtils.padInt(date.get(Calendar.SECOND), 2) + " " +
-                weekday.charAt(0) + weekday.substring(1, 3).toLowerCase();
+        String filepath = folderName + LocalDateTime.now().format(TS_FORMAT);
         this.logOut = createFile(filepath + ".dslog");
         this.eventsOut = createFile(filepath + ".dsevents");
 
@@ -66,7 +60,7 @@ public class DSLog extends Clock {
                 return new FileOutputStream(outFile);
             } catch (IOException e) {
                 MessageBox.show("Could not create log file", MessageBox.Type.ERROR);
-                this.interrupt();
+                this.end();
             }
         }
         return null;
@@ -116,7 +110,7 @@ public class DSLog extends Clock {
 
     public static void queueEvent(String event, EventSeverity level) {
         event = (level == EventSeverity.ERROR ? level.name() :
-                NumberUtils.toTitleCase(level.name())) + " " + event;
+                StringUtils.toTitleCase(level.name())) + " " + event;
         byte[] data = new PacketBuilder().pad(0, 4)
                 .addBytes(secondTimestamp())
                 .addBytes(millisecondTimestamp())

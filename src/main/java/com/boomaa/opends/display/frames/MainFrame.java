@@ -27,10 +27,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class MainFrame implements MainJDEC {
-    public static final Image ICON = Toolkit.getDefaultToolkit().getImage(MainFrame.class.getResource("/icon.png")).getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-    public static final Image ICON_MIN = Toolkit.getDefaultToolkit().getImage(MainFrame.class.getResource("/icon-min.png"));
-    private static final GBCPanelBuilder base = new GBCPanelBuilder(TAB_CONTAINER).setInsets(new Insets(5, 5, 5, 5)).setFill(GridBagConstraints.BOTH).setAnchor(GridBagConstraints.CENTER);
-    public static NTTab NT_FRAME;
+    public static final Image ICON = Toolkit.getDefaultToolkit()
+            .getImage(MainFrame.class.getResource("/icon.png"))
+            .getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+    public static final Image ICON_MIN = Toolkit.getDefaultToolkit()
+            .getImage(MainFrame.class.getResource("/icon-min.png"));
+    private static final GBCPanelBuilder base = new GBCPanelBuilder(TAB_CONTAINER)
+            .setInsets(new Insets(5, 5, 5, 5))
+            .setFill(GridBagConstraints.BOTH)
+            .setAnchor(GridBagConstraints.CENTER);
 
     public static void display() {
         FRAME.setIconImage(MainFrame.ICON);

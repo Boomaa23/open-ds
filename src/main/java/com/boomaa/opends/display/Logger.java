@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Logger extends OutputStream {
+    //TODO output something to this log
     public static PrintStream OUT;
     public static JScrollPane PANE;
     private final byte[] oneByte;

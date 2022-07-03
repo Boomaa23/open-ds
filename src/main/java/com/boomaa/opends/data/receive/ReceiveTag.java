@@ -8,6 +8,7 @@ import com.boomaa.opends.display.InLog;
 import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.DSLog;
 import com.boomaa.opends.util.NumberUtils;
+import com.boomaa.opends.util.StringUtils;
 
 public enum ReceiveTag {
     //TODO fix the 2015/2016 CPU, RAM, disk, and CAN usage values. LibDS doesn't look right.
@@ -75,8 +76,9 @@ public enum ReceiveTag {
                 DSLog.PDP_STATS = ArrayUtils.slice(packet, 1);
                 TagValueMap<Double> map = new TagValueMap<>();
                 StringBuilder binaryBuilder = new StringBuilder();
+                //TODO implement this without using binary strings
                 for (int i = 1; i < packet.length - 3; i++) {
-                    binaryBuilder.append(NumberUtils.padByte(packet[i]));
+                    binaryBuilder.append(StringUtils.padByte(packet[i]));
                 }
                 char[] binaryChars = binaryBuilder.toString().toCharArray();
                 int[] binary = new int[binaryChars.length];
@@ -179,7 +181,7 @@ public enum ReceiveTag {
                 }
                 map.put("Device Type", devType);
                 map.put("ID", String.valueOf(packet[3]));
-                String[] nameAndVer = NumberUtils.getNLengthStrs(ArrayUtils.slice(packet, 4), 1, true);
+                String[] nameAndVer = StringUtils.getNLengthStrs(ArrayUtils.slice(packet, 4), 1, true);
                 map.put("Name", nameAndVer[0]);
                 map.put("Version", nameAndVer[1]);
                 return map;
@@ -201,7 +203,7 @@ public enum ReceiveTag {
                 } else if (NumberUtils.hasPlacedBit(packet[12], 6)) {
                     map.addTo("Flag", "isLVcode");
                 }
-                String[] detLocCall = NumberUtils.getNLengthStrs(ArrayUtils.slice(packet, 13), 2, true);
+                String[] detLocCall = StringUtils.getNLengthStrs(ArrayUtils.slice(packet, 13), 2, true);
                 if (detLocCall.length >= 2) {
                     map.addTo("Details", detLocCall[0]);
                     map.addTo("Location", detLocCall[1]);
@@ -238,7 +240,7 @@ public enum ReceiveTag {
             RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<String>) (packet, size) -> {
                 TagValueMap<String> map = new TagValueMap<>();
-                String[] nStrs = ArrayUtils.removeBlanks(NumberUtils.extractAllASCII(packet));
+                String[] nStrs = ArrayUtils.removeBlanks(StringUtils.extractAllASCII(packet));
                 if (nStrs.length >= 2) {
                     map.addTo("Status", nStrs[0]).addTo("Version", nStrs[1]);
                 }

@@ -73,7 +73,11 @@ public class NTConnection extends Clock {
                     slicedData = mergedData;
                     CUTOFF_DATA = new byte[0];
                 }
-                i += new NTPacketData(slicedData).usedLength();
+                int usedLen = new NTPacketData(slicedData).usedLength();
+                if (usedLen == Integer.MAX_VALUE) {
+                    break;
+                }
+                i += usedLen;
             }
         }
     }

@@ -61,9 +61,7 @@ public class Creator2020 extends PacketCreator {
         if (FMS_CONNECT.isSelected()) {
             builder.addBytes(SendTag.MATCH_INFO.getBytes());
         }
-        if (!GAME_DATA.getText().isEmpty()) {
-            builder.addBytes(SendTag.GAME_DATA.getBytes());
-        }
+        builder.addBytes(SendTag.GAME_DATA.getBytes());
         builder.addBytes(SendTag.DS_PING.getBytes());
         return builder.build();
     }

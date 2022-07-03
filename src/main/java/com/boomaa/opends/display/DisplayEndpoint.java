@@ -45,6 +45,20 @@ public class DisplayEndpoint implements MainJDEC {
     public static final NetworkClock FMS_TCP_CLOCK = new NetworkClock(Remote.FMS, Protocol.TCP);
     public static final NetworkClock FMS_UDP_CLOCK = new NetworkClock(Remote.FMS, Protocol.UDP);
 
+    private static final Clock controlUpdater = new Clock("controlUpdater", 2000) {
+        @Override
+        public void onCycle() {
+            if (MainJDEC.FRAME.isShowing()) {
+                System.gc();
+                ControlDevices.updateValues();
+                ControlDevices.checkForRemoval();
+                ControlDevices.findAll();
+            } else {
+                super.end();
+            }
+        }
+    };
+
     public static void main(String[] args) {
         Parameter.parseArgs(args);
         Libraries.init();
@@ -56,18 +70,15 @@ public class DisplayEndpoint implements MainJDEC {
         RIO_UDP_CLOCK.start();
         FMS_TCP_CLOCK.start();
         FMS_UDP_CLOCK.start();
-        NETWORK_TABLES.start();
-        FILE_LOGGER.start();
+        if (!Parameter.DISABLE_LOG.isPresent()) {
+            FILE_LOGGER.start();
+        }
+        if (!Parameter.DISABLE_NETTABLES.isPresent()) {
+            NETWORK_TABLES.start();
+        }
         checkForUpdates();
 
-        while (MainJDEC.FRAME.isShowing()) {
-            System.gc();
-            ControlDevices.updateValues();
-            ControlDevices.checkForRemoval();
-            ControlDevices.findAll();
-            //TODO improve clock logic
-            Clock.sleep(2000);
-        }
+        controlUpdater.start();
     }
 
     public static void doProtocolUpdate() {

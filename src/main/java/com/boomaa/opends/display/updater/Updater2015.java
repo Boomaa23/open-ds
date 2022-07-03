@@ -13,6 +13,7 @@ import com.boomaa.opends.display.RobotMode;
 import com.boomaa.opends.display.tabs.JoystickTab;
 import com.boomaa.opends.display.tabs.TabBase;
 import com.boomaa.opends.util.NumberUtils;
+import com.boomaa.opends.util.StringUtils;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class Updater2015 extends ElementUpdater {
         } else {
             ROBOT_CODE_STATUS.forceHide();
         }
-        BAT_VOLTAGE.setText(NumberUtils.padDouble(NumberUtils.roundTo(rioUdp.getBatteryVoltage(), 2), 2) + " V");
+        BAT_VOLTAGE.setText(StringUtils.padDouble(NumberUtils.roundTo(rioUdp.getBatteryVoltage(), 2), 2) + " V");
         FMS_CONNECTION_STATUS.forceDisplay();
 
         if (tagMap.size() > 0) {

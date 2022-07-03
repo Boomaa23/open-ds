@@ -6,13 +6,14 @@ import com.boomaa.opends.data.receive.parser.PacketParser;
 import com.boomaa.opends.data.receive.parser.Parser2014;
 import com.boomaa.opends.data.send.creator.PacketCreator;
 import com.boomaa.opends.util.NumberUtils;
+import com.boomaa.opends.util.StringUtils;
 
 public class Updater2014 extends ElementUpdater {
     @Override
     protected void doUpdateFromRioUdp(PacketParser data, TVMList tagMap) {
         Parser2014.RioToDsUdp rioUdp = (Parser2014.RioToDsUdp) data;
         ESTOP_STATUS.setDisplay(rioUdp.isEmergencyStopped());
-        BAT_VOLTAGE.setText(NumberUtils.padDouble(NumberUtils.roundTo(rioUdp.getBatteryVoltage(), 2), 2) + " V");
+        BAT_VOLTAGE.setText(StringUtils.padDouble(NumberUtils.roundTo(rioUdp.getBatteryVoltage(), 2), 2) + " V");
         ROBOT_CONNECTION_STATUS.forceDisplay();
     }
 
