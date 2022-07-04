@@ -36,12 +36,12 @@ public class NetworkClock extends Clock {
             if (connFms) {
                 if (NET_IF_INIT.get(remote, protocol)) {
                     iface.write(CREATOR.create(remote, protocol));
-                    byte[] rioTcpGet = iface.read();
-                    if (rioTcpGet == null || (protocol == Protocol.UDP && rioTcpGet.length == 0)) {
+                    byte[] data = iface.read();
+                    if (data == null || (protocol == Protocol.UDP && data.length == 0)) {
                         UPDATER.update(ParserNull.getInstance(), remote, protocol);
                         NET_IF_INIT.set(false, remote, protocol);
                     } else {
-                        UPDATER.update(getPacketParser(remote, protocol, rioTcpGet), remote, protocol);
+                        UPDATER.update(getPacketParser(remote, protocol, data), remote, protocol);
                     }
                 } else {
                     UPDATER.update(ParserNull.getInstance(), remote, protocol);
@@ -56,6 +56,9 @@ public class NetworkClock extends Clock {
 
     public void reloadInterface() {
         PacketCounters.get(remote, protocol).reset();
+        if (UPDATER != null) {
+            UPDATER.update(ParserNull.getInstance(), remote, protocol);
+        }
         if (iface != null) {
             iface.close();
             iface = null;

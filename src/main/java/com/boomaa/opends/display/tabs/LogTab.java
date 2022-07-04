@@ -6,7 +6,7 @@ import java.awt.Dimension;
 
 public class LogTab extends TabBase {
     public LogTab() {
-        super(new Dimension(400, 270));
+        super(new Dimension(450, 270));
         Logger.PANE.setPreferredSize(super.dimension);
     }
 

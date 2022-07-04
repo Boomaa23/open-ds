@@ -1,5 +1,7 @@
 package com.boomaa.opends.display.frames;
 
+import com.boomaa.opends.data.holders.Protocol;
+import com.boomaa.opends.data.holders.Remote;
 import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.display.GlobalKeyListener;
 import com.boomaa.opends.display.MainJDEC;
@@ -87,16 +89,10 @@ public class MainFrame implements MainJDEC {
         TAB.addChangeListener(TabChangeListener.getInstance());
 
         USB_CONNECT.addActionListener((e) -> {
-            Thread reload = new Thread() {
-                @Override
-                public void run() {
-                    DisplayEndpoint.RIO_UDP_CLOCK.reloadInterface();
-                    DisplayEndpoint.RIO_TCP_CLOCK.reloadInterface();
-                    super.run();
-                    interrupt();
-                }
-            };
-            reload.start();
+            DisplayEndpoint.NET_IF_INIT.set(false, Remote.ROBO_RIO, Protocol.UDP);
+            DisplayEndpoint.NET_IF_INIT.set(false, Remote.ROBO_RIO, Protocol.TCP);
+            DisplayEndpoint.NET_IF_INIT.set(false, Remote.FMS, Protocol.UDP);
+            DisplayEndpoint.NET_IF_INIT.set(false, Remote.FMS, Protocol.TCP);
         });
         RESTART_CODE_BTN.addActionListener((e) -> IS_ENABLED.setSelected(false));
         ESTOP_BTN.addActionListener((e) -> IS_ENABLED.setSelected(false));

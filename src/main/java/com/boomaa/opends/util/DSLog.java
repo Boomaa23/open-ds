@@ -1,6 +1,7 @@
 package com.boomaa.opends.util;
 
 import com.boomaa.opends.data.StatsFields;
+import com.boomaa.opends.data.holders.Protocol;
 import com.boomaa.opends.data.holders.Remote;
 import com.boomaa.opends.data.send.PacketBuilder;
 import com.boomaa.opends.display.DisplayEndpoint;
@@ -73,7 +74,7 @@ public class DSLog extends Clock {
         WlanConnection radio = WlanConnection.getRadio();
         double bat = checkedNumParse(MainJDEC.BAT_VOLTAGE.getText().replaceAll(" V", ""));
 
-        if (DisplayEndpoint.NET_IF_INIT.isOrInit(Remote.ROBO_RIO)) {
+        if (DisplayEndpoint.NET_IF_INIT.get(Remote.ROBO_RIO, Protocol.TCP)) {
             if (MainJDEC.IS_ENABLED.isSelected()) {
                 RobotMode selMode = (RobotMode) MainJDEC.ROBOT_DRIVE_MODE.getSelectedItem();
                 if (selMode == RobotMode.TELEOPERATED) {

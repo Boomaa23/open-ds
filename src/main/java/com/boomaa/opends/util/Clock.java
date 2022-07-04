@@ -46,7 +46,6 @@ public abstract class Clock {
         return name;
     }
 
-    @Deprecated
     public static void sleep(long ms) {
         try {
             Thread.sleep(ms);
