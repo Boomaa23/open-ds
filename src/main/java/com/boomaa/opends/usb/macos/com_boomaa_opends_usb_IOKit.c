@@ -25,6 +25,7 @@ JNIEXPORT jlong JNICALL Java_com_boomaa_opends_usb_IOKit_createIterator
   (JNIEnv *env, jobject obj) {
     io_iterator_t hidObjectIterator;
     CFMutableDictionaryRef hidMatchDictionary = IOServiceMatching(kIOHIDDeviceKey);
+    // kIOMasterPortDefault --> kIOMainPortDefault eventually
     IOReturn ioRtn = IOServiceGetMatchingServices(kIOMasterPortDefault, hidMatchDictionary, &hidObjectIterator);
 
     if (ioRtn != kIOReturnSuccess) {

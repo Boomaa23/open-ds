@@ -55,6 +55,9 @@ public interface IOKitFlags {
     int UP_KEYBOARD = 0x07;
     int UP_BUTTON = 0x09;
 
+    int USAGE_GAMEPAD = 0x05;
+    int USAGE_JOYSTICK = 0x04;
+
     int ET_MISC = 1;
     int ET_BUTTON = 2;
     int ET_AXIS = 3;

@@ -6,11 +6,18 @@ public class IOKitDevice extends Controller<IOKitElement> {
     private final long address;
     private final long ifaceAddr;
     private final Map<String, ?> properties;
+    private final long usagePage;
+    private final long usage;
+    private final Type hidType;
 
     public IOKitDevice(long address, long ifaceAddr) {
         this.address = address;
         this.ifaceAddr = ifaceAddr;
         this.properties = getDeviceProperties(address);
+        this.usagePage = (Long) properties.get("PrimaryUsagePage");
+        this.usage = (Long) properties.get("PrimaryUsage");
+        this.hidType = usage == IOKitFlags.USAGE_GAMEPAD ? Type.HID_GAMEPAD :
+                (usage == IOKitFlags.USAGE_JOYSTICK ? Type.HID_JOYSTICK : Type.UNKNOWN);
         open(ifaceAddr);
     }
 
@@ -50,14 +57,21 @@ public class IOKitDevice extends Controller<IOKitElement> {
         return value != null ? value.intValue() : def;
     }
 
+    public long getUsagePage() {
+        return usagePage;
+    }
+
+    public long getUsage() {
+        return usage;
+    }
+
     public native int open(long ifaceAddr);
 
     private native Map<String, ?> getDeviceProperties(long address);
 
     @Override
     public Type getType() {
-        //TODO support more types
-        return Type.HID_JOYSTICK;
+        return hidType;
     }
 
     @Override

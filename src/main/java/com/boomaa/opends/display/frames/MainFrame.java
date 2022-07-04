@@ -9,7 +9,6 @@ import com.boomaa.opends.display.MultiKeyEvent;
 import com.boomaa.opends.display.TeamNumListener;
 import com.boomaa.opends.display.TeamNumPersist;
 import com.boomaa.opends.display.elements.GBCPanelBuilder;
-import com.boomaa.opends.display.tabs.NTTab;
 import com.boomaa.opends.display.tabs.TabChangeListener;
 import com.boomaa.opends.util.OperatingSystem;
 import com.boomaa.opends.util.Parameter;
@@ -121,9 +120,7 @@ public class MainFrame implements MainJDEC {
         FRAME.add(TAB);
 
         Dimension dimension = new Dimension(560, 350);
-        if (!OperatingSystem.isWindows()) {
-            dimension.setSize(dimension.getWidth() * FrameBase.NONWINDOWS_WIDTH_SCALE, dimension.getHeight());
-        }
+        FrameBase.applyNonWindowsScaling(dimension);
         FRAME.setPreferredSize(dimension);
 
         GBCPanelBuilder endr = base.clone().setAnchor(GridBagConstraints.LINE_END).setFill(GridBagConstraints.NONE);

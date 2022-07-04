@@ -1,7 +1,6 @@
 package com.boomaa.opends.networktables;
 
 import com.boomaa.opends.display.MainJDEC;
-import com.boomaa.opends.display.frames.MainFrame;
 
 public class NTEntry {
     private final String path;

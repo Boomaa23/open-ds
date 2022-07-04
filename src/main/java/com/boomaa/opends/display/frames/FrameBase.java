@@ -9,7 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public abstract class FrameBase extends JFrame {
-    public static final double NONWINDOWS_WIDTH_SCALE = 1.1;
+    public static final double NONWINDOWS_WIDTH_SCALE = 1.2;
     protected static Map<Class<? extends FrameBase>, FrameBase> alive = new LinkedHashMap<>();
     protected final String uuid;
     protected final Dimension dimension;
@@ -24,9 +24,7 @@ public abstract class FrameBase extends JFrame {
         this.uuid = getClass().getSimpleName();
         alive.put(getClass(), this);
         this.dimension = dimension;
-        if (OperatingSystem.getCurrent() == OperatingSystem.MACOS) {
-            dimension.setSize(dimension.getWidth() * NONWINDOWS_WIDTH_SCALE, dimension.getHeight());
-        }
+        applyNonWindowsScaling(dimension);
         this.content = this.getContentPane();
         config();
         super.pack();
@@ -84,5 +82,11 @@ public abstract class FrameBase extends JFrame {
     public void forceDispose() {
         removeAlive(this.getClass());
         super.dispose();
+    }
+
+    public static void applyNonWindowsScaling(Dimension dimension) {
+        if (!OperatingSystem.isWindows()) {
+            dimension.setSize(dimension.getWidth() * NONWINDOWS_WIDTH_SCALE, dimension.getHeight());
+        }
     }
 }
