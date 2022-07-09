@@ -17,7 +17,6 @@ import static com.boomaa.opends.display.DisplayEndpoint.UPDATER;
 import static com.boomaa.opends.display.DisplayEndpoint.getPacketParser;
 
 public class NetworkClock extends Clock {
-    private static final int POST_DISCONNECT_WAIT_MS = 500;
     private NetworkInterface iface;
     private final Remote remote;
     private final Protocol protocol;
@@ -72,7 +71,11 @@ public class NetworkClock extends Clock {
             String ip = isFms ?
                     AddressConstants.FMS_IP :
                     AddressConstants.getRioAddress();
-            exceptionPingTest(ip);
+            boolean reachable = exceptionPingTest(ip);
+            if (!reachable) {
+                uninitialize(isFms);
+                return;
+            }
             PortTriple ports = isFms ?
                     AddressConstants.getFMSPorts() :
                     AddressConstants.getRioPorts();
@@ -81,16 +84,19 @@ public class NetworkClock extends Clock {
                     new UDPInterface(ip, ports.getUdpClient(), ports.getUdpServer());
             NET_IF_INIT.set(true, remote, protocol);
         } catch (IOException e) {
-            NET_IF_INIT.set(false, remote, protocol);
-            if (isFms) {
-                MainJDEC.FMS_CONNECT.setSelected(false);
-            } else {
-                MainJDEC.IS_ENABLED.setEnabled(false);
-                if (MainJDEC.IS_ENABLED.isSelected()) {
-                    MainJDEC.IS_ENABLED.setSelected(false);
-                }
+            uninitialize(isFms);
+        }
+    }
+
+    private void uninitialize(boolean isFms) {
+        NET_IF_INIT.set(false, remote, protocol);
+        if (isFms) {
+            MainJDEC.FMS_CONNECT.setSelected(false);
+        } else {
+            MainJDEC.IS_ENABLED.setEnabled(false);
+            if (MainJDEC.IS_ENABLED.isSelected()) {
+                MainJDEC.IS_ENABLED.setSelected(false);
             }
-            Clock.sleep(POST_DISCONNECT_WAIT_MS);
         }
     }
 
@@ -111,7 +117,6 @@ public class NetworkClock extends Clock {
         try {
             return InetAddress.getByName(ip).isReachable(1000);
         } catch (UnknownHostException ignored) {
-            Clock.sleep(1000);
             throw new IOException("Unknown host " + ip);
         }
     }

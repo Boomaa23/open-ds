@@ -35,7 +35,7 @@ public class AddressConstants {
             return LOCALHOST;
         }
         // Default case that will always fail
-        return "route-find-fail";
+        return "240.0.0.0";
     }
 
     private static Object getProtoYearValue(String base) {

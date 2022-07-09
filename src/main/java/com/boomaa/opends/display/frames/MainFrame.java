@@ -16,9 +16,21 @@ import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
 import org.jnativehook.keyboard.NativeKeyEvent;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.KeyEvent;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -161,30 +173,6 @@ public class MainFrame implements MainJDEC {
         base.clone().setPos(5, 7, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(MATCH_TIME);
     }
 
-    @Deprecated
-    public static ButtonGroup createButtonGroup(JRadioButton... buttons) {
-        ButtonGroup temp = new ButtonGroup();
-        for (JRadioButton button : buttons) {
-            temp.add(button);
-        }
-        return temp;
-    }
-
-    @Deprecated
-    public static void setButtonCenteredAbove(JRadioButton... buttons) {
-        for (JRadioButton button : buttons) {
-            button.setVerticalTextPosition(SwingConstants.BOTTOM);
-            button.setHorizontalTextPosition(SwingConstants.CENTER);
-        }
-    }
-
-    @Deprecated
-    public static void setSelected(JToggleButton... buttons) {
-        for (JToggleButton button : buttons) {
-            button.setSelected(true);
-        }
-    }
-
     public static Container addToPanel(Container panel, Component... comps) {
         for (Component comp : comps) {
             panel.add(comp);
@@ -205,15 +193,5 @@ public class MainFrame implements MainJDEC {
             }
         });
         return href;
-    }
-
-    @Deprecated
-    public static void createKeyAction(int keyCode, Runnable action) {
-        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(e -> {
-            if (e.getID() == KeyEvent.KEY_PRESSED && e.getKeyCode() == keyCode) {
-                action.run();
-            }
-            return false;
-        });
     }
 }

@@ -1,7 +1,12 @@
 package com.boomaa.opends.networking;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 
 public class UDPInterface implements NetworkInterface {
     private DatagramSocket clientSocket;

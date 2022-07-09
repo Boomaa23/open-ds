@@ -1,6 +1,12 @@
 package com.boomaa.opends.data.receive.parser;
 
-import com.boomaa.opends.data.holders.*;
+import com.boomaa.opends.data.holders.AllianceStation;
+import com.boomaa.opends.data.holders.Control;
+import com.boomaa.opends.data.holders.Date;
+import com.boomaa.opends.data.holders.Protocol;
+import com.boomaa.opends.data.holders.Remote;
+import com.boomaa.opends.data.holders.Status;
+import com.boomaa.opends.data.holders.Trace;
 import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.NumberUtils;
 
