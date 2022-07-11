@@ -51,7 +51,6 @@ public class Creator2015 extends NoTCPCreator {
                     .addBytes(tzOut);
         }
         if (IS_ENABLED.isSelected()) {
-            ControlDevices.findAll();
             ControlDevices.updateValues();
             for (int i = 0; i < IndexTracker.MAX_JS_NUM; i++) {
                 builder.addBytes(SendTag.JOYSTICK.getBytes());

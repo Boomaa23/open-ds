@@ -55,9 +55,10 @@ public class ReassignAxesFrame extends FrameBase {
                 if (hwId == Component.NullIdentifier.NONE) {
                     axesTracker.unmap(userId);
                 } else {
-                    axesTracker.map(userId, hwId);
+                    axesTracker.map(userId, hwId, true);
                 }
             }
+            axesTracker.saveToFile(device.getAxesTrackerFilePath());
             forceDispose();
         });
 

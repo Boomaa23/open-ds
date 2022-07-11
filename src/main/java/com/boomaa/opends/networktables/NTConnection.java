@@ -50,8 +50,7 @@ public class NTConnection extends Clock {
         try {
             NetworkClock.exceptionPingTest(rioIp);
             connection = new TCPInterface(rioIp, AddressConstants.getRioPorts().getShuffleboard(), -1);
-        } catch (IOException e) {
-            Clock.sleep(500);
+        } catch (IOException ignored) {
         }
         doReconnectSend = true;
     }

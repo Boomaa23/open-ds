@@ -39,7 +39,6 @@ public class Creator2014 extends NoTCPCreator {
         builder.addInt(station.isBlue() ? 0x42 : 0x52)
                 .addInt(station.getSidedNum() + 0x30);
         if (IS_ENABLED.isSelected()) {
-            ControlDevices.findAll();
             ControlDevices.updateValues();
             for (int i = 0; i < IndexTracker.MAX_JS_NUM; i++) {
                 builder.addBytes(SendTag.JOYSTICK.getBytes());

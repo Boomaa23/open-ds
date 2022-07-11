@@ -1,9 +1,17 @@
 package com.boomaa.opends.usb;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class ComponentTracker {
+public class ComponentTracker implements Serializable {
+    private static final long serialVersionUID = 750540465359805070L;
     private final Map<Component.Identifier, Integer> hardwareMap;
     private final Map<Component.Identifier, Component.Identifier> userMap;
     private final Map<Component.Identifier, Integer> directMap;
@@ -14,9 +22,9 @@ public class ComponentTracker {
         this.directMap = new LinkedHashMap<>();
     }
 
-    public ComponentTracker map(Component.Identifier userId, Component.Identifier hardwareId) {
+    public ComponentTracker map(Component.Identifier userId, Component.Identifier hardwareId, boolean overwrite) {
         directMap.clear();
-        if (hardwareMap.containsKey(hardwareId)) {
+        if (hardwareMap.containsKey(hardwareId) && (overwrite || !userMap.containsKey(userId))) {
             userMap.put(userId, hardwareId);
         }
         return this;
@@ -70,5 +78,25 @@ public class ComponentTracker {
 
     public int numTracked() {
         return hardwareMap.size();
+    }
+
+    public void saveToFile(String path) {
+        try (FileOutputStream fos = new FileOutputStream(path);
+             ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+            oos.writeObject(this);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static ComponentTracker fromFile(String path) {
+        try (FileInputStream fis = new FileInputStream(path);
+            ObjectInputStream ois = new ObjectInputStream(fis)) {
+            return (ComponentTracker) ois.readObject();
+        } catch (FileNotFoundException ignored) {
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return new ComponentTracker();
     }
 }

@@ -45,13 +45,4 @@ public abstract class Clock {
     public String toString() {
         return name;
     }
-
-    @Deprecated
-    public static void sleep(long ms) {
-        try {
-            Thread.sleep(ms);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
 }

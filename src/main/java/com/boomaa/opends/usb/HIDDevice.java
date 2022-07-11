@@ -1,5 +1,7 @@
 package com.boomaa.opends.usb;
 
+import com.boomaa.opends.util.OperatingSystem;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -16,7 +18,7 @@ public class HIDDevice {
         this.idx = IndexTracker.registerNext();
         ctrl.poll();
 
-        this.axesTracker = new ComponentTracker();
+        this.axesTracker = ComponentTracker.fromFile(getAxesTrackerFilePath());
         this.buttonTracker = new ComponentTracker();
         List<? extends Component> comps = ctrl.getComponents();
         for (int i = 0; i < comps.size(); i++) {
@@ -29,12 +31,12 @@ public class HIDDevice {
             }
         }
 
-        axesTracker.map(Component.Axis.X, Component.Axis.X)
-                .map(Component.Axis.Y, Component.Axis.Y)
-                .map(Component.Axis.Z, Component.Axis.RZ)
-                .map(Component.Axis.RX, Component.Axis.RX)
-                .map(Component.Axis.RY, Component.Axis.RY)
-                .map(Component.Axis.RZ, Component.Axis.Z);
+        axesTracker.map(Component.Axis.X, Component.Axis.X, false)
+                .map(Component.Axis.Y, Component.Axis.Y, false)
+                .map(Component.Axis.Z, Component.Axis.RZ, false)
+                .map(Component.Axis.RX, Component.Axis.RX, false)
+                .map(Component.Axis.RY, Component.Axis.RY, false)
+                .map(Component.Axis.RZ, Component.Axis.Z, false);
         buttonTracker.mapAllSelf(Component.Button.values());
     }
 
@@ -88,6 +90,13 @@ public class HIDDevice {
 
     public ComponentTracker getAxesTracker() {
         return axesTracker;
+    }
+
+    public String getAxesTrackerFilePath() {
+        return OperatingSystem.getTempFolder()
+                + "ods-axestracker-"
+                + getName().replaceAll("[^a-zA-Z0-9]", "")
+                + ".conf";
     }
 
     public double getAxis(Component.Identifier id) {
