@@ -1,12 +1,12 @@
 package com.boomaa.opends.display.elements;
 
-import javax.swing.JEditorPane;
-import javax.swing.JOptionPane;
-import javax.swing.event.HyperlinkEvent;
 import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import javax.swing.JEditorPane;
+import javax.swing.JOptionPane;
+import javax.swing.event.HyperlinkEvent;
 
 public class HyperlinkBox extends JEditorPane {
     public HyperlinkBox(String bodyHtml) {

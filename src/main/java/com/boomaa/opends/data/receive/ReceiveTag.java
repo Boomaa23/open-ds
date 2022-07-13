@@ -159,9 +159,9 @@ public enum ReceiveTag {
             RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<Integer>) (packet, size) -> new TagValueMap<Integer>(),
-//                .addTo("6V", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 0, 2)))
-//                .addTo("5V", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 2, 4)))
-//                .addTo("3.3V", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 4, 6))),
+            // .addTo("6V", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 0, 2)))
+            // .addTo("5V", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 2, 4)))
+            // .addTo("3.3V", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 4, 6))),
             NullReceiveTag.getInstance(),
             NullReceiveTag.getInstance(),
             NullReceiveTag.getInstance()
@@ -173,11 +173,21 @@ public enum ReceiveTag {
                 TagValueMap<String> map = new TagValueMap<>();
                 String devType = "Unknown";
                 switch (packet[0]) {
-                    case 0: devType = "Software"; break;
-                    case 2: devType = "CAN Talon"; break;
-                    case 8: devType = "PDP"; break;
-                    case 9: devType = "PCM"; break;
-                    case 21: devType = "Pigeon"; break;
+                    case 0:
+                        devType = "Software";
+                        break;
+                    case 2:
+                        devType = "CAN Talon";
+                        break;
+                    case 8:
+                        devType = "PDP";
+                        break;
+                    case 9:
+                        devType = "PCM";
+                        break;
+                    case 21:
+                        devType = "Pigeon";
+                        break;
                 }
                 map.put("Device Type", devType);
                 map.put("ID", String.valueOf(packet[3]));
@@ -195,9 +205,9 @@ public enum ReceiveTag {
             RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<String>) (packet, size) -> {
                 TagValueMap<String> map = new TagValueMap<String>()
-                        .addTo("Timestamp", String.valueOf(NumberUtils.getFloat(ArrayUtils.slice(packet, 0 ,4))))
-                        .addTo("Sequence Num", String.valueOf(NumberUtils.getUInt16(ArrayUtils.slice(packet, 4, 6))))
-                        .addTo("Error Code", String.valueOf(NumberUtils.getInt32(ArrayUtils.slice(packet, 8, 12))));
+                    .addTo("Timestamp", String.valueOf(NumberUtils.getFloat(ArrayUtils.slice(packet, 0, 4))))
+                    .addTo("Sequence Num", String.valueOf(NumberUtils.getUInt16(ArrayUtils.slice(packet, 4, 6))))
+                    .addTo("Error Code", String.valueOf(NumberUtils.getInt32(ArrayUtils.slice(packet, 8, 12))));
                 if (NumberUtils.hasPlacedBit(packet[12], 7)) {
                     map.addTo("Flag", "Error");
                 } else if (NumberUtils.hasPlacedBit(packet[12], 6)) {
@@ -219,7 +229,7 @@ public enum ReceiveTag {
             RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<String>) (packet, size) -> new TagValueMap<String>()
-                .addTo("Timestamp", String.valueOf(NumberUtils.getFloat(ArrayUtils.slice(packet, 0 ,4))))
+                .addTo("Timestamp", String.valueOf(NumberUtils.getFloat(ArrayUtils.slice(packet, 0, 4))))
                 .addTo("Sequence Num", String.valueOf(NumberUtils.getUInt16(ArrayUtils.slice(packet, 4, 6))))
                 .addTo("Message", new String(ArrayUtils.slice(packet, 6))),
             NullReceiveTag.getInstance(),

@@ -15,6 +15,9 @@ public class TeamNumPersist {
     private static String confFile = "ods-teamnum.conf";
     private static boolean hasInit = false;
 
+    private TeamNumPersist() {
+    }
+
     public static void init() {
         if (Parameter.TEAM_PERSIST_FILE.isPresent()) {
             confFile = Parameter.TEAM_PERSIST_FILE.getStringValue();

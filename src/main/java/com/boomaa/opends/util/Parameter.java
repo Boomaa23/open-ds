@@ -4,12 +4,12 @@ import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.display.RobotMode;
 
+import java.util.Arrays;
+import java.util.List;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
-import java.util.Arrays;
-import java.util.List;
 
 public enum Parameter {
     ALLIANCE_COLOR("--alliance-color", Type.STRING, MainJDEC.ALLIANCE_COLOR, "Red", "Blue"),

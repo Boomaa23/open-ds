@@ -10,14 +10,14 @@ import com.boomaa.opends.display.tabs.LogTab;
 import com.boomaa.opends.display.tabs.NTTab;
 import com.boomaa.opends.display.tabs.StatsTab;
 
+import java.awt.Container;
+import java.awt.GridBagLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-import java.awt.Container;
-import java.awt.GridBagLayout;
 
 // JDEC = (J)ava (D)isplay (E)lement (C)onstants
 public interface MainJDEC {

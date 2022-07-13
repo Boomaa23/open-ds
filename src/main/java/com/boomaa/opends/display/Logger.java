@@ -1,7 +1,5 @@
 package com.boomaa.opends.display;
 
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import java.awt.EventQueue;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -11,9 +9,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 public class Logger extends OutputStream {
-    //TODO output something to this log
     public static PrintStream OUT;
     public static JScrollPane PANE;
     private final byte[] oneByte;
@@ -63,7 +62,7 @@ public class Logger extends OutputStream {
     }
 
     public synchronized void write(byte[] ba, int str, int len) {
-        if(appender != null) {
+        if (appender != null) {
             appender.append(bytesToString(ba, str, len));
         }
     }
@@ -73,8 +72,8 @@ public class Logger extends OutputStream {
     }
 
     public static class Appender implements Runnable {
-        static private final String EOL1 = "\n";
-        static private final String EOL2 = System.getProperty("line.separator", EOL1);
+        private static final String EOL1 = "\n";
+        private static final String EOL2 = System.getProperty("line.separator", EOL1);
 
         private final JTextArea textArea;
         private final int maxLines = 2000;
@@ -121,7 +120,8 @@ public class Logger extends OutputStream {
                 curLength += val.length();
                 if (val.endsWith(EOL1) || val.endsWith(EOL2)) {
                     if (lengths.size() >= maxLines) {
-                        textArea.replaceRange("", 0, lengths.removeFirst()); }
+                        textArea.replaceRange("", 0, lengths.removeFirst());
+                    }
                     lengths.addLast(curLength);
                     curLength = 0;
                 }

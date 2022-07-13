@@ -2,7 +2,9 @@ package com.boomaa.opends.networking;
 
 import com.boomaa.opends.data.holders.Protocol;
 import com.boomaa.opends.data.holders.Remote;
+import com.boomaa.opends.data.receive.parser.PacketParser;
 import com.boomaa.opends.data.receive.parser.ParserNull;
+import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.util.Clock;
 import com.boomaa.opends.util.PacketCounters;
@@ -10,11 +12,6 @@ import com.boomaa.opends.util.PacketCounters;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
-import static com.boomaa.opends.display.DisplayEndpoint.CREATOR;
-import static com.boomaa.opends.display.DisplayEndpoint.NET_IF_INIT;
-import static com.boomaa.opends.display.DisplayEndpoint.UPDATER;
-import static com.boomaa.opends.display.DisplayEndpoint.getPacketParser;
 
 public class NetworkClock extends Clock {
     private NetworkInterface iface;
@@ -31,32 +28,33 @@ public class NetworkClock extends Clock {
     @Override
     public void onCycle() {
         boolean connFms = remote != Remote.FMS || MainJDEC.FMS_CONNECT.isSelected();
-        if (UPDATER != null && CREATOR != null) {
+        if (DisplayEndpoint.UPDATER != null && DisplayEndpoint.CREATOR != null) {
             if (connFms) {
-                if (NET_IF_INIT.get(remote, protocol)) {
-                    iface.write(CREATOR.create(remote, protocol));
+                if (DisplayEndpoint.NET_IF_INIT.get(remote, protocol)) {
+                    iface.write(DisplayEndpoint.CREATOR.create(remote, protocol));
                     byte[] data = iface.read();
                     if (data == null || (protocol == Protocol.UDP && data.length == 0)) {
-                        UPDATER.update(ParserNull.getInstance(), remote, protocol);
-                        NET_IF_INIT.set(false, remote, protocol);
+                        DisplayEndpoint.UPDATER.update(ParserNull.getInstance(), remote, protocol);
+                        DisplayEndpoint.NET_IF_INIT.set(false, remote, protocol);
                     } else {
-                        UPDATER.update(getPacketParser(remote, protocol, data), remote, protocol);
+                        PacketParser packetParser = DisplayEndpoint.getPacketParser(remote, protocol, data);
+                        DisplayEndpoint.UPDATER.update(packetParser, remote, protocol);
                     }
                 } else {
-                    UPDATER.update(ParserNull.getInstance(), remote, protocol);
+                    DisplayEndpoint.UPDATER.update(ParserNull.getInstance(), remote, protocol);
                     reloadInterface();
                 }
             } else {
-                UPDATER.update(ParserNull.getInstance(), remote, protocol);
-                NET_IF_INIT.set(false, remote, protocol);
+                DisplayEndpoint.UPDATER.update(ParserNull.getInstance(), remote, protocol);
+                DisplayEndpoint.NET_IF_INIT.set(false, remote, protocol);
             }
         }
     }
 
     public void reloadInterface() {
         PacketCounters.get(remote, protocol).reset();
-        if (UPDATER != null) {
-            UPDATER.update(ParserNull.getInstance(), remote, protocol);
+        if (DisplayEndpoint.UPDATER != null) {
+            DisplayEndpoint.UPDATER.update(ParserNull.getInstance(), remote, protocol);
         }
         if (iface != null) {
             iface.close();
@@ -64,32 +62,32 @@ public class NetworkClock extends Clock {
         }
         boolean isFms = remote == Remote.FMS;
         if (isFms && !MainJDEC.FMS_CONNECT.isSelected()) {
-            NET_IF_INIT.set(false, remote, protocol);
+            DisplayEndpoint.NET_IF_INIT.set(false, remote, protocol);
             return;
         }
         try {
-            String ip = isFms ?
-                    AddressConstants.FMS_IP :
-                    AddressConstants.getRioAddress();
+            String ip = isFms
+                    ? AddressConstants.FMS_IP
+                    : AddressConstants.getRioAddress();
             boolean reachable = exceptionPingTest(ip);
             if (!reachable) {
                 uninitialize(isFms);
                 return;
             }
-            PortTriple ports = isFms ?
-                    AddressConstants.getFMSPorts() :
-                    AddressConstants.getRioPorts();
-            iface = protocol == Protocol.TCP ?
-                    new TCPInterface(ip, ports.getTcp()) :
-                    new UDPInterface(ip, ports.getUdpClient(), ports.getUdpServer());
-            NET_IF_INIT.set(true, remote, protocol);
+            PortTriple ports = isFms
+                    ? AddressConstants.getFMSPorts()
+                    : AddressConstants.getRioPorts();
+            iface = protocol == Protocol.TCP
+                    ? new TCPInterface(ip, ports.getTcp())
+                    : new UDPInterface(ip, ports.getUdpClient(), ports.getUdpServer());
+            DisplayEndpoint.NET_IF_INIT.set(true, remote, protocol);
         } catch (IOException e) {
             uninitialize(isFms);
         }
     }
 
     private void uninitialize(boolean isFms) {
-        NET_IF_INIT.set(false, remote, protocol);
+        DisplayEndpoint.NET_IF_INIT.set(false, remote, protocol);
         if (isFms) {
             MainJDEC.FMS_CONNECT.setSelected(false);
         } else {

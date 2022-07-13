@@ -9,13 +9,6 @@ import com.boomaa.opends.usb.HIDDevice;
 import com.boomaa.opends.util.Clock;
 import com.boomaa.opends.util.NumberUtils;
 
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -23,6 +16,13 @@ import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
 
 public class ReassignAxesFrame extends FrameBase {
     private static ValueUpdater valueUpdater;
@@ -70,12 +70,12 @@ public class ReassignAxesFrame extends FrameBase {
         EmbeddedJDEC.LIST_SCR.setPreferredSize(new Dimension(80, 100));
 
         GBCPanelBuilder base = new GBCPanelBuilder(content)
-                .setFill(GridBagConstraints.BOTH)
-                .setAnchor(GridBagConstraints.CENTER)
-                .setInsets(new Insets(5, 5, 5, 5));
+            .setFill(GridBagConstraints.BOTH)
+            .setAnchor(GridBagConstraints.CENTER)
+            .setInsets(new Insets(5, 5, 5, 5));
         GBCPanelBuilder end = base.clone()
-                .setFill(GridBagConstraints.NONE)
-                .setAnchor(GridBagConstraints.LINE_END);
+            .setFill(GridBagConstraints.NONE)
+            .setAnchor(GridBagConstraints.LINE_END);
 
         base.clone().setPos(0, 0, 2, 1).build(new JLabel("Used Axes"));
         ComponentTracker axesTracker = device.getAxesTracker();

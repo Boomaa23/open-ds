@@ -11,6 +11,9 @@ public class ControlDevices {
     private static int sendDataCtr = 0;
     private static int sendDescCtr = 0;
 
+    private ControlDevices() {
+    }
+
     public static void init() {
         findAll();
         updateValues();
@@ -72,7 +75,7 @@ public class ControlDevices {
         }
     }
 
-    public synchronized static int iterateSend(boolean isData) {
+    public static synchronized int iterateSend(boolean isData) {
         int out;
         if (isData) {
             out = sendDataCtr++;

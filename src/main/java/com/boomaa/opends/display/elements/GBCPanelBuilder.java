@@ -2,11 +2,11 @@ package com.boomaa.opends.display.elements;
 
 import com.boomaa.opends.display.frames.MainFrame;
 
-import javax.swing.JPanel;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import javax.swing.JPanel;
 
 public class GBCPanelBuilder {
     private final Container build;

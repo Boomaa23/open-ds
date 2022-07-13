@@ -16,12 +16,6 @@ import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
 import org.jnativehook.keyboard.NativeKeyEvent;
 
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Desktop;
@@ -38,17 +32,26 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 public class MainFrame implements MainJDEC {
     public static final Image ICON = Toolkit.getDefaultToolkit()
-            .getImage(MainFrame.class.getResource("/icon.png"))
-            .getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+        .getImage(MainFrame.class.getResource("/icon.png"))
+        .getScaledInstance(32, 32, Image.SCALE_SMOOTH);
     public static final Image ICON_MIN = Toolkit.getDefaultToolkit()
-            .getImage(MainFrame.class.getResource("/icon-min.png"));
+        .getImage(MainFrame.class.getResource("/icon-min.png"));
     private static final GBCPanelBuilder base = new GBCPanelBuilder(TAB_CONTAINER)
-            .setInsets(new Insets(5, 5, 5, 5))
-            .setFill(GridBagConstraints.BOTH)
-            .setAnchor(GridBagConstraints.CENTER);
+        .setInsets(new Insets(5, 5, 5, 5))
+        .setFill(GridBagConstraints.BOTH)
+        .setAnchor(GridBagConstraints.CENTER);
+
+    private MainFrame() {
+    }
 
     public static void display() {
         FRAME.setIconImage(MainFrame.ICON);
@@ -112,16 +115,16 @@ public class MainFrame implements MainJDEC {
 
         if (!Parameter.DISABLE_HOTKEYS.isPresent()) {
             GlobalScreen.addNativeKeyListener(GlobalKeyListener.INSTANCE
-                    .addKeyEvent(NativeKeyEvent.VC_ENTER, () -> MainJDEC.IS_ENABLED.setSelected(false))
-                    .addKeyEvent(NativeKeyEvent.VC_SPACE, MainJDEC.ESTOP_BTN::doClick)
-                    .addMultiKeyEvent(new MultiKeyEvent(() -> MainJDEC.IS_ENABLED.setSelected(MainJDEC.IS_ENABLED.isEnabled()),
-                            NativeKeyEvent.VC_OPEN_BRACKET, NativeKeyEvent.VC_CLOSE_BRACKET, NativeKeyEvent.VC_BACK_SLASH))
+                .addKeyEvent(NativeKeyEvent.VC_ENTER, () -> MainJDEC.IS_ENABLED.setSelected(false))
+                .addKeyEvent(NativeKeyEvent.VC_SPACE, MainJDEC.ESTOP_BTN::doClick)
+                .addMultiKeyEvent(new MultiKeyEvent(() -> MainJDEC.IS_ENABLED.setSelected(MainJDEC.IS_ENABLED.isEnabled()),
+                        NativeKeyEvent.VC_OPEN_BRACKET, NativeKeyEvent.VC_CLOSE_BRACKET, NativeKeyEvent.VC_BACK_SLASH))
             );
         }
     }
 
     private static void layoutInit() {
-        UIManager.getDefaults().put("TabbedPane.contentBorderInsets", new Insets(0,0,0,0));
+        UIManager.getDefaults().put("TabbedPane.contentBorderInsets", new Insets(0, 0, 0, 0));
         UIManager.getDefaults().put("TabbedPane.tabsOverlapBorder", true);
 
         TAB.addTab("Control", TAB_CONTAINER);

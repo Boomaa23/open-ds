@@ -2,13 +2,13 @@ package com.boomaa.opends.display.elements;
 
 import com.boomaa.opends.data.StatsFields;
 
+import java.awt.Color;
+import java.awt.Component;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
-import java.awt.Color;
-import java.awt.Component;
 
 public class ColorCellRenderer implements TableCellRenderer {
     public static final DefaultTableCellRenderer DEFAULT_RENDERER = new DefaultTableCellRenderer();

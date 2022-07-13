@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ArrayUtils {
+    private ArrayUtils() {
+    }
+
     public static byte[] slice(byte[] array, int start, int end) {
         try {
             byte[] out = new byte[end - start];

@@ -35,11 +35,11 @@ public class AllianceStation {
 
     @Override
     public String toString() {
-        return "AllianceStation{" +
-                "sidedZeroedNum=" + sidedZeroedNum +
-                ", isBlue=" + isBlue +
-                ", status=" + status +
-                '}';
+        return "AllianceStation{"
+                + "sidedZeroedNum=" + sidedZeroedNum
+                + ", isBlue=" + isBlue
+                + ", status=" + status
+                + '}';
     }
 
     @Override
@@ -51,8 +51,8 @@ public class AllianceStation {
             return false;
         }
         AllianceStation that = (AllianceStation) o;
-        return sidedZeroedNum == that.sidedZeroedNum &&
-            isBlue == that.isBlue;
+        return sidedZeroedNum == that.sidedZeroedNum
+                && isBlue == that.isBlue;
     }
 
     @Override

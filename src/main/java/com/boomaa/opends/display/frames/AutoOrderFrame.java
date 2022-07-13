@@ -2,18 +2,18 @@ package com.boomaa.opends.display.frames;
 
 import com.boomaa.opends.display.elements.GBCPanelBuilder;
 import com.boomaa.opends.display.tabs.JoystickTab;
-import com.boomaa.opends.usb.HIDDevice;
 import com.boomaa.opends.usb.ControlDevices;
+import com.boomaa.opends.usb.HIDDevice;
 import com.boomaa.opends.util.Clock;
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.LinkedList;
 import java.util.List;
+import javax.swing.JButton;
+import javax.swing.JLabel;
 
 public class AutoOrderFrame extends FrameBase {
     private static final List<HIDDevice> devices = new LinkedList<>();
@@ -48,9 +48,9 @@ public class AutoOrderFrame extends FrameBase {
 
         content.setLayout(new GridBagLayout());
         GBCPanelBuilder base = new GBCPanelBuilder(content)
-                .setFill(GridBagConstraints.BOTH)
-                .setAnchor(GridBagConstraints.CENTER)
-                .setInsets(new Insets(5, 5, 5, 5));
+            .setFill(GridBagConstraints.BOTH)
+            .setAnchor(GridBagConstraints.CENTER)
+            .setInsets(new Insets(5, 5, 5, 5));
 
         base.clone().setPos(0, 0, 6, 1).build(new JLabel("Press a button on each joystick in ascending index order"));
 

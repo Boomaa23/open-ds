@@ -10,7 +10,9 @@ public abstract class Controller<T extends Component> {
     protected boolean queueRemove;
 
     public abstract Type getType();
+
     public abstract void poll();
+
     public abstract String getName();
 
     public List<T> getComponents() {

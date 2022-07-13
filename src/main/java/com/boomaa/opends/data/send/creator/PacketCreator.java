@@ -11,15 +11,18 @@ public abstract class PacketCreator implements MainJDEC {
     public static final SequenceCounter SEQUENCE_COUNTER_FMS = new SequenceCounter(true);
 
     protected abstract byte[] dsToRioUdp();
+
     protected abstract byte[] dsToRioTcp();
+
     protected abstract byte[] dsToFmsUdp();
+
     protected abstract byte[] dsToFmsTcp();
 
     public byte[] create(Remote remote, Protocol protocol) {
         boolean ptcp = protocol == Protocol.TCP;
-        return remote == Remote.ROBO_RIO ?
-                (ptcp ? dsToRioTcp() : dsToRioUdp()) :
-                (ptcp ? dsToFmsTcp() : dsToFmsUdp());
+        return remote == Remote.ROBO_RIO
+                ? (ptcp ? dsToRioTcp() : dsToRioUdp())
+                : (ptcp ? dsToFmsTcp() : dsToFmsUdp());
     }
 
     public static PacketBuilder getSequenced(Remote remote) {

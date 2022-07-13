@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StringUtils {
+    private StringUtils() {
+    }
+
     public static String padByte(byte b) {
         return padByte(b, 8);
     }

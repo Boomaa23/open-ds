@@ -2,11 +2,11 @@ package com.boomaa.opends.display.frames;
 
 import com.boomaa.opends.util.OperatingSystem;
 
-import javax.swing.JFrame;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import javax.swing.JFrame;
 
 public abstract class FrameBase extends JFrame {
     public static final double NONWINDOWS_WIDTH_SCALE = 1.2;

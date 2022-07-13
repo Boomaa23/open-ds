@@ -160,15 +160,19 @@ public class DirectInputDevice extends Controller<DIDeviceObject> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         DirectInputDevice that = (DirectInputDevice) o;
-        return devSubtype == that.devSubtype &&
-                Arrays.equals(instanceGUID, that.instanceGUID) &&
-                Arrays.equals(productGUID, that.productGUID) &&
-                instanceName.equals(that.instanceName) &&
-                productName.equals(that.productName) &&
-                devType == that.devType;
+        return devSubtype == that.devSubtype
+                && Arrays.equals(instanceGUID, that.instanceGUID)
+                && Arrays.equals(productGUID, that.productGUID)
+                && instanceName.equals(that.instanceName)
+                && productName.equals(that.productName)
+                && devType == that.devType;
     }
 
     @Override

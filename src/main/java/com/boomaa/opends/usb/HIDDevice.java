@@ -138,8 +138,12 @@ public class HIDDevice {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         HIDDevice hidDevice = (HIDDevice) o;
         return ctrl == hidDevice.ctrl;
     }

@@ -3,13 +3,13 @@ package com.boomaa.opends.display.tabs;
 import com.boomaa.opends.data.StatsFields;
 import com.boomaa.opends.display.elements.ColorCellRenderer;
 
+import java.awt.Dimension;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-import java.awt.Dimension;
 
 public class StatsTab extends TabBase {
     public static final DefaultTableModel TABLE_MODEL = new DefaultTableModel(new String[0][], new String[] { "", "Key", "Value" });

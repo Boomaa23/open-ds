@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NumberUtils {
+    private NumberUtils() {
+    }
+
     public static double getDouble(byte[] bytes) throws BufferUnderflowException {
         return byteWrapBig(bytes).getDouble();
     }

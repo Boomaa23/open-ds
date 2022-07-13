@@ -4,9 +4,39 @@ import com.boomaa.opends.data.receive.TagValueMap;
 import com.boomaa.opends.util.ArrayUtils;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class UsageReporting {
     public static byte[] RECEIVED_USAGE = null;
+    private static final Map<Integer, String> LANG_TYPE_MAP = new HashMap<>();
+    private static final Map<Integer, String> ADXL345_MAP = new HashMap<>();
+    private static final Map<Integer, String> FRAMEWORK_TYPE_MAP = new HashMap<>();
+    private static final Map<Integer, String> SPI_PORT_MAP = new HashMap<>();
+
+    static {
+        LANG_TYPE_MAP.put(1, "LabVIEW");
+        LANG_TYPE_MAP.put(2, "C++");
+        LANG_TYPE_MAP.put(3, "Java");
+        LANG_TYPE_MAP.put(4, "Python");
+        LANG_TYPE_MAP.put(5, ".NET");
+        LANG_TYPE_MAP.put(6, "Kotlin");
+
+        ADXL345_MAP.put(1, "SPI");
+        ADXL345_MAP.put(2, "I2C");
+
+        FRAMEWORK_TYPE_MAP.put(1, "Iterative");
+        FRAMEWORK_TYPE_MAP.put(2, "Simple");
+        FRAMEWORK_TYPE_MAP.put(3, "CommandControl");
+
+        SPI_PORT_MAP.put(0, "OnboardCS0");
+        SPI_PORT_MAP.put(1, "OnboardCS1");
+        SPI_PORT_MAP.put(2, "OnboardCS2");
+        SPI_PORT_MAP.put(3, "OnboardCS3");
+        SPI_PORT_MAP.put(4, "MXP");
+    }
+
+    private UsageReporting() {
+    }
 
     public static TagValueMap<String> decode(byte[] bytes, int size) {
         RECEIVED_USAGE = bytes;
@@ -34,39 +64,27 @@ public class UsageReporting {
             }
             if (numAssoc != null && mapping != null) {
                 String concatStr = numAssoc;
+                Map<Integer, String> idpMap = null;
                 switch (mapping.getIdPrefix()) {
                     case LANG_TYPE:
-                        switch (Integer.parseInt(concatStr)) {
-                            case 1: concatStr = "LabVIEW"; break;
-                            case 2: concatStr = "C++"; break;
-                            case 3: concatStr = "Java"; break;
-                            case 4: concatStr = "Python"; break;
-                            case 5: concatStr = ".NET"; break;
-                            case 6: concatStr = "Kotlin"; break;
-                        }
+                        idpMap = LANG_TYPE_MAP;
                         break;
                     case ADXL345:
-                        switch (Integer.parseInt(concatStr)) {
-                            case 1: concatStr = "SPI"; break;
-                            case 2: concatStr = "I2C"; break;
-                        }
+                        idpMap = ADXL345_MAP;
                         break;
                     case FRAMEWORK_TYPE:
-                        switch (Integer.parseInt(concatStr)) {
-                            case 1: concatStr = "Iterative"; break;
-                            case 2: concatStr = "Simple"; break;
-                            case 3: concatStr = "CommandControl"; break;
-                        }
+                        idpMap = FRAMEWORK_TYPE_MAP;
                         break;
                     case SPI_PORT:
-                        switch (Integer.parseInt(concatStr)) {
-                            case 0: concatStr = "OnboardCS0"; break;
-                            case 1: concatStr = "OnboardCS1"; break;
-                            case 2: concatStr = "OnboardCS2"; break;
-                            case 3: concatStr = "OnboardCS3"; break;
-                            case 4: concatStr = "MXP"; break;
-                        }
+                        idpMap = SPI_PORT_MAP;
                         break;
+                }
+                if (idpMap == null) {
+                    continue;
+                }
+                String idpRes = idpMap.get(Integer.parseInt(concatStr));
+                if (idpRes == null) {
+                    continue;
                 }
                 String prefix = mapping.idPrefix.getPrefix();
                 map.addTo("Usage Report " + namingCounter++, mapping.getName() + " (" + prefix + (prefix.length() != 0 ? " " : "") + concatStr + ")");

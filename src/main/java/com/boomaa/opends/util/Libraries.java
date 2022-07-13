@@ -11,6 +11,9 @@ public class Libraries {
             "ods-input"
     };
 
+    private Libraries() {
+    }
+
     public static void init() {
         String tmpPath = OperatingSystem.getTempFolder();
 

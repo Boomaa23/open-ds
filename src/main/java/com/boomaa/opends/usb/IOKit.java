@@ -16,7 +16,7 @@ public class IOKit extends NativeUSBManager<IOKitDevice> {
         while ((dev = next(address)) != null) {
             long usage = dev.getUsage();
             if (dev.getUsagePage() != IOKitFlags.UP_GENERIC_DESKTOP
-                    || (usage != IOKitFlags.USAGE_JOYSTICK && usage != IOKitFlags.USAGE_GAMEPAD)) {
+                || (usage != IOKitFlags.USAGE_JOYSTICK && usage != IOKitFlags.USAGE_GAMEPAD)) {
                 continue;
             }
             boolean inDevices = false;

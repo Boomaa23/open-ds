@@ -9,9 +9,9 @@ import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.display.RobotMode;
 import com.boomaa.opends.networking.WlanConnection;
 import com.boomaa.opends.usb.Component;
+import com.boomaa.opends.usb.ControlDevices;
 import com.boomaa.opends.usb.Controller;
 import com.boomaa.opends.usb.HIDDevice;
-import com.boomaa.opends.usb.ControlDevices;
 import com.boomaa.opends.util.NumberUtils;
 
 import java.lang.management.ManagementFactory;

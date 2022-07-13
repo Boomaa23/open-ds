@@ -170,12 +170,16 @@ public class NTPacketData {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         NTPacketData that = (NTPacketData) o;
-        return msgId == that.msgId &&
-                messageType == that.messageType &&
-                dataType == that.dataType;
+        return msgId == that.msgId
+                && messageType == that.messageType
+                && dataType == that.dataType;
     }
 
     @Override

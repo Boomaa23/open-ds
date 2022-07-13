@@ -23,9 +23,9 @@ public class Creator2020 extends PacketCreator {
         PacketBuilder builder = getSequenced(Remote.ROBO_RIO);
         builder.addInt(0x01);
         int control = (ESTOP_BTN.wasPressed() ? Control.ESTOP.getFlag() : 0)
-                + (DisplayEndpoint.NET_IF_INIT.isOrInit(Remote.FMS) ? Control.FMS_CONNECTED.getFlag() : 0)
-                + (IS_ENABLED.isSelected() ? Control.ENABLED.getFlag() : 0)
-                + ((RobotMode) Objects.requireNonNull(ROBOT_DRIVE_MODE.getSelectedItem())).getControlFlag().getFlag();
+            + (DisplayEndpoint.NET_IF_INIT.isOrInit(Remote.FMS) ? Control.FMS_CONNECTED.getFlag() : 0)
+            + (IS_ENABLED.isSelected() ? Control.ENABLED.getFlag() : 0)
+            + ((RobotMode) Objects.requireNonNull(ROBOT_DRIVE_MODE.getSelectedItem())).getControlFlag().getFlag();
         builder.addInt(control);
         int request = Request.DS_CONNECTED.getFlag();
         if (RESTART_ROBO_RIO_BTN.wasPressed()) {

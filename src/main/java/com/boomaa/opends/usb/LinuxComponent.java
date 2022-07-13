@@ -10,9 +10,9 @@ public class LinuxComponent implements Component {
         this.type = event.getType();
         this.number = event.getNumber();
         this.value = event.getValue();
-        Identifier tempId = isButton() ?
-            Component.Button.values()[number] :
-            Component.Axis.values()[number];
+        Identifier tempId = isButton()
+            ? Component.Button.values()[number]
+            : Component.Axis.values()[number];
         //TODO make a more permanent solution, DirectInput auto-assigns RZ
         if (tempId == Axis.Z) {
             tempId = Axis.RZ;

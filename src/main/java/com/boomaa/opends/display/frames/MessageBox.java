@@ -3,6 +3,9 @@ package com.boomaa.opends.display.frames;
 import javax.swing.JOptionPane;
 
 public class MessageBox {
+    private MessageBox() {
+    }
+
     public static void show(String message, Type type) {
         JOptionPane.showMessageDialog(null, message, type.title, type.optionFlag);
     }

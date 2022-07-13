@@ -11,13 +11,19 @@ import com.boomaa.opends.display.MainJDEC;
 
 public abstract class ElementUpdater implements MainJDEC {
     protected abstract void doUpdateFromRioUdp(PacketParser data, TVMList tagMap);
+
     protected abstract void doUpdateFromRioTcp(PacketParser data, TVMList tagMap);
+
     protected abstract void doUpdateFromFmsUdp(PacketParser data, TVMList tagMap);
+
     protected abstract void doUpdateFromFmsTcp(PacketParser data, TVMList tagMap);
 
     protected abstract void resetDataRioUdp();
+
     protected abstract void resetDataRioTcp();
+
     protected abstract void resetDataFmsUdp();
+
     protected abstract void resetDataFmsTcp();
 
     public void update(PacketParser data, Remote remote, Protocol protocol) {

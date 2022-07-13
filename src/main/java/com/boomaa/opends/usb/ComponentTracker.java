@@ -82,7 +82,7 @@ public class ComponentTracker implements Serializable {
 
     public void saveToFile(String path) {
         try (FileOutputStream fos = new FileOutputStream(path);
-             ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+            ObjectOutputStream oos = new ObjectOutputStream(fos)) {
             oos.writeObject(this);
         } catch (IOException e) {
             e.printStackTrace();

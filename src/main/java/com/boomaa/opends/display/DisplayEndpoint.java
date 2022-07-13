@@ -59,6 +59,9 @@ public class DisplayEndpoint implements MainJDEC {
         }
     };
 
+    private DisplayEndpoint() {
+    }
+
     public static void main(String[] args) {
         Parameter.parseArgs(args);
         Libraries.init();

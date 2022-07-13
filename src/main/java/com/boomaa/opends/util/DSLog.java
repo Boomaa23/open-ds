@@ -92,15 +92,16 @@ public class DSLog extends Clock {
         }
 
         writeData(logOut, new PacketBuilder()
-                .addInts(getTripTime(0x00), getPacketLoss(0x00))
-                .addBytes(getBattery(bat))
-                .addInts(getRioCPU((int) checkedNumParse(StatsFields.CPU_PERCENT.getValue())), trace,
-                        getCAN((int) checkedNumParse(StatsFields.CAN_UTILIZATION.getValue())),
-                        getWifiDb(radio != null ? radio.getSignal() : 0x00))
-                .addBytes(getWifiMb(0x00))
-                .pad(0x00, 1)
-                .addBytes(PDP_STATS)
-                .build()
+            .addInts(getTripTime(0x00), getPacketLoss(0x00))
+            .addBytes(getBattery(bat))
+            .addInt(getRioCPU((int) checkedNumParse(StatsFields.CPU_PERCENT.getValue())))
+            .addInt(trace)
+            .addInt(getCAN((int) checkedNumParse(StatsFields.CAN_UTILIZATION.getValue())))
+            .addInt(getWifiDb(radio != null ? radio.getSignal() : 0x00))
+            .addBytes(getWifiMb(0x00))
+            .pad(0x00, 1)
+            .addBytes(PDP_STATS)
+            .build()
         );
 
         for (byte[] e : eventQueue) {

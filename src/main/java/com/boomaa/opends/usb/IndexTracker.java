@@ -7,6 +7,9 @@ public class IndexTracker {
     public static int MAX_JS_INDEX = 0;
     private static final boolean[] tracker = new boolean[MAX_JS_NUM];
 
+    private IndexTracker() {
+    }
+
     public static int registerNext() {
         for (int i = 0; i < tracker.length; i++) {
             if (!tracker[i]) {

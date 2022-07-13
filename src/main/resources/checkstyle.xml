@@ -85,7 +85,6 @@
         <module name="OneStatementPerLine"/>
         <module name="MultipleVariableDeclarations"/>
         <module name="ArrayTypeStyle"/>
-        <module name="MissingSwitchDefault"/>
         <module name="FallThrough"/>
         <module name="UpperEll"/>
         <module name="ModifierOrder"/>
@@ -145,11 +144,11 @@
         </module>
         <!-- Make Indentation not target ternaries; https://github.com/checkstyle/checkstyle/issues/9719 related? -->
         <!-- Also, any `new` seems to not work right -->
+        <!-- Also make Indentation not target lambdas, https://github.com/checkstyle/checkstyle/issues/3342 "not important enough" -->
         <module name="SuppressionXpathSingleFilter">
             <property name="checks" value="Indentation"/>
-            <property name="query" value="//QUESTION/descendant-or-self::node()|//LITERAL_NEW/descendant-or-self::node()"/>
+            <property name="query" value="//QUESTION/descendant-or-self::node()|//LITERAL_NEW/descendant-or-self::node()|//LAMBDA/descendant-or-self::node()"/>
         </module>
-        <module name="OverloadMethodsDeclarationOrder"/>
         <module name="ModifierOrder"/>
         <module name="CustomImportOrder">
             <property name="sortImportsInGroupAlphabetically" value="true"/>
@@ -216,9 +215,6 @@
         </module>
         <module name="SingleLineJavadoc">
             <property name="ignoreInlineTags" value="false"/>
-        </module>
-        <module name="EmptyCatchBlock">
-            <property name="exceptionVariableName" value="expected"/>
         </module>
         <module name="CommentsIndentation">
             <property name="tokens" value="SINGLE_LINE_COMMENT, BLOCK_COMMENT_BEGIN"/>

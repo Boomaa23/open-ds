@@ -7,8 +7,8 @@ import com.boomaa.opends.data.holders.Request;
 import com.boomaa.opends.data.send.PacketBuilder;
 import com.boomaa.opends.data.send.SendTag;
 import com.boomaa.opends.display.RobotMode;
-import com.boomaa.opends.usb.IndexTracker;
 import com.boomaa.opends.usb.ControlDevices;
+import com.boomaa.opends.usb.IndexTracker;
 
 import java.util.Objects;
 import java.util.zip.CRC32;
@@ -24,8 +24,8 @@ public class Creator2014 extends NoTCPCreator {
             control = Request.REBOOT_ROBO_RIO.getFlag();
         } else {
             Object robotMode = Objects.requireNonNull(ROBOT_DRIVE_MODE.getSelectedItem());
-            control |= ((IS_ENABLED.isSelected() ? 0x20 : 0x00) +
-                    ((RobotMode) robotMode).getControlFlag().getFlag());
+            control |= ((IS_ENABLED.isSelected() ? 0x20 : 0x00)
+                    + ((RobotMode) robotMode).getControlFlag().getFlag());
             if (FMS_CONNECTION_STATUS.isDisplayed()) {
                 control |= Control.FMS_CONNECTED.getFlag();
             }

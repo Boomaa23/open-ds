@@ -1,19 +1,25 @@
 package com.boomaa.opends.display.tabs;
 
 import com.boomaa.opends.display.MainJDEC;
-import com.boomaa.opends.display.frames.FrameBase;
 import com.boomaa.opends.display.elements.GBCPanelBuilder;
 import com.boomaa.opends.display.elements.HideableLabel;
 import com.boomaa.opends.display.frames.AutoOrderFrame;
+import com.boomaa.opends.display.frames.FrameBase;
 import com.boomaa.opends.display.frames.MessageBox;
 import com.boomaa.opends.display.frames.ReassignAxesFrame;
 import com.boomaa.opends.usb.Component;
+import com.boomaa.opends.usb.ControlDevices;
 import com.boomaa.opends.usb.HIDDevice;
 import com.boomaa.opends.usb.IndexTracker;
-import com.boomaa.opends.usb.ControlDevices;
 import com.boomaa.opends.util.Clock;
 import com.boomaa.opends.util.NumberUtils;
 
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -24,12 +30,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.util.ArrayList;
-import java.util.List;
 
 public class JoystickTab extends TabBase {
     private static final int BTN_PER_ROW = 16;
@@ -117,12 +117,12 @@ public class JoystickTab extends TabBase {
 
         super.setLayout(new GridBagLayout());
         GBCPanelBuilder base = new GBCPanelBuilder(this)
-                .setFill(GridBagConstraints.BOTH)
-                .setAnchor(GridBagConstraints.CENTER)
-                .setInsets(new Insets(5, 5, 5, 5));
+            .setFill(GridBagConstraints.BOTH)
+            .setAnchor(GridBagConstraints.CENTER)
+            .setInsets(new Insets(5, 5, 5, 5));
         GBCPanelBuilder end = base.clone()
-                .setFill(GridBagConstraints.NONE)
-                .setAnchor(GridBagConstraints.LINE_END);
+            .setFill(GridBagConstraints.NONE)
+            .setAnchor(GridBagConstraints.LINE_END);
 
         base.clone().setPos(0, 0, 1, 1).setFill(GridBagConstraints.NONE).build(new JLabel("Index"));
         base.clone().setPos(0, 1, 1, 1).setFill(GridBagConstraints.NONE).build(EmbeddedJDEC.INDEX_SET);
@@ -240,14 +240,14 @@ public class JoystickTab extends TabBase {
                     int nFRCIdx = Integer.parseInt(EmbeddedJDEC.INDEX_SET.getText());
                     if (nFRCIdx >= IndexTracker.MAX_JS_NUM) {
                         MessageBox.show("New index " + nFRCIdx + " greater than maximum index of 6."
-                                + " Not performing change.", MessageBox.Type.ERROR);
+                            + " Not performing change.", MessageBox.Type.ERROR);
                         EmbeddedJDEC.INDEX_SET.setText(String.valueOf(cListIdx));
                     } else if (current.getIdx() != nFRCIdx) {
                         for (HIDDevice dev : ControlDevices.getAll().values()) {
                             if (dev.getIdx() == nFRCIdx) {
                                 MessageBox.show("Duplicate index \"" + nFRCIdx + "\" for controller \"" + dev
-                                        + "\"\nSetting controller \"" + dev + "\" on index \"" + dev.getIdx()
-                                        + "\"\n to new index \"" + cListIdx + "\" and making requested index change",
+                                    + "\"\nSetting controller \"" + dev + "\" on index \"" + dev.getIdx()
+                                    + "\"\n to new index \"" + cListIdx + "\" and making requested index change",
                                     MessageBox.Type.WARNING);
                             }
                         }

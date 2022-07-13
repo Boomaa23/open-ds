@@ -1,6 +1,9 @@
 package com.boomaa.opends.data;
 
 public class Challenge {
+    private Challenge() {
+    }
+
     private static final String[] RESPONSES = new String[] {
             "Johnny Five", "Data", "ED-209", "Bishop", "NXT", "Optimus Prime", "Roomba", "Rosie",
             "The Terminator", "HAL 9000", "Sojourner", "R2-D2", "C-3PO", "Wall-E", "Curiosity",

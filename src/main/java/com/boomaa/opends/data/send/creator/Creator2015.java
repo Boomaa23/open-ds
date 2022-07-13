@@ -9,8 +9,8 @@ import com.boomaa.opends.data.send.SendTag;
 import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.display.RobotMode;
-import com.boomaa.opends.usb.IndexTracker;
 import com.boomaa.opends.usb.ControlDevices;
+import com.boomaa.opends.usb.IndexTracker;
 import com.boomaa.opends.util.NumberUtils;
 
 import java.util.Objects;
@@ -34,8 +34,8 @@ public class Creator2015 extends NoTCPCreator {
         }
         builder.addInt(control);
 
-        builder.addInt((MainJDEC.RESTART_ROBO_RIO_BTN.wasPressed() ? Request.REBOOT_ROBO_RIO.getFlag() : 0) +
-                (MainJDEC.RESTART_CODE_BTN.wasPressed() ? Request.RESTART_CODE.getFlag() : 0));
+        builder.addInt((MainJDEC.RESTART_ROBO_RIO_BTN.wasPressed() ? Request.REBOOT_ROBO_RIO.getFlag() : 0)
+            + (MainJDEC.RESTART_CODE_BTN.wasPressed() ? Request.RESTART_CODE.getFlag() : 0));
         builder.addInt(new AllianceStation(ALLIANCE_NUM.getSelectedIndex(),
                 Objects.equals(ALLIANCE_COLOR.getSelectedItem(), "Blue")).getGlobalNum());
 

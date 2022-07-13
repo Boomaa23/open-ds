@@ -1,10 +1,10 @@
 package com.boomaa.opends.display.tabs;
 
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.util.HashMap;
-import java.util.Map;
 
 public class TabChangeListener implements ChangeListener {
     private static final TabChangeListener INSTANCE = new TabChangeListener();

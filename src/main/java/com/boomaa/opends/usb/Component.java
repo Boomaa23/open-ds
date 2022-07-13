@@ -4,12 +4,15 @@ import com.boomaa.opends.util.NumberUtils;
 
 public interface Component {
     Identifier getIdentitifer();
+
     double provideValue();
 
     default double getValue() {
         return NumberUtils.limit(provideValue(), -1, 1);
     }
+
     boolean isButton();
+
     boolean isAxis();
 
     default String getName() {

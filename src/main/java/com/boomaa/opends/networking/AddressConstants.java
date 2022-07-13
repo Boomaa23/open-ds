@@ -11,6 +11,9 @@ public class AddressConstants {
     private static PortTriple fmsPorts;
     private static PortQuad rioPorts;
 
+    private AddressConstants() {
+    }
+
     public static void reloadProtocol() {
         fmsPorts = (PortTriple) getProtoYearValue("FMS_PORTS");
         rioPorts = (PortQuad) getProtoYearValue("RIO_PORTS");
@@ -30,7 +33,7 @@ public class AddressConstants {
         }
         int teamNum = MainJDEC.TEAM_NUMBER.checkedIntParse();
         if (teamNum != -1) {
-            return "roboRIO-" + teamNum +"-FRC.local";
+            return "roboRIO-" + teamNum + "-FRC.local";
         } else if (MainJDEC.TEAM_NUMBER.getText().equalsIgnoreCase("localhost")) {
             return LOCALHOST;
         }
