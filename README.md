@@ -1,7 +1,6 @@
 # OpenDS
 <a href="https://github.com/Boomaa23/open-ds/actions?query=branch%3Amaster+event%3Apush"><img src="https://github.com/Boomaa23/open-ds/workflows/Java%20CI/badge.svg" /></a>
 <a href="https://github.com/Boomaa23/open-ds/releases/latest"><img src="https://img.shields.io/github/v/release/Boomaa23/open-ds" /></a>
-<a href="https://codeclimate.com/github/Boomaa23/open-ds/maintainability"><img src="https://api.codeclimate.com/v1/badges/dd8308d08264f085a5fb/maintainability" /></a>
 
 A reverse-engineered lightweight FRC Driver Station alternative for Windows, Linux, and macOS
 
@@ -21,7 +20,8 @@ installation of any kind, unlike the official Driver Station which
 has a lengthy installation process and heavy install footprint.
 
 NOTE: OpenDS may not be used during FRC-legal competitions as per 
-rules R66 and R88. OpenDS is intended for testing use only.
+rules R710 and R901 (previously R66 and R88). 
+OpenDS is intended for testing use only.
 
 * Robot
     * Enable and disable
