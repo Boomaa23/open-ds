@@ -27,11 +27,11 @@ public class DSLog extends Clock {
     private static final List<byte[]> eventQueue = new LinkedList<>();
     private final FileOutputStream eventsOut;
     private final FileOutputStream logOut;
+    boolean flag = false;
 
     public DSLog() {
-        super(19);
-        //TODO fix
-        // 19ms != 20ms, intentional to sync events w/ log
+        super(20);
+        //TODO fix fully
         String folderName = OperatingSystem.isWindows() ? "C:\\Users\\Public\\Documents\\FRC\\Log Files\\"
                 : System.getProperty("user.home") + "/opends/";
         File folder = new File(folderName);
@@ -90,15 +90,19 @@ public class DSLog extends Clock {
                 trace -= Trace.BROWNOUT.flag;
             }
         }
+        if (flag) {
+            trace -= Trace.BROWNOUT.flag;
+        }
+        flag = !flag;
 
         writeData(logOut, new PacketBuilder()
-            .addInts(getTripTime(0x00), getPacketLoss(0x00))
-            .addBytes(getBattery(bat))
-            .addInt(getRioCPU((int) checkedNumParse(StatsFields.CPU_PERCENT.getValue())))
+            .addInts(encodeTripTime(0x00), encodePacketLoss(0x00))
+            .addBytes(encodeBattery(bat))
+            .addInt(encodeRioCPU((int) checkedNumParse(StatsFields.CPU_PERCENT.getValue())))
             .addInt(trace)
-            .addInt(getCAN((int) checkedNumParse(StatsFields.CAN_UTILIZATION.getValue())))
-            .addInt(getWifiDb(radio != null ? radio.getSignal() : 0x00))
-            .addBytes(getWifiMb(0x00))
+            .addInt(encodeCAN((int) checkedNumParse(StatsFields.CAN_UTILIZATION.getValue())))
+            .addInt(encodeWifiDb(radio != null ? radio.getSignal() : 0x00))
+            .addBytes(encodeWifiMb(0x00))
             .pad(0x00, 1)
             .addBytes(PDP_STATS)
             .build()
@@ -150,39 +154,35 @@ public class DSLog extends Clock {
         }
     }
 
-    private int getTripTime(int tripTime) {
+    private int encodeTripTime(int tripTime) {
         return tripTime * 2;
     }
 
-    private int getPacketLoss(int packetLoss) {
+    private int encodePacketLoss(int packetLoss) {
         return packetLoss / 4;
     }
 
-    private byte[] getBattery(double bat) {
+    private byte[] encodeBattery(double bat) {
         byte[] out = new byte[2];
         out[0] = (byte) ((int) bat);
         out[1] = (byte) ((int) ((bat - out[0]) * 256));
         return out;
     }
 
-    private int getRioCPU(int rioCPU) {
+    private int encodeRioCPU(int rioCPU) {
         return rioCPU * 2;
     }
 
-    private int getCAN(int can) {
+    private int encodeCAN(int can) {
         return can * 2;
     }
 
-    private int getWifiDb(int wifiDb) {
+    private int encodeWifiDb(int wifiDb) {
         return wifiDb * 2;
     }
 
-    private byte[] getWifiMb(double wifiMb) {
+    private byte[] encodeWifiMb(double wifiMb) {
         return new byte[] { (byte) wifiMb, (byte) (wifiMb % 1D * 0xFF) };
-    }
-
-    public enum EventSeverity {
-        INFO, WARNING, ERROR
     }
 
     private enum Trace {

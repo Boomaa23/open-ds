@@ -1,12 +1,15 @@
 package com.boomaa.opends.usb;
 
 import com.boomaa.opends.display.tabs.JoystickTab;
+import com.boomaa.opends.util.Debug;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class ControlDevices {
+    private static final String addDebugFmt = "Found and added new HID/controller device (%s) with %d buttons and %d axes";
+    private static final String rmDebugFmt = "Removed now invalid HID/controller device: %s";
     private static final Map<Integer, HIDDevice> controllers = new LinkedHashMap<>();
     private static int sendDataCtr = 0;
     private static int sendDescCtr = 0;
@@ -17,6 +20,7 @@ public class ControlDevices {
     public static void init() {
         findAll();
         updateValues();
+        Debug.println("Human input/control devices initialized");
     }
 
     public static synchronized void findAll() {
@@ -34,6 +38,7 @@ public class ControlDevices {
                 controllers.put(hid.getIdx(), hid);
                 final int addIdx = Math.min(hid.getIdx(), JoystickTab.EmbeddedJDEC.LIST_MODEL.size());
                 JoystickTab.EmbeddedJDEC.LIST_MODEL.add(addIdx, hid);
+                Debug.println(String.format(addDebugFmt, hid, hid.deviceNumButtons(), hid.deviceNumAxes()));
             }
         }
     }
@@ -50,11 +55,13 @@ public class ControlDevices {
                 IndexTracker.unregister(hid.getIdx());
                 final int remIdx = Math.min(hid.getIdx(), JoystickTab.EmbeddedJDEC.LIST_MODEL.size() - 1);
                 JoystickTab.EmbeddedJDEC.LIST_MODEL.remove(remIdx);
+                Debug.println(String.format(rmDebugFmt, hid));
             }
         }
     }
 
     public static synchronized void reindexAll() {
+        Debug.println("Device user indexing has changed - reindexing controller list");
         Map<Integer, HIDDevice> deviceMapTemp = new HashMap<>(controllers);
         controllers.clear();
         for (HIDDevice device : deviceMapTemp.values()) {
@@ -64,6 +71,7 @@ public class ControlDevices {
     }
 
     public static synchronized void clearAll() {
+        Debug.println("Removed all control devices");
         NativeUSBManager.getOSInstance().clearDevices();
         IndexTracker.reset();
         controllers.clear();

@@ -5,6 +5,8 @@ import com.boomaa.opends.networking.NetworkClock;
 import com.boomaa.opends.networking.TCPInterface;
 import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.Clock;
+import com.boomaa.opends.util.Debug;
+import com.boomaa.opends.util.EventSeverity;
 import com.boomaa.opends.util.NumberUtils;
 
 import java.io.IOException;
@@ -28,14 +30,19 @@ public class NTConnection extends Clock {
     @Override
     public void onCycle() {
         if (connection == null || connection.isClosed()) {
+            Debug.printlnSticky("NetworkTables connection failed", EventSeverity.WARNING);
             reloadConnection();
         } else {
             if (doReconnectSend) {
+                Debug.removeSticky("NetworkTables connection failed");
                 connection.write(CLIENT_HELLO);
                 decodeInput(connection.read());
                 connection.write(CLIENT_HELLO_COMPLETE);
                 decodeInput(connection.read());
                 doReconnectSend = false;
+                String debugStr = String.format("NetworkTables connected to %s:%s",
+                    connection.getIP(), connection.getPort());
+                Debug.println(debugStr, EventSeverity.INFO);
             }
             connection.write(KEEP_ALIVE);
             decodeInput(connection.read());

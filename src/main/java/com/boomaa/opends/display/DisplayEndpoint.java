@@ -15,6 +15,8 @@ import com.boomaa.opends.usb.ControlDevices;
 import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.Clock;
 import com.boomaa.opends.util.DSLog;
+import com.boomaa.opends.util.Debug;
+import com.boomaa.opends.util.EventSeverity;
 import com.boomaa.opends.util.InitChecker;
 import com.boomaa.opends.util.Libraries;
 import com.boomaa.opends.util.Parameter;
@@ -63,11 +65,13 @@ public class DisplayEndpoint implements MainJDEC {
     }
 
     public static void main(String[] args) {
+        Debug.println("Starting OpenDS");
         Parameter.parseArgs(args);
         Libraries.init();
         ControlDevices.init();
         MainFrame.display();
         doProtocolUpdate();
+        Debug.println("Backend robot interface classes initialized.");
 
         RIO_TCP_CLOCK.start();
         RIO_UDP_CLOCK.start();
@@ -82,6 +86,7 @@ public class DisplayEndpoint implements MainJDEC {
         checkForUpdates();
 
         controlUpdater.start();
+        Debug.println("All threaded processes started");
     }
 
     public static void doProtocolUpdate() {

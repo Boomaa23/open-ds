@@ -16,9 +16,12 @@ public class Libraries {
 
     public static void init() {
         String tmpPath = OperatingSystem.getTempFolder();
+        Debug.println("Temporary directory located at: " + tmpPath);
 
         OperatingSystem os = OperatingSystem.getCurrent();
+        Debug.println("Detected operating system: " + os);
         Architecture arch = Architecture.getCurrent();
+        Debug.println("Detected architecture: " + arch);
         String nLibExt = "-" + os.getCommonName() + "-" + arch.toString() + "." + os.getNativeExt();
 
         for (String libName : NATIVE_LIBS) {
@@ -33,6 +36,8 @@ public class Libraries {
                 e.printStackTrace();
             }
             System.load(tmpPath + libName);
+            Debug.println("Loaded " + libName);
         }
+        Debug.println("Native input libraries loaded");
     }
 }

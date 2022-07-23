@@ -13,8 +13,12 @@ public class TCPInterface implements NetworkInterface {
     private Socket socket;
     private InputStream in;
     private boolean closed;
+    private final String ip;
+    private final int port;
 
     public TCPInterface(String ip, int port, int timeout) throws SocketException {
+        this.ip = ip;
+        this.port = port;
         try {
             this.socket = new Socket(ip, port);
             socket.setTcpNoDelay(true);
@@ -99,6 +103,14 @@ public class TCPInterface implements NetworkInterface {
     @Override
     public boolean isClosed() {
         return closed;
+    }
+
+    public String getIP() {
+        return ip;
+    }
+
+    public int getPort() {
+        return port;
     }
 
     private interface NetworkAction<T> {

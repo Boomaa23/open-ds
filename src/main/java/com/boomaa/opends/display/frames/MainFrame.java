@@ -11,6 +11,7 @@ import com.boomaa.opends.display.TeamNumListener;
 import com.boomaa.opends.display.TeamNumPersist;
 import com.boomaa.opends.display.elements.GBCPanelBuilder;
 import com.boomaa.opends.display.tabs.TabChangeListener;
+import com.boomaa.opends.util.Debug;
 import com.boomaa.opends.util.OperatingSystem;
 import com.boomaa.opends.util.Parameter;
 import org.jnativehook.GlobalScreen;
@@ -58,11 +59,11 @@ public class MainFrame implements MainJDEC {
     public static void display() {
         FRAME.setIconImage(MainFrame.ICON);
         CONTENT.setLayout(new GridBagLayout());
-
         TITLE.setText(TITLE.getText() + " " + DisplayEndpoint.CURRENT_VERSION_TAG);
 
         LogManager.getLogManager().reset();
         Logger.getLogger(GlobalScreen.class.getPackage().getName()).setLevel(Level.OFF);
+
         listenerInit();
         valueInit();
         layoutInit();
@@ -87,13 +88,14 @@ public class MainFrame implements MainJDEC {
                 e.printStackTrace();
             }
         }
+        Debug.println("Display elements initialized and GUI showing");
     }
 
     private static void valueInit() {
         IS_ENABLED.setEnabled(false);
 
-        TeamNumPersist.init();
         String prevTeamNum = TeamNumPersist.load();
+        Debug.println("Team number retrieved from file (will set if not empty): " + prevTeamNum);
         if (!prevTeamNum.trim().isEmpty()) {
             TEAM_NUMBER.setText(prevTeamNum);
         }
@@ -102,7 +104,10 @@ public class MainFrame implements MainJDEC {
     }
 
     private static void listenerInit() {
-        PROTOCOL_YEAR.addActionListener((e) -> DisplayEndpoint.doProtocolUpdate());
+        PROTOCOL_YEAR.addActionListener((e) -> {
+            DisplayEndpoint.doProtocolUpdate();
+            Debug.println("Protocol year changed to: " + MainJDEC.getProtocolYear());
+        });
         TAB.addChangeListener(TabChangeListener.getInstance());
 
         USB_CONNECT.addActionListener((e) -> {
@@ -115,6 +120,7 @@ public class MainFrame implements MainJDEC {
         ESTOP_BTN.addActionListener((e) -> IS_ENABLED.setSelected(false));
 
         TEAM_NUMBER.getDocument().addDocumentListener(new TeamNumListener());
+        Debug.println("Initialized listeners for display elements");
 
         if (!Parameter.DISABLE_HOTKEYS.isPresent()) {
             StdOutRedirect.toNull();
@@ -125,6 +131,7 @@ public class MainFrame implements MainJDEC {
                         NativeKeyEvent.VC_OPEN_BRACKET, NativeKeyEvent.VC_CLOSE_BRACKET, NativeKeyEvent.VC_BACK_SLASH))
             );
             StdOutRedirect.reset();
+            Debug.println("Registered global hotkey hooks (JNativeHook)");
         }
     }
 
@@ -138,6 +145,7 @@ public class MainFrame implements MainJDEC {
         TAB.addTab("Statistics", STATS_TAB);
         TAB.addTab("Log", LOG_TAB);
         FRAME.add(TAB);
+        Debug.println("Swing tabs added to frame");
 
         Dimension dimension = new Dimension(560, 350);
         FrameBase.applyNonWindowsScaling(dimension);
@@ -180,6 +188,8 @@ public class MainFrame implements MainJDEC {
         base.clone().setPos(5, 6, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(FMS_CONNECTION_STATUS);
         endr.clone().setPos(4, 7, 1, 1).build(new JLabel("Time: "));
         base.clone().setPos(5, 7, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(MATCH_TIME);
+
+        Debug.println("Swing components initialized and ready for display");
     }
 
     public static Container addToPanel(Container panel, Component... comps) {

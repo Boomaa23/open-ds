@@ -14,16 +14,16 @@ import javax.swing.JTextField;
 public enum Parameter {
     ALLIANCE_COLOR("--alliance-color", Type.STRING, MainJDEC.ALLIANCE_COLOR, "Red", "Blue"),
     ALLIANCE_NUMBER("--alliance-num", Type.INTEGER,  MainJDEC.ALLIANCE_NUM, 1, 2, 3),
-    FMS("--fms", Type.BOOLEAN,  MainJDEC.FMS_CONNECT),
+    DEBUG("--debug", Type.BOOLEAN),
+    DISABLE_HOTKEYS("--disable-hotkeys", Type.BOOLEAN),
+    DISABLE_LOG("--disable-log", Type.BOOLEAN),
+    DISABLE_NETTABLES("--disable-nettables", Type.BOOLEAN),
+    FMS_CONNECT("--fms", Type.BOOLEAN,  MainJDEC.FMS_CONNECT),
     GAME_DATA("--game-data", Type.STRING,  MainJDEC.GAME_DATA),
     PROTOCOL_YEAR("--protocol-year", Type.INTEGER, MainJDEC.PROTOCOL_YEAR, getProtocolYears()),
     ROBOT_DRIVE_MODE("--robot-mode", Type.STRING, MainJDEC.ROBOT_DRIVE_MODE, getRobotModes()),
     TEAM_NUMBER("--team-num", Type.INTEGER, MainJDEC.TEAM_NUMBER),
-    USB("--usb", Type.BOOLEAN, MainJDEC.USB_CONNECT),
-    TEAM_PERSIST_FILE("--tpf", Type.STRING, null),
-    DISABLE_HOTKEYS("--disable-hotkeys", Type.BOOLEAN, null),
-    DISABLE_NETTABLES("--disable-nettables", Type.BOOLEAN, null),
-    DISABLE_LOG("--disable-log", Type.BOOLEAN, null);
+    USB_CONNECT("--usb", Type.BOOLEAN, MainJDEC.USB_CONNECT);
 
     private final String flag;
     private final Type type;
@@ -38,6 +38,10 @@ public enum Parameter {
         this.jdecLink = jdecLink;
         this.options = Arrays.asList(options);
         this.present = false;
+    }
+
+    Parameter(String flag, Type type) {
+        this(flag, type, null);
     }
 
     public String getFlag() {
@@ -109,6 +113,7 @@ public enum Parameter {
                 }
             }
         }
+        Debug.println("Command-line arguments parsed");
     }
 
     public static void applyJDECLinks() {
