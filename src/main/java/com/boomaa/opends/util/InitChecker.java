@@ -4,56 +4,24 @@ import com.boomaa.opends.data.holders.Protocol;
 import com.boomaa.opends.data.holders.Remote;
 
 public class InitChecker {
-    private boolean rioUdp = false;
-    private boolean rioTcp = false;
-    private boolean fmsUdp = false;
-    private boolean fmsTcp = false;
+    // rioUDP, rioTCP, fmsUDP, fmsTCP
+    private final boolean[] states = new boolean[4];
 
     public boolean get(Remote remote, Protocol protocol) {
-        if (remote == Remote.ROBO_RIO) {
-            if (protocol == Protocol.UDP) {
-                return rioUdp;
-            } else {
-                return rioTcp;
-            }
-        } else {
-            if (protocol == Protocol.UDP) {
-                return fmsUdp;
-            } else {
-                return fmsTcp;
-            }
-        }
+        return states[(remote.ordinal() * 2) + protocol.ordinal()];
     }
 
     public void set(boolean value, Remote remote, Protocol protocol) {
-        if (remote == Remote.ROBO_RIO) {
-            if (protocol == Protocol.UDP) {
-                rioUdp = value;
-            } else {
-                rioTcp = value;
-            }
-        } else {
-            if (protocol == Protocol.UDP) {
-                fmsUdp = value;
-            } else {
-                fmsTcp = value;
-            }
-        }
+        states[(remote.ordinal() * 2) + protocol.ordinal()] = value;
     }
 
-    public boolean isAndInit(Protocol protocol) {
-        return protocol == Protocol.UDP ? (rioUdp && fmsUdp) : (rioTcp && fmsTcp);
+    public boolean isInit(Protocol protocol, LogicOperation operation) {
+        int idx = protocol.ordinal();
+        return operation.apply(states[idx], states[idx + 2]);
     }
 
-    public boolean isAndInit(Remote remote) {
-        return remote == Remote.ROBO_RIO ? (rioUdp && rioTcp) : (fmsUdp && fmsTcp);
-    }
-
-    public boolean isOrInit(Protocol protocol) {
-        return protocol == Protocol.UDP ? (rioUdp || fmsUdp) : (rioTcp || fmsTcp);
-    }
-
-    public boolean isOrInit(Remote remote) {
-        return remote == Remote.ROBO_RIO ? (rioUdp || rioTcp) : (fmsUdp || fmsTcp);
+    public boolean isInit(Remote remote, LogicOperation operation) {
+        int idx = remote.ordinal() * 2;
+        return operation.apply(states[idx], states[idx + 1]);
     }
 }

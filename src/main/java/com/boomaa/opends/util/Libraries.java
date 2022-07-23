@@ -8,7 +8,7 @@ import java.nio.file.StandardCopyOption;
 
 public class Libraries {
     private static final String[] NATIVE_LIBS = new String[] {
-            "ods-input"
+            "opends-lib"
     };
 
     private Libraries() {
