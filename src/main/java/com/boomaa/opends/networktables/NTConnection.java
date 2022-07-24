@@ -30,19 +30,18 @@ public class NTConnection extends Clock {
     @Override
     public void onCycle() {
         if (connection == null || connection.isClosed()) {
-            Debug.printlnSticky("NetworkTables connection failed", EventSeverity.WARNING);
+            Debug.println("NetworkTables connection failed",
+                Debug.Options.create().setSeverity(EventSeverity.WARNING).setSticky(true));
             reloadConnection();
         } else {
             if (doReconnectSend) {
+                Debug.println("NetworkTables connected to " + connection.toString());
                 Debug.removeSticky("NetworkTables connection failed");
                 connection.write(CLIENT_HELLO);
                 decodeInput(connection.read());
                 connection.write(CLIENT_HELLO_COMPLETE);
                 decodeInput(connection.read());
                 doReconnectSend = false;
-                String debugStr = String.format("NetworkTables connected to %s:%s",
-                    connection.getIP(), connection.getPort());
-                Debug.println(debugStr, EventSeverity.INFO);
             }
             connection.write(KEEP_ALIVE);
             decodeInput(connection.read());

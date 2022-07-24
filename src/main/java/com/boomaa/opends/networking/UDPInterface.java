@@ -79,4 +79,9 @@ public class UDPInterface implements NetworkInterface {
     public boolean isClosed() {
         return closed;
     }
+
+    @Override
+    public String toString() {
+        return ip.getHostName() + ":RX" + serverSocket.getLocalPort() + "/TX" + clientPort;
+    }
 }

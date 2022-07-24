@@ -7,6 +7,8 @@ import com.boomaa.opends.data.receive.parser.ParserNull;
 import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.util.Clock;
+import com.boomaa.opends.util.Debug;
+import com.boomaa.opends.util.EventSeverity;
 import com.boomaa.opends.util.PacketCounters;
 
 import java.io.IOException;
@@ -34,6 +36,8 @@ public class NetworkClock extends Clock {
                     iface.write(DisplayEndpoint.CREATOR.create(remote, protocol));
                     byte[] data = iface.read();
                     if (data == null || (protocol == Protocol.UDP && data.length == 0)) {
+                        Debug.println(makeDebugStr("invalid data"),
+                            Debug.Options.create().setSticky(true).setSeverity(EventSeverity.WARNING));
                         DisplayEndpoint.UPDATER.update(ParserNull.getInstance(), remote, protocol);
                         DisplayEndpoint.NET_IF_INIT.set(false, remote, protocol);
                     } else {
@@ -41,13 +45,22 @@ public class NetworkClock extends Clock {
                         DisplayEndpoint.UPDATER.update(packetParser, remote, protocol);
                     }
                 } else {
+                    Debug.println(makeDebugStr("network error"),
+                        Debug.Options.create().setSticky(true).setSeverity(EventSeverity.WARNING));
                     DisplayEndpoint.UPDATER.update(ParserNull.getInstance(), remote, protocol);
                     reloadInterface();
                 }
+                Debug.removeSticky(makeDebugStr("FMS not selected"));
             } else {
                 DisplayEndpoint.UPDATER.update(ParserNull.getInstance(), remote, protocol);
                 DisplayEndpoint.NET_IF_INIT.set(false, remote, protocol);
+                Debug.println(makeDebugStr("FMS not selected"),
+                    Debug.Options.create().setSticky(true).setSeverity(EventSeverity.INFO));
             }
+            Debug.removeSticky(makeDebugStr("updater or creator is null"));
+        } else {
+            Debug.println(makeDebugStr("updater or creator is null"),
+                Debug.Options.create().setSticky(true).setSeverity(EventSeverity.ERROR));
         }
     }
 
@@ -81,16 +94,24 @@ public class NetworkClock extends Clock {
                     ? new TCPInterface(ip, ports.getTcp())
                     : new UDPInterface(ip, ports.getUdpClient(), ports.getUdpServer());
             DisplayEndpoint.NET_IF_INIT.set(true, remote, protocol);
+            Debug.println(remote + " " + protocol + " interface connected to " + iface.toString());
+            Debug.removeSticky(makeDebugStr("network error"));
+            Debug.removeSticky(makeDebugStr("invalid data"));
         } catch (IOException e) {
             uninitialize(isFms);
         }
     }
 
+    public void restart() {
+        super.end();
+        DisplayEndpoint.NET_IF_INIT.set(false, remote, protocol);
+        reloadInterface();
+        super.start();
+    }
+
     private void uninitialize(boolean isFms) {
         DisplayEndpoint.NET_IF_INIT.set(false, remote, protocol);
-        if (isFms) {
-            MainJDEC.FMS_CONNECT.setSelected(false);
-        } else {
+        if (!isFms) {
             MainJDEC.IS_ENABLED.setEnabled(false);
             if (MainJDEC.IS_ENABLED.isSelected()) {
                 MainJDEC.IS_ENABLED.setSelected(false);
@@ -101,6 +122,10 @@ public class NetworkClock extends Clock {
     private static String createName(Remote remote, Protocol protocol) {
         String proto = protocol.name().charAt(0) + protocol.name().substring(1).toLowerCase();
         return (remote == Remote.ROBO_RIO ? "rio" : "fms") + proto;
+    }
+
+    private String makeDebugStr(String reason) {
+        return remote + " " + protocol + " did not connect: " + reason;
     }
 
     public static boolean pingTest(String ip) {

@@ -1,11 +1,10 @@
 package com.boomaa.opends.display.frames;
 
-import com.boomaa.opends.data.holders.Protocol;
-import com.boomaa.opends.data.holders.Remote;
 import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.display.GlobalKeyListener;
 import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.display.MultiKeyEvent;
+import com.boomaa.opends.display.RobotMode;
 import com.boomaa.opends.display.StdOutRedirect;
 import com.boomaa.opends.display.TeamNumListener;
 import com.boomaa.opends.display.TeamNumPersist;
@@ -27,11 +26,15 @@ import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -39,6 +42,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -64,14 +68,12 @@ public class MainFrame implements MainJDEC {
         LogManager.getLogManager().reset();
         Logger.getLogger(GlobalScreen.class.getPackage().getName()).setLevel(Level.OFF);
 
-        listenerInit();
         valueInit();
         layoutInit();
+        listenerInit();
 
         FRAME.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         FRAME.setResizable(true);
-        FRAME.pack();
-        FRAME.setLocationRelativeTo(null);
         if (OperatingSystem.isWindows()) {
             try {
                 UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
@@ -80,6 +82,8 @@ public class MainFrame implements MainJDEC {
             }
         }
         SwingUtilities.updateComponentTreeUI(FRAME);
+        FRAME.pack();
+        FRAME.setLocationRelativeTo(null);
         FRAME.setVisible(true);
         if (!Parameter.DISABLE_HOTKEYS.isPresent()) {
             try {
@@ -104,20 +108,51 @@ public class MainFrame implements MainJDEC {
     }
 
     private static void listenerInit() {
-        PROTOCOL_YEAR.addActionListener((e) -> {
+        PROTOCOL_YEAR.addActionListener(makeAsyncListener((e) -> {
             DisplayEndpoint.doProtocolUpdate();
+            unsetAllInterfaces();
             Debug.println("Protocol year changed to: " + MainJDEC.getProtocolYear());
-        });
+        }));
         TAB.addChangeListener(TabChangeListener.getInstance());
 
-        USB_CONNECT.addActionListener((e) -> {
-            DisplayEndpoint.NET_IF_INIT.set(false, Remote.ROBO_RIO, Protocol.UDP);
-            DisplayEndpoint.NET_IF_INIT.set(false, Remote.ROBO_RIO, Protocol.TCP);
-            DisplayEndpoint.NET_IF_INIT.set(false, Remote.FMS, Protocol.UDP);
-            DisplayEndpoint.NET_IF_INIT.set(false, Remote.FMS, Protocol.TCP);
+        USB_CONNECT.addActionListener(makeAsyncListener((e) -> {
+            unsetAllInterfaces();
+            Debug.println("Connecting to robot over USB");
+        }));
+        RESTART_CODE_BTN.addActionListener((e) -> {
+            IS_ENABLED.setSelected(false);
+            Debug.println("Restarting robot code");
         });
-        RESTART_CODE_BTN.addActionListener((e) -> IS_ENABLED.setSelected(false));
-        ESTOP_BTN.addActionListener((e) -> IS_ENABLED.setSelected(false));
+        ESTOP_BTN.addActionListener((e) -> {
+            IS_ENABLED.setSelected(false);
+            Debug.println("Emergency Stop (ESTOP) initiated");
+        });
+
+        // Debug println method checks this, but checking before adding a listener improves performance
+        if (Parameter.DEBUG.isPresent()) {
+            RESTART_ROBO_RIO_BTN.addActionListener((e) -> Debug.println("Restarting RoboRIO"));
+            IS_ENABLED.addItemListener((e) -> Debug.println(e.getStateChange() == ItemEvent.SELECTED
+                    ? "Robot Enabled" : "Robot Disabled"));
+            FMS_CONNECT.addItemListener((e) -> Debug.println(e.getStateChange() == ItemEvent.SELECTED
+                    ? "FMS connection allowed" : "FMS connection disallowed"));
+            USB_CONNECT.addItemListener((e) -> Debug.println(e.getStateChange() == ItemEvent.SELECTED
+                    ? "USB connection allowed" : "USB connection disallowed"));
+            ROBOT_DRIVE_MODE.addItemListener((e) -> {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    Debug.println("Drive mode changed to: " + ((RobotMode) e.getItem()).name());
+                }
+            });
+            ALLIANCE_COLOR.addItemListener((e) -> {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    Debug.println("Alliance color changed to: " + e.getItem());
+                }
+            });
+            ALLIANCE_NUM.addItemListener((e) -> {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    Debug.println("Alliance number changed to: " + e.getItem());
+                }
+            });
+        }
 
         TEAM_NUMBER.getDocument().addDocumentListener(new TeamNumListener());
         Debug.println("Initialized listeners for display elements");
@@ -190,6 +225,23 @@ public class MainFrame implements MainJDEC {
         base.clone().setPos(5, 7, 1, 1).setAnchor(GridBagConstraints.LINE_START).build(MATCH_TIME);
 
         Debug.println("Swing components initialized and ready for display");
+    }
+
+    private static void unsetAllInterfaces() {
+        DisplayEndpoint.RIO_UDP_CLOCK.restart();
+        DisplayEndpoint.RIO_TCP_CLOCK.restart();
+        DisplayEndpoint.FMS_UDP_CLOCK.restart();
+        DisplayEndpoint.FMS_TCP_CLOCK.restart();
+    }
+
+    public static ActionListener makeAsyncListener(Consumer<ActionEvent> func) {
+        return (e) -> new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() {
+                func.accept(e);
+                return null;
+            }
+        }.execute();
     }
 
     public static Container addToPanel(Container panel, Component... comps) {

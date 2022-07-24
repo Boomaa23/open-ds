@@ -105,12 +105,9 @@ public class TCPInterface implements NetworkInterface {
         return closed;
     }
 
-    public String getIP() {
-        return ip;
-    }
-
-    public int getPort() {
-        return port;
+    @Override
+    public String toString() {
+        return ip + ":" + port;
     }
 
     private interface NetworkAction<T> {

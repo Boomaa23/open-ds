@@ -64,7 +64,8 @@ public class DisplayEndpoint implements MainJDEC {
     }
 
     public static void main(String[] args) {
-        Debug.println("Starting OpenDS");
+        Debug.println("Starting OpenDS",
+            Debug.Options.create().setForced(true));
         Parameter.parseArgs(args);
         Libraries.init();
         ControlDevices.init();

@@ -8,8 +8,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class ControlDevices {
-    private static final String addDebugFmt = "Found and added new HID/controller device (%s) with %d buttons and %d axes";
-    private static final String rmDebugFmt = "Removed now invalid HID/controller device: %s";
     private static final Map<Integer, HIDDevice> controllers = new LinkedHashMap<>();
     private static int sendDataCtr = 0;
     private static int sendDescCtr = 0;
@@ -38,7 +36,8 @@ public class ControlDevices {
                 controllers.put(hid.getIdx(), hid);
                 final int addIdx = Math.min(hid.getIdx(), JoystickTab.EmbeddedJDEC.LIST_MODEL.size());
                 JoystickTab.EmbeddedJDEC.LIST_MODEL.add(addIdx, hid);
-                Debug.println(String.format(addDebugFmt, hid, hid.deviceNumButtons(), hid.deviceNumAxes()));
+                Debug.println(String.format("Found and added new HID/controller device (%s) with %d buttons and %d axes",
+                    hid, hid.deviceNumButtons(), hid.deviceNumAxes()));
             }
         }
     }
@@ -55,7 +54,7 @@ public class ControlDevices {
                 IndexTracker.unregister(hid.getIdx());
                 final int remIdx = Math.min(hid.getIdx(), JoystickTab.EmbeddedJDEC.LIST_MODEL.size() - 1);
                 JoystickTab.EmbeddedJDEC.LIST_MODEL.remove(remIdx);
-                Debug.println(String.format(rmDebugFmt, hid));
+                Debug.println(String.format("Removed now invalid HID/controller device: %s", hid));
             }
         }
     }

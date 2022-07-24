@@ -147,7 +147,7 @@
         <!-- Also make Indentation not target lambdas, https://github.com/checkstyle/checkstyle/issues/3342 "not important enough" -->
         <module name="SuppressionXpathSingleFilter">
             <property name="checks" value="Indentation"/>
-            <property name="query" value="//QUESTION/descendant-or-self::node()|//LITERAL_NEW/descendant-or-self::node()|//LAMBDA/descendant-or-self::node()"/>
+            <property name="query" value="//QUESTION/descendant-or-self::node()|//LITERAL_NEW/descendant-or-self::node()|//LAMBDA/descendant-or-self::node()|//CTOR_DEF/descendant-or-self::node()"/>
         </module>
         <module name="ModifierOrder"/>
         <module name="CustomImportOrder">

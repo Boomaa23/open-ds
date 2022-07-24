@@ -7,7 +7,8 @@ import java.util.concurrent.TimeUnit;
 
 public abstract class Clock {
     public static final int INSTANT = 0;
-    private static final ScheduledExecutorService executor = Executors.newScheduledThreadPool(8);
+    private static final ScheduledExecutorService executor = Executors.newScheduledThreadPool(
+        Math.min(8, Runtime.getRuntime().availableProcessors()));
     protected final int msToCycle;
     private ScheduledFuture<?> task;
     protected final String name;

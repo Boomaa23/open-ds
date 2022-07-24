@@ -43,6 +43,14 @@ public class StringUtils {
         return sb.toString();
     }
 
+    public static String padStringRight(String str, int digits) {
+        return String.format("%-" + digits + "s", str);
+    }
+
+    public static String padStringLeft(String str, int digits) {
+        return String.format("%" + digits + "s", str);
+    }
+
     public static String bytesHumanReadable(long bytes) {
         if (-1000 < bytes && bytes < 1000) {
             return bytes + " B";
