@@ -2,43 +2,102 @@ USB_SRC := src/main/java/com/boomaa/opends/usb
 LIB_OUT := src/main/resources
 LIB_NAME := opends-lib
 
-OS_TYPE := $(shell uname -s)
-ARCH_TYPE := $(shell uname -p)
-JAVA_PATH ?= $(shell which java 2>/dev/null)
-INCLUDE_PATH ?= $(shell readlink -f $(JAVA_PATH) 2>/dev/null | head --bytes=-10)/include
+LINUX_INCLUDE_PATH := "/usr/lib/jvm/java-8-openjdk-amd64/include"
+OSX_INCLUDE_PATH = LINUX_INCLUDE_PATH
+WIN32_INCLUDE_PATH := "C:\Program Files\Java\jdk1.8.0_251\include"
 
-ifeq ($(ARCH_TYPE),x86_64)
-	ARCH_TYPE := amd64
+VS_PATH := "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\"
+
+ifeq ($(OS),Windows_NT)
+    OS_TYPE := win32
+    SHELL = CMD
+    LIB_OUT := $(subst /,\\,$(LIB_OUT))
+    ifeq ($(PROCESSOR_ARCHITEW6432),AMD64)
+        ARCH_TYPE := amd64
+    else
+        ifeq ($(PROCESSOR_ARCHITECTURE),AMD64)
+            ARCH_TYPE := amd64
+        endif
+        ifeq ($(PROCESSOR_ARCHITECTURE),x86)
+            ARCH_TYPE := x86
+        endif
+    endif
+else
+    UNAME_S := $(shell uname -s)
+    ifeq ($(UNAME_S),Linux)
+        OS_TYPE := linux
+    endif
+    ifeq ($(UNAME_S),Darwin)
+        OS_TYPE := osx
+    endif
+    UNAME_P := $(shell uname -p)
+    ifeq ($(UNAME_P),x86_64)
+        ARCH_TYPE := amd64
+    else
+		ifneq ($(filter %86,$(UNAME_P)),)
+			ARCH_TYPE := x86
+		else
+			ARCH_TYPE := $(UNAME_P)
+		endif
+	endif
 endif
 
-.PHONY: native native-linux native-osx native-win32
+.PHONY: build check jar clean native-linux native-osx native-win32
+
+build: clean
+	mvn -B package --file pom.xml
+
+check: clean
+	mvn -B checkstyle:check --file pom.xml
+
+jar: check build
+
+clean:
+ifeq ($(OS_TYPE),linux)
+	rm -rf target/
+endif
+ifeq ($(OS_TYPE),osx)
+	rm -rf target/
+endif
+ifeq ($(OS_TYPE),win32)
+	rmdir /s /q target
+endif
 
 native:
-#TODO do not call make again here
-ifeq ($(OS_TYPE),Linux)
+ifeq ($(OS_TYPE),linux)
 	make native-linux
-else
-ifeq ($(OS_TYPE),Darwin)
-	make native-osx
-else
-	make native-win32
 endif
+ifeq ($(OS_TYPE),osx)
+	make native-osx
+endif
+ifeq ($(OS_TYPE),win32)
+	make native-win32
 endif
 
 native-linux:
-	gcc -c -fPIC -I$(INCLUDE_PATH) -I$(INCLUDE_PATH)/linux/ \
+	gcc -c -fPIC -I$(LINUX_INCLUDE_PATH) -I$(LINUX_INCLUDE_PATH)/linux/ \
 		$(USB_SRC)/linux/com_boomaa_opends_usb_LinuxController.c
 	gcc -shared -o $(LIB_OUT)/$(LIB_NAME)-linux-$(ARCH_TYPE).so com_boomaa_opends_usb_LinuxController.o
 	rm com_boomaa_opends_usb_LinuxController.o
 
 native-osx:
-# TODO figure out how to get java include path (similar to linux?)
-	gcc -c -fPIC -I$(INCLUDE_PATH) -I$(INCLUDE_PATH)/darwin/ \
-		$(USB_SRC)/osx/com_boomaa_opends_usb_IOKit.c $(USB_SRC)/com_boomaa_opends_usb_IOKitDevice.c
+	gcc -c -fPIC -I$(OSX_INCLUDE_PATH) -I$(OSX_INCLUDE_PATH)/darwin/ \
+		$(USB_SRC)/osx/com_boomaa_opends_usb_IOKit.c \
+		$(USB_SRC)/com_boomaa_opends_usb_IOKitDevice.c
 	gcc -shared -framework IOKit -framework CoreServices -o $(LIB_OUT)/$(LIB_NAME)-osx-$(ARCH_TYPE).jnilib \
 		com_boomaa_opends_usb_IOKit.o com_boomaa_opends_usb_IOKitDevice.o
 	rm com_boomaa_opends_usb_IOKit.o com_boomaa_opends_usb_IOKitDevice.o
 
 native-win32:
-# TODO implement (if possible)
-	echo "WIN#@"
+	$(VS_PATH)\\BuildTools\\VC\\Auxiliary\\Build\\vcvars64.bat && \
+	cl.exe /LD /I$(WIN32_INCLUDE_PATH) /I$(WIN32_INCLUDE_PATH)\\win32 \
+		$(USB_SRC)/win32/com_boomaa_opends_usb_DirectInput.c \
+		$(USB_SRC)/win32/com_boomaa_opends_usb_DirectInputDevice.c \
+		$(USB_SRC)/win32/com_boomaa_opends_usb_PlaceholderWindow.c \
+		$(USB_SRC)/win32/win32util.c /O1 /MD /Zc:inline
+	del com_boomaa_opends_usb_DirectInput.exp com_boomaa_opends_usb_DirectInput.lib \
+ 		com_boomaa_opends_usb_DirectInput.obj com_boomaa_opends_usb_DirectInputDevice.obj \
+ 		com_boomaa_opends_usb_PlaceholderWindow.obj win32util.obj
+	move /y com_boomaa_opends_usb_DirectInput.dll "$(LIB_OUT)\\"
+	del $(LIB_OUT)\\$(LIB_NAME)-win32-$(ARCH_TYPE).dll
+	ren $(LIB_OUT)\\com_boomaa_opends_usb_DirectInput.dll $(LIB_NAME)-win32-$(ARCH_TYPE).dll

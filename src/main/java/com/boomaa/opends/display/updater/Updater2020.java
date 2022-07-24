@@ -19,7 +19,6 @@ import com.boomaa.opends.display.tabs.JoystickTab;
 import com.boomaa.opends.display.tabs.TabBase;
 import com.boomaa.opends.util.DSLog;
 import com.boomaa.opends.util.EventSeverity;
-import com.boomaa.opends.util.LogicOperation;
 import com.boomaa.opends.util.NumberUtils;
 import com.boomaa.opends.util.StringUtils;
 
@@ -30,7 +29,7 @@ public class Updater2020 extends ElementUpdater {
     @Override
     protected void doUpdateFromRioUdp(PacketParser data, TVMList tagMap) {
         Parser2020.RioToDsUdp rioUdp = (Parser2020.RioToDsUdp) data;
-        IS_ENABLED.setEnabled(!DisplayEndpoint.NET_IF_INIT.isInit(Remote.FMS, LogicOperation.OR)
+        IS_ENABLED.setEnabled(!DisplayEndpoint.NET_IF_INIT.isInit(Remote.FMS)
             && !TabBase.isVisible(JoystickTab.class) && !ESTOP_STATUS.isDisplayed());
         ESTOP_STATUS.setDisplay(rioUdp.getStatus().contains(Status.ESTOP));
         if (rioUdp.getTrace().contains(Trace.ROBOTCODE)) {
@@ -41,7 +40,7 @@ public class Updater2020 extends ElementUpdater {
             ROBOT_CODE_STATUS.forceHide();
         }
 
-        boolean robotConn = DisplayEndpoint.NET_IF_INIT.isInit(Remote.ROBO_RIO, LogicOperation.OR);
+        boolean robotConn = DisplayEndpoint.NET_IF_INIT.isInit(Remote.ROBO_RIO);
         if (robotConn) {
             boolean isRealRobot = rioUdp.getTrace().contains(Trace.ISROBORIO);
             ROBOT_CONNECTION_STATUS.changeToDisplay(isRealRobot ? 0 : 1, true);

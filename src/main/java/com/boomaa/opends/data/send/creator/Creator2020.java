@@ -12,7 +12,6 @@ import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.display.RobotMode;
 import com.boomaa.opends.usb.ControlDevices;
 import com.boomaa.opends.usb.IndexTracker;
-import com.boomaa.opends.util.LogicOperation;
 import com.boomaa.opends.util.NumberUtils;
 import com.boomaa.opends.util.PacketCounters;
 
@@ -24,7 +23,7 @@ public class Creator2020 extends PacketCreator {
         PacketBuilder builder = getSequenced(Remote.ROBO_RIO);
         builder.addInt(0x01);
         int control = (ESTOP_BTN.wasPressed() ? Control.ESTOP.getFlag() : 0)
-            + (DisplayEndpoint.NET_IF_INIT.isInit(Remote.FMS, LogicOperation.OR) ? Control.FMS_CONNECTED.getFlag() : 0)
+            + (DisplayEndpoint.NET_IF_INIT.isInit(Remote.FMS) ? Control.FMS_CONNECTED.getFlag() : 0)
             + (IS_ENABLED.isSelected() ? Control.ENABLED.getFlag() : 0)
             + ((RobotMode) Objects.requireNonNull(ROBOT_DRIVE_MODE.getSelectedItem())).getControlFlag().getFlag();
         builder.addInt(control);
@@ -78,7 +77,7 @@ public class Creator2020 extends PacketCreator {
         if (ROBOT_CONNECTION_STATUS.isDisplayed()) {
             status += 0x20;
         }
-        if (DisplayEndpoint.NET_IF_INIT.isInit(Remote.ROBO_RIO, LogicOperation.OR)) {
+        if (DisplayEndpoint.NET_IF_INIT.isInit(Remote.ROBO_RIO)) {
             status += 0x10 + 0x08;
         }
         if (IS_ENABLED.isSelected()) {

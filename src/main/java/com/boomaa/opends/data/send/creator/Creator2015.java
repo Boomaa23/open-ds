@@ -11,7 +11,6 @@ import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.display.RobotMode;
 import com.boomaa.opends.usb.ControlDevices;
 import com.boomaa.opends.usb.IndexTracker;
-import com.boomaa.opends.util.LogicOperation;
 import com.boomaa.opends.util.NumberUtils;
 
 import java.util.Objects;
@@ -71,7 +70,7 @@ public class Creator2015 extends NoTCPCreator {
         if (ROBOT_CONNECTION_STATUS.isDisplayed()) {
             status += 0x20;
         }
-        if (DisplayEndpoint.NET_IF_INIT.isInit(Remote.ROBO_RIO, LogicOperation.OR)) {
+        if (DisplayEndpoint.NET_IF_INIT.isInit(Remote.ROBO_RIO)) {
             status += 0x10 + 0x08;
         }
         if (IS_ENABLED.isSelected()) {
@@ -92,7 +91,7 @@ public class Creator2015 extends NoTCPCreator {
         if (teamStr != null && !teamStr.isEmpty()) {
             builder.addBytes(NumberUtils.intToBytePair(Integer.parseInt(teamStr)));
         }
-        if (DisplayEndpoint.NET_IF_INIT.isInit(Remote.ROBO_RIO, LogicOperation.OR)) {
+        if (DisplayEndpoint.NET_IF_INIT.isInit(Remote.ROBO_RIO)) {
             double bat = Double.parseDouble(BAT_VOLTAGE.getText().replaceAll(" V", ""));
             //TODO test if this battery re-encoder works
             int b1 = (int) bat;

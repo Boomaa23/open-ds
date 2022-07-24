@@ -1,3 +1,4 @@
+#pragma comment (lib, "User32.lib")
 #include <stdio.h>
 #include <jni.h>
 #include "win32util.h"

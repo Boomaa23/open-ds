@@ -1,4 +1,4 @@
-name: Java CI
+name: Checkstyle Java
 
 on:
   push:

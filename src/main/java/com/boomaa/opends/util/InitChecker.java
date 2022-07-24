@@ -15,13 +15,8 @@ public class InitChecker {
         states[(remote.ordinal() * 2) + protocol.ordinal()] = value;
     }
 
-    public boolean isInit(Protocol protocol, LogicOperation operation) {
-        int idx = protocol.ordinal();
-        return operation.apply(states[idx], states[idx + 2]);
-    }
-
-    public boolean isInit(Remote remote, LogicOperation operation) {
+    public boolean isInit(Remote remote) {
         int idx = remote.ordinal() * 2;
-        return operation.apply(states[idx], states[idx + 1]);
+        return states[idx] || states[idx + 1];
     }
 }
