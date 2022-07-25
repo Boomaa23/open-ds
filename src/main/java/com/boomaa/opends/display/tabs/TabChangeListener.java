@@ -1,5 +1,7 @@
 package com.boomaa.opends.display.tabs;
 
+import com.boomaa.opends.util.Debug;
+
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JTabbedPane;
@@ -14,13 +16,16 @@ public class TabChangeListener implements ChangeListener {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void stateChanged(ChangeEvent e) {
         if (!(e.getSource() instanceof JTabbedPane)) {
             return;
         }
         JTabbedPane pane = (JTabbedPane) e.getSource();
         TabBase.setVisible((Class<? extends TabBase>) pane.getSelectedComponent().getClass());
-        Runnable action = actions.get(pane.getTitleAt(pane.getSelectedIndex()));
+        String title = pane.getTitleAt(pane.getSelectedIndex());
+        Debug.println("JTab changed to: " + title);
+        Runnable action = actions.get(title);
         if (action != null) {
             action.run();
         }

@@ -1,5 +1,6 @@
 package com.boomaa.opends.display.frames;
 
+import com.boomaa.opends.util.Debug;
 import com.boomaa.opends.util.OperatingSystem;
 
 import java.awt.Container;
@@ -26,14 +27,16 @@ public abstract class FrameBase extends JFrame {
         this.dimension = dimension;
         applyNonWindowsScaling(dimension);
         this.content = this.getContentPane();
+        Debug.println(title + " frame configuration started");
         config();
+        Debug.println(title + " frame configured");
         super.pack();
         super.setLocationRelativeTo(null);
         forceShow();
     }
 
     public void config() {
-        //default config goes here
+        // Default config goes here
         this.setPreferredSize(dimension);
         this.setIconImage(MainFrame.ICON);
         this.setLocationRelativeTo(null);
@@ -41,16 +44,14 @@ public abstract class FrameBase extends JFrame {
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
 
-    public void reopen() {
-        forceShow();
-    }
-
     public void forceShow() {
         super.setVisible(true);
+        Debug.println(getTitle() + " frame displayed");
     }
 
     public void forceHide() {
         super.setVisible(false);
+        Debug.println(getTitle() + " frame hidden");
     }
 
     public String getUUID() {

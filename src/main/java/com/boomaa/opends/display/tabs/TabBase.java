@@ -1,6 +1,7 @@
 package com.boomaa.opends.display.tabs;
 
 import com.boomaa.opends.display.frames.FrameBase;
+import com.boomaa.opends.util.Debug;
 
 import java.awt.Dimension;
 import javax.swing.JPanel;
@@ -15,7 +16,9 @@ public abstract class TabBase extends JPanel {
             FrameBase.applyNonWindowsScaling(dimension);
             this.setPreferredSize(dimension);
         }
+        Debug.println(getClass().getSimpleName() + " configuration started");
         config();
+        Debug.println(getClass().getSimpleName() + " configured");
     }
 
     public TabBase() {

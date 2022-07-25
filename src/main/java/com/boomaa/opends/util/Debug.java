@@ -14,20 +14,16 @@ public class Debug {
     private Debug() {
     }
 
-    public static void println(String msg, Options options) {
-        if (options.forceDisplay() || Parameter.DEBUG.isPresent()) {
-            if (options.isSticky() && stickyMessages.contains(msg)) {
+    public static void println(String msg, EventSeverity severity, boolean sticky, boolean forced) {
+        if (forced || Parameter.DEBUG.isPresent()) {
+            if (sticky && stickyMessages.contains(msg)) {
                 return;
             }
             String dt = LocalDateTime.now().format(TS_FORMAT);
-            String out = String.format("%s [%s]: %s", dt, options.getSeverity().name(), msg);
-            if (options.addToPane()) {
-                Logger.OUT.println(out);
-            }
-            if (options.addToEvents()) {
-                DSLog.queueEvent(msg, options.getSeverity());
-            }
-            if (options.getSeverity() == EventSeverity.ERROR) {
+            String out = String.format("%s [%s]: %s", dt, severity.name(), msg);
+            Logger.OUT.println(out);
+            DSLog.queueEvent(msg, severity);
+            if (severity == EventSeverity.ERROR) {
                 System.err.println(out);
             } else {
                 System.out.println(out);
@@ -36,115 +32,19 @@ public class Debug {
         }
     }
 
+    public static void println(String msg, EventSeverity severity, boolean sticky) {
+        println(msg, severity, sticky, false);
+    }
+
+    public static void println(String msg, EventSeverity severity) {
+        println(msg, severity, false, false);
+    }
+
     public static void println(String msg) {
-        println(msg, Options.DEFAULT);
+        println(msg, EventSeverity.INFO, false, false);
     }
 
     public static boolean removeSticky(String msg) {
         return stickyMessages.remove(msg);
-    }
-
-    public static class Options {
-        public static final Options DEFAULT = Options.create().setMutable(false);
-
-        private EventSeverity severity;
-        private boolean toEvents;
-        private boolean toPane;
-        private boolean sticky;
-        private boolean forced;
-        private boolean mutable;
-
-        public Options(EventSeverity severity, boolean toEvents,
-                       boolean toPane, boolean sticky,
-                       boolean forced, boolean mutable) {
-            this.severity = severity;
-            this.toEvents = toEvents;
-            this.toPane = toPane;
-            this.sticky = sticky;
-            this.forced = forced;
-            this.mutable = mutable;
-        }
-
-        public Options(Options other) {
-            this(other.severity, other.toEvents, other.toPane, other.sticky, other.forced, other.mutable);
-        }
-
-        public EventSeverity getSeverity() {
-            return severity;
-        }
-
-        public boolean addToEvents() {
-            return toEvents;
-        }
-
-        public boolean addToPane() {
-            return toPane;
-        }
-
-        public boolean isSticky() {
-            return sticky;
-        }
-
-        public boolean forceDisplay() {
-            return forced;
-        }
-
-        public boolean isMutable() {
-            return mutable;
-        }
-
-        public Options setSeverity(EventSeverity severity) {
-            if (mutable) {
-                this.severity = severity;
-                return this;
-            } else {
-                return new Options(this).setMutable(true).setSeverity(severity);
-            }
-        }
-
-        public Options setToEvents(boolean toEvents) {
-            if (mutable) {
-                this.toEvents = toEvents;
-                return this;
-            } else {
-                return new Options(this).setMutable(true).setToEvents(toEvents);
-            }
-        }
-
-        public Options setToPane(boolean toPane) {
-            if (mutable) {
-                this.toPane = toPane;
-                return this;
-            } else {
-                return new Options(this).setMutable(true).setToPane(toPane);
-            }
-        }
-
-        public Options setSticky(boolean sticky) {
-            if (mutable) {
-                this.sticky = sticky;
-                return this;
-            } else {
-                return new Options(this).setMutable(true).setSticky(sticky);
-            }
-        }
-
-        public Options setForced(boolean forced) {
-            if (mutable) {
-                this.forced = forced;
-                return this;
-            } else {
-                return new Options(this).setMutable(true).setForced(forced);
-            }
-        }
-
-        public Options setMutable(boolean mutable) {
-            this.mutable = mutable;
-            return this;
-        }
-
-        public static Options create() {
-            return new Options(EventSeverity.INFO, true, true, false, false, true);
-        }
     }
 }

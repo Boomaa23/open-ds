@@ -12,6 +12,8 @@ import com.boomaa.opends.usb.ControlDevices;
 import com.boomaa.opends.usb.HIDDevice;
 import com.boomaa.opends.usb.IndexTracker;
 import com.boomaa.opends.util.Clock;
+import com.boomaa.opends.util.Debug;
+import com.boomaa.opends.util.EventSeverity;
 import com.boomaa.opends.util.NumberUtils;
 
 import java.awt.Dimension;
@@ -50,7 +52,10 @@ public class JoystickTab extends TabBase {
         EmbeddedJDEC.LIST_SCR.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         EmbeddedJDEC.LIST_SCR.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         EmbeddedJDEC.LIST_SCR.setPreferredSize(new Dimension(200, 100));
-        ctrlToDisplay();
+
+        for (HIDDevice hid : ControlDevices.getAll().values()) {
+            EmbeddedJDEC.LIST_MODEL.add(EmbeddedJDEC.LIST_MODEL.size(), hid);
+        }
 
         EmbeddedJDEC.UP_BTN.setEnabled(false);
         EmbeddedJDEC.DOWN_BTN.setEnabled(false);
@@ -62,6 +67,7 @@ public class JoystickTab extends TabBase {
         EmbeddedJDEC.LIST.getSelectionModel().addListSelectionListener((e) -> {
             HIDDevice device = EmbeddedJDEC.LIST.getSelectedValue();
             if (device != null) {
+                Debug.println("Selected joystick: " + device);
                 EmbeddedJDEC.INDEX_SET.setEnabled(true);
                 EmbeddedJDEC.INDEX_SET.setText(String.valueOf(device.getIdx()));
 
@@ -84,36 +90,53 @@ public class JoystickTab extends TabBase {
                     gbcButton.clone().setX(i % BTN_PER_ROW).setY(row).build(new JLabel(String.valueOf(i + 1)));
                     gbcButton.clone().setX(i % BTN_PER_ROW).setY(row + 1).build(cb);
                 }
+                Debug.println("Joystick " + device + " setup to display");
             } else {
+                Debug.println("Joystick device selected was null", EventSeverity.WARNING);
                 EmbeddedJDEC.INDEX_SET.setEnabled(false);
                 EmbeddedJDEC.INDEX_SET.setText("");
             }
         });
         EmbeddedJDEC.UP_BTN.addActionListener(e -> {
             int idx = EmbeddedJDEC.LIST.getSelectedIndex();
+            Debug.println("Joystick moving up: swapping " + idx + " and " + (idx - 1));
             swapDeviceIndices(idx, idx - 1);
         });
         EmbeddedJDEC.DOWN_BTN.addActionListener(e -> {
             int idx = EmbeddedJDEC.LIST.getSelectedIndex();
+            Debug.println("Joystick moving down: swapping " + idx + " and " + (idx + 1));
             swapDeviceIndices(idx, idx + 1);
         });
         EmbeddedJDEC.AUTO_ORDER_BTN.addActionListener(e -> {
             if (!FrameBase.isAlive(AutoOrderFrame.class)) {
                 new AutoOrderFrame();
+                Debug.println("New auto order frame opened");
             } else {
-                FrameBase.getAlive(AutoOrderFrame.class).reopen();
+                FrameBase.getAlive(AutoOrderFrame.class).forceShow();
+                Debug.println("Existing auto order frame shown");
             }
         });
         EmbeddedJDEC.REASSIGN_AXES_BTN.addActionListener(e -> {
             if (!FrameBase.isAlive(ReassignAxesFrame.class)) {
                 new ReassignAxesFrame();
+                Debug.println("New reassign axes frame opened");
             } else {
-                FrameBase.getAlive(ReassignAxesFrame.class).reopen();
+                FrameBase.getAlive(ReassignAxesFrame.class).forceShow();
+                Debug.println("Existing reassign axes frame shown");
             }
         });
-        EmbeddedJDEC.DISABLE_BTN.addActionListener(e -> EmbeddedJDEC.LIST.getSelectedValue()
-                .setDisabled(EmbeddedJDEC.DISABLE_BTN.isSelected()));
-        EmbeddedJDEC.RELOAD_BTN.addActionListener(e -> resetControllerDisplay());
+        EmbeddedJDEC.DISABLE_BTN.addActionListener(e -> {
+            EmbeddedJDEC.LIST.getSelectedValue()
+                    .setDisabled(EmbeddedJDEC.DISABLE_BTN.isSelected());
+            String action = EmbeddedJDEC.DISABLE_BTN.isSelected() ? " disabled" :  " enabled";
+            Debug.println("Joystick " + EmbeddedJDEC.LIST.getSelectedValue() + action);
+        });
+        EmbeddedJDEC.RELOAD_BTN.addActionListener(e -> {
+            EmbeddedJDEC.LIST_MODEL.clear();
+            ControlDevices.clearAll();
+            ControlDevices.findAll();
+            Debug.println("All HID devices/joysticks reloaded");
+        });
 
         super.setLayout(new GridBagLayout());
         GBCPanelBuilder base = new GBCPanelBuilder(this)
@@ -157,8 +180,10 @@ public class JoystickTab extends TabBase {
 
         if (valueUpdater == null) {
             valueUpdater = new ValueUpdater();
+            Debug.println("Joystick tab value updater thread instantiated");
         }
         valueUpdater.start();
+        Debug.println("Joystick tab value updater thread started");
     }
 
     private static synchronized void swapDeviceIndices(int aIndex, int bIndex) {
@@ -178,18 +203,6 @@ public class JoystickTab extends TabBase {
                 EmbeddedJDEC.LIST_MODEL.addElement(aDevice);
                 EmbeddedJDEC.LIST.setSelectedIndex(listSize - 1);
             }
-        }
-    }
-
-    private void resetControllerDisplay() {
-        EmbeddedJDEC.LIST_MODEL.clear();
-        ControlDevices.clearAll();
-        ControlDevices.findAll();
-    }
-
-    private void ctrlToDisplay() {
-        for (HIDDevice hid : ControlDevices.getAll().values()) {
-            EmbeddedJDEC.LIST_MODEL.add(EmbeddedJDEC.LIST_MODEL.size(), hid);
         }
     }
 
@@ -227,11 +240,17 @@ public class JoystickTab extends TabBase {
         @Override
         public void onCycle() {
             if (!TabBase.isVisible(JoystickTab.class) && !FrameBase.isVisible(AutoOrderFrame.class)) {
+                Debug.println("Joystick tab is not visible, value updater paused", EventSeverity.INFO, true);
+                Debug.removeSticky("Joystick tab visible, value updater started");
                 return;
             }
+            Debug.println("Joystick tab visible, value updater started", EventSeverity.INFO, true);
+            Debug.removeSticky("Joystick tab is not visible, value updater paused");
             HIDDevice current = EmbeddedJDEC.LIST.getSelectedValue();
             int cListIdx = EmbeddedJDEC.LIST.getSelectedIndex();
             if (current != null) {
+                Debug.removeSticky("Joystick device selected was null");
+                Debug.removeSticky("Joystick info fields reset");
                 EmbeddedJDEC.UP_BTN.setEnabled(cListIdx != 0);
                 EmbeddedJDEC.DOWN_BTN.setEnabled(cListIdx != EmbeddedJDEC.LIST_MODEL.size() - 1);
                 EmbeddedJDEC.REASSIGN_AXES_BTN.setEnabled(true);
@@ -268,6 +287,7 @@ public class JoystickTab extends TabBase {
                     EmbeddedJDEC.BUTTONS.get(i).setSelected(buttons[i]);
                 }
             } else {
+                Debug.println("Joystick device selected was null", EventSeverity.INFO, true);
                 EmbeddedJDEC.VAL_X.setText(" N/A");
                 EmbeddedJDEC.VAL_Y.setText(" N/A");
                 EmbeddedJDEC.VAL_Z.setText(" N/A");
@@ -278,6 +298,7 @@ public class JoystickTab extends TabBase {
                 EmbeddedJDEC.REASSIGN_AXES_BTN.setEnabled(false);
                 EmbeddedJDEC.UP_BTN.setEnabled(false);
                 EmbeddedJDEC.DOWN_BTN.setEnabled(false);
+                Debug.println("Joystick info fields reset", EventSeverity.INFO, true);
             }
             EmbeddedJDEC.BUTTON_GRID.revalidate();
         }

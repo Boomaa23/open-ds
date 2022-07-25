@@ -16,6 +16,7 @@ import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.Clock;
 import com.boomaa.opends.util.DSLog;
 import com.boomaa.opends.util.Debug;
+import com.boomaa.opends.util.EventSeverity;
 import com.boomaa.opends.util.InitChecker;
 import com.boomaa.opends.util.Libraries;
 import com.boomaa.opends.util.Parameter;
@@ -64,8 +65,7 @@ public class DisplayEndpoint implements MainJDEC {
     }
 
     public static void main(String[] args) {
-        Debug.println("Starting OpenDS",
-            Debug.Options.create().setForced(true));
+        Debug.println("Starting OpenDS", EventSeverity.INFO, false, true);
         Parameter.parseArgs(args);
         Libraries.init();
         ControlDevices.init();

@@ -7,6 +7,8 @@ import com.boomaa.opends.usb.Component;
 import com.boomaa.opends.usb.ComponentTracker;
 import com.boomaa.opends.usb.HIDDevice;
 import com.boomaa.opends.util.Clock;
+import com.boomaa.opends.util.Debug;
+import com.boomaa.opends.util.EventSeverity;
 import com.boomaa.opends.util.NumberUtils;
 
 import java.awt.Dimension;
@@ -44,10 +46,13 @@ public class ReassignAxesFrame extends FrameBase {
             if (selectedDevice != device) {
                 MessageBox.show("Selected joystick device has changed or been removed."
                         + " Not making changes.", MessageBox.Type.ERROR);
+                Debug.println("Input device removed, not reassigning axes", EventSeverity.WARNING);
                 forceDispose();
                 return;
             }
             ComponentTracker axesTracker = selectedDevice.getAxesTracker();
+            Debug.println("Old user axis mapping: " + axesTracker.getUserMap().toString());
+            Debug.println("Old direct axis mapping: " + axesTracker.getDirectMap().toString());
             for (int i = 0; i < EmbeddedJDEC.USED_AXES.length; i++) {
                 AxisComboBox box = EmbeddedJDEC.USED_AXES[i];
                 Component.Identifier hwId = box.getHardwareId();
@@ -58,7 +63,10 @@ public class ReassignAxesFrame extends FrameBase {
                     axesTracker.map(userId, hwId, true);
                 }
             }
+            Debug.println("New user axis mapping: " + axesTracker.getUserMap().toString());
+            Debug.println("New direct axis mapping: " + axesTracker.getDirectMap().toString());
             axesTracker.saveToFile(device.getAxesTrackerFilePath());
+            Debug.println("Axis reassignment saved to file");
             forceDispose();
         });
 
@@ -107,7 +115,9 @@ public class ReassignAxesFrame extends FrameBase {
 
         if (valueUpdater == null) {
             valueUpdater = new ValueUpdater();
+            Debug.println("Reassign Axes Frame value updater thread instantiated");
             valueUpdater.start();
+            Debug.println("Reassign Axes Frame value updater thread started");
         }
     }
 
@@ -115,6 +125,7 @@ public class ReassignAxesFrame extends FrameBase {
     public void dispose() {
         forceDispose();
         super.dispose();
+        Debug.println("Reassign Axes Frame value updater thread stopped");
     }
 
     public interface EmbeddedJDEC {

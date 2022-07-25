@@ -3,6 +3,7 @@ package com.boomaa.opends.display.tabs;
 import com.boomaa.opends.display.elements.GBCPanelBuilder;
 import com.boomaa.opends.networktables.NTEntry;
 import com.boomaa.opends.networktables.NTStorage;
+import com.boomaa.opends.util.Debug;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -128,6 +129,7 @@ public class NTTab extends TabBase {
         entryDisplayWrapper.revalidate();
         super.repaint();
         super.revalidate();
+        Debug.println("NT tab " + name + " rendered with " + displayedEntries.size() + " entries");
     }
 
     public void populateTabsBar() {

@@ -1,11 +1,15 @@
 package com.boomaa.opends.display;
 
+import com.boomaa.opends.util.Debug;
+
+import java.util.Arrays;
+
 public class MultiKeyEvent {
     private final Runnable action;
     private final int[] keycodes;
     private final boolean[] flags;
 
-    public MultiKeyEvent(Runnable action, int...keycodes) {
+    public MultiKeyEvent(Runnable action, int... keycodes) {
         this.action = action;
         this.keycodes = keycodes;
         this.flags = new boolean[keycodes.length];
@@ -26,6 +30,9 @@ public class MultiKeyEvent {
                 return;
             }
         }
+        String fmtAction = "Multikey action %s with keycodes: " + Arrays.toString(keycodes);
+        Debug.println(String.format(fmtAction, "detected"));
         action.run();
+        Debug.println(String.format(fmtAction, "run"));
     }
 }

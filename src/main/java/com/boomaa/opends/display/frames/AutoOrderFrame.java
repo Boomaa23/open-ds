@@ -5,6 +5,7 @@ import com.boomaa.opends.display.tabs.JoystickTab;
 import com.boomaa.opends.usb.ControlDevices;
 import com.boomaa.opends.usb.HIDDevice;
 import com.boomaa.opends.util.Clock;
+import com.boomaa.opends.util.Debug;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -54,19 +55,10 @@ public class AutoOrderFrame extends FrameBase {
 
         base.clone().setPos(0, 0, 6, 1).build(new JLabel("Press a button on each joystick in ascending index order"));
 
-        base.clone().setPos(0, 1, 1, 1).build(new JLabel("0: "));
-        base.clone().setPos(0, 2, 1, 1).build(new JLabel("1: "));
-        base.clone().setPos(0, 3, 1, 1).build(new JLabel("2: "));
-        base.clone().setPos(0, 4, 1, 1).build(new JLabel("3: "));
-        base.clone().setPos(0, 5, 1, 1).build(new JLabel("4: "));
-        base.clone().setPos(0, 6, 1, 1).build(new JLabel("5: "));
-
-        base.clone().setPos(1, 1, 5, 1).build(EmbeddedJDEC.JS_NAMES[0]);
-        base.clone().setPos(1, 2, 5, 1).build(EmbeddedJDEC.JS_NAMES[1]);
-        base.clone().setPos(1, 3, 5, 1).build(EmbeddedJDEC.JS_NAMES[2]);
-        base.clone().setPos(1, 4, 5, 1).build(EmbeddedJDEC.JS_NAMES[3]);
-        base.clone().setPos(1, 5, 5, 1).build(EmbeddedJDEC.JS_NAMES[4]);
-        base.clone().setPos(1, 6, 5, 1).build(EmbeddedJDEC.JS_NAMES[5]);
+        for (int i = 0; i < EmbeddedJDEC.JS_NAMES.length; i++) {
+            base.clone().setPos(0, i + 1, 1, 1).build(new JLabel(i + ": "));
+            base.clone().setPos(1, i + 1, 5, 1).build(EmbeddedJDEC.JS_NAMES[i]);
+        }
 
         //TODO spacing/GBC positioning does not work for these buttons
         base.clone().setPos(0, 7, 3, 1).build(EmbeddedJDEC.SKIP_BTN);
@@ -74,8 +66,10 @@ public class AutoOrderFrame extends FrameBase {
 
         if (valueUpdater == null) {
             valueUpdater = new ValueUpdater();
+            Debug.println("Auto Order Frame value updater thread instantiated");
         }
         valueUpdater.start();
+        Debug.println("Auto Order Frame value updater thread started");
     }
 
     @Override
@@ -86,6 +80,7 @@ public class AutoOrderFrame extends FrameBase {
         idxCtr = 0;
         EmbeddedJDEC.SKIP_BTN.setEnabled(true);
         if (valueUpdater != null) {
+            Debug.println("Auto Order Frame value updater thread stopped");
             valueUpdater.end();
         }
         super.forceDispose();

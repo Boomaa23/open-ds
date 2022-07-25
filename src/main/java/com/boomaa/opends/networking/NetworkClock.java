@@ -13,6 +13,7 @@ import com.boomaa.opends.util.PacketCounters;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class NetworkClock extends Clock {
@@ -36,17 +37,18 @@ public class NetworkClock extends Clock {
                     iface.write(DisplayEndpoint.CREATOR.create(remote, protocol));
                     byte[] data = iface.read();
                     if (data == null || (protocol == Protocol.UDP && data.length == 0)) {
-                        Debug.println(makeDebugStr("invalid data"),
-                            Debug.Options.create().setSticky(true).setSeverity(EventSeverity.WARNING));
+                        Debug.println(makeDebugStr("invalid data"), EventSeverity.WARNING, true);
                         DisplayEndpoint.UPDATER.update(ParserNull.getInstance(), remote, protocol);
                         DisplayEndpoint.NET_IF_INIT.set(false, remote, protocol);
                     } else {
                         PacketParser packetParser = DisplayEndpoint.getPacketParser(remote, protocol, data);
                         DisplayEndpoint.UPDATER.update(packetParser, remote, protocol);
+                        Debug.println(remote + " " + protocol + " interface connected to " + iface.toString(), EventSeverity.INFO, true);
+                        Debug.removeSticky(makeDebugStr("network error"));
+                        Debug.removeSticky(makeDebugStr("invalid data"));
                     }
                 } else {
-                    Debug.println(makeDebugStr("network error"),
-                        Debug.Options.create().setSticky(true).setSeverity(EventSeverity.WARNING));
+                    Debug.println(makeDebugStr("network error"), EventSeverity.WARNING, true);
                     DisplayEndpoint.UPDATER.update(ParserNull.getInstance(), remote, protocol);
                     reloadInterface();
                 }
@@ -54,13 +56,11 @@ public class NetworkClock extends Clock {
             } else {
                 DisplayEndpoint.UPDATER.update(ParserNull.getInstance(), remote, protocol);
                 DisplayEndpoint.NET_IF_INIT.set(false, remote, protocol);
-                Debug.println(makeDebugStr("FMS not selected"),
-                    Debug.Options.create().setSticky(true).setSeverity(EventSeverity.INFO));
+                Debug.println(makeDebugStr("FMS not selected"), EventSeverity.INFO, true);
             }
             Debug.removeSticky(makeDebugStr("updater or creator is null"));
         } else {
-            Debug.println(makeDebugStr("updater or creator is null"),
-                Debug.Options.create().setSticky(true).setSeverity(EventSeverity.ERROR));
+            Debug.println(makeDebugStr("updater or creator is null"), EventSeverity.ERROR, true);
         }
     }
 
@@ -70,6 +70,7 @@ public class NetworkClock extends Clock {
             DisplayEndpoint.UPDATER.update(ParserNull.getInstance(), remote, protocol);
         }
         if (iface != null) {
+            Debug.removeSticky(remote + " " + protocol + " interface connected to " + iface);
             iface.close();
             iface = null;
         }
@@ -94,9 +95,6 @@ public class NetworkClock extends Clock {
                     ? new TCPInterface(ip, ports.getTcp())
                     : new UDPInterface(ip, ports.getUdpClient(), ports.getUdpServer());
             DisplayEndpoint.NET_IF_INIT.set(true, remote, protocol);
-            Debug.println(remote + " " + protocol + " interface connected to " + iface.toString());
-            Debug.removeSticky(makeDebugStr("network error"));
-            Debug.removeSticky(makeDebugStr("invalid data"));
         } catch (IOException e) {
             uninitialize(isFms);
         }

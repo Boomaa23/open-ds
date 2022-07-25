@@ -1,5 +1,6 @@
 package com.boomaa.opends.display;
 
+import com.boomaa.opends.util.Debug;
 import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;
 
@@ -44,7 +45,9 @@ public class GlobalKeyListener implements NativeKeyListener {
     public void doAction(NativeKeyEvent event) {
         int keycode = event.getKeyCode();
         if (keyMap.containsKey(keycode)) {
+            Debug.println("Action detected with keycode " + keycode);
             keyMap.get(keycode).run();
+            Debug.println("Action run with keycode " + keycode);
         }
         for (MultiKeyEvent mkEvent : multiKeyList) {
             mkEvent.pollAction();

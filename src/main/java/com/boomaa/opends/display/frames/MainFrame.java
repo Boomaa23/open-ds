@@ -188,7 +188,6 @@ public class MainFrame implements MainJDEC {
 
         GBCPanelBuilder endr = base.clone().setAnchor(GridBagConstraints.LINE_END).setFill(GridBagConstraints.NONE);
 
-        //TODO find a better solution than duplicating the GBCPanelBuilder for every component
         base.clone().setPos(0, 0, 6, 1).setFill(GridBagConstraints.NONE).build(TITLE);
         base.clone().setPos(0, 1, 6, 1).setFill(GridBagConstraints.NONE).build(LINK);
         base.clone().setPos(5, 0, 1, 2).setFill(GridBagConstraints.NONE).build(new JLabel(new ImageIcon(MainFrame.ICON_MIN)));

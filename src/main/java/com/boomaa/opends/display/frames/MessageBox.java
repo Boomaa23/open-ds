@@ -1,5 +1,7 @@
 package com.boomaa.opends.display.frames;
 
+import com.boomaa.opends.util.Debug;
+
 import javax.swing.JOptionPane;
 
 public class MessageBox {
@@ -8,6 +10,7 @@ public class MessageBox {
 
     public static void show(String message, Type type) {
         JOptionPane.showMessageDialog(null, message, type.title, type.optionFlag);
+        Debug.println("Popup message [" + type.name() + "] displayed with content: " + message);
     }
 
     public enum Type {
