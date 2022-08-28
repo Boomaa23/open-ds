@@ -5,7 +5,6 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import javax.swing.JTextField;
 
-@SuppressWarnings("serial")
 public class OverlayField extends JTextField implements FocusListener {
     private final String hint;
     private boolean showingHint;

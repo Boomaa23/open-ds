@@ -1,5 +1,6 @@
 package com.boomaa.opends.display;
 
+import com.boomaa.opends.display.elements.HCheckBox;
 import com.boomaa.opends.display.elements.HideableLabel;
 import com.boomaa.opends.display.elements.MultiValueLabel;
 import com.boomaa.opends.display.elements.OverlayField;
@@ -29,7 +30,7 @@ public interface MainJDEC {
     JLabel TITLE = new JLabel("OpenDS");
     JLabel LINK = MainFrame.createLinkLabel("github.com/Boomaa23/open-ds");
 
-    JCheckBox IS_ENABLED = new JCheckBox("Enable");
+    HCheckBox IS_ENABLED = new HCheckBox("Enable");
     JComboBox<RobotMode> ROBOT_DRIVE_MODE = new JComboBox<>(RobotMode.values());
 
     JComboBox<String> ALLIANCE_COLOR = new JComboBox<>(new String[] { "Red", "Blue" });
@@ -43,8 +44,8 @@ public interface MainJDEC {
     OverlayField TEAM_NUMBER = new OverlayField("Team Number", 6);
 
     JComboBox<Integer> PROTOCOL_YEAR = new JComboBox<>(DisplayEndpoint.VALID_PROTOCOL_YEARS);
-    JCheckBox FMS_CONNECT = new JCheckBox("Connect FMS");
-    JCheckBox USB_CONNECT = new JCheckBox("Use USB");
+    HCheckBox FMS_CONNECT = new HCheckBox("Connect FMS");
+    HCheckBox USB_CONNECT = new HCheckBox("Use USB");
 
     JoystickTab JS_TAB = new JoystickTab();
     NTTab NT_TAB = new NTTab();

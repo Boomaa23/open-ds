@@ -1,6 +1,7 @@
 package com.boomaa.opends.display.frames;
 
 import com.boomaa.opends.util.Debug;
+import com.boomaa.opends.util.Parameter;
 
 import javax.swing.JOptionPane;
 
@@ -9,8 +10,12 @@ public class MessageBox {
     }
 
     public static void show(String message, Type type) {
-        JOptionPane.showMessageDialog(null, message, type.title, type.optionFlag);
-        Debug.println("Popup message [" + type.name() + "] displayed with content: " + message);
+        if (Parameter.HEADLESS.isPresent()) {
+            JOptionPane.showMessageDialog(null, message, type.title, type.optionFlag);
+            Debug.println("Popup message [" + type.name() + "] displayed with content: " + message);
+        } else {
+            Debug.println("Popup message [" + type.name() + "] was not displayed due to headless mode (with content: " + message + ")");
+        }
     }
 
     public enum Type {

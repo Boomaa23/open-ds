@@ -20,6 +20,7 @@ public enum Parameter {
     DISABLE_NETTABLES("--disable-nettables", Type.BOOLEAN),
     FMS_CONNECT("--fms", Type.BOOLEAN,  MainJDEC.FMS_CONNECT),
     GAME_DATA("--game-data", Type.STRING,  MainJDEC.GAME_DATA),
+    HEADLESS("--headless", Type.BOOLEAN),
     PROTOCOL_YEAR("--protocol-year", Type.INTEGER, MainJDEC.PROTOCOL_YEAR, getProtocolYears()),
     ROBOT_DRIVE_MODE("--robot-mode", Type.STRING, MainJDEC.ROBOT_DRIVE_MODE, getRobotModes()),
     TEAM_NUMBER("--team-num", Type.INTEGER, MainJDEC.TEAM_NUMBER),

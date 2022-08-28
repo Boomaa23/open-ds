@@ -6,6 +6,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.util.Arrays;
 import javax.swing.JPanel;
 
 public class GBCPanelBuilder {
@@ -76,6 +77,10 @@ public class GBCPanelBuilder {
     public GBCPanelBuilder setInsets(Insets insets) {
         gbc.insets = insets;
         return this;
+    }
+
+    public void build(Object... comps) {
+        build((Component[]) Arrays.stream(comps).filter((a) -> a instanceof Component).toArray());
     }
 
     public void build(Component... comps) {
