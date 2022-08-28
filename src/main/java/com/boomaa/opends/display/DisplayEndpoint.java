@@ -19,6 +19,7 @@ import com.boomaa.opends.util.Debug;
 import com.boomaa.opends.util.EventSeverity;
 import com.boomaa.opends.util.InitChecker;
 import com.boomaa.opends.util.Libraries;
+import com.boomaa.opends.util.OperatingSystem;
 import com.boomaa.opends.util.Parameter;
 import org.jnativehook.GlobalScreen;
 
@@ -31,6 +32,13 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 public class DisplayEndpoint implements MainJDEC {
+    static {
+        if (System.getenv("DISPLAY") == null) {
+            OperatingSystem.disableEnvWarning();
+            OperatingSystem.setEnv("DISPLAY", "0.0");
+        }
+    }
+
     public static final String CURRENT_VERSION_TAG = "v0.2.4";
 
     public static DSLog FILE_LOGGER = new DSLog();

@@ -5,7 +5,7 @@ import com.boomaa.opends.display.GlobalKeyListener;
 import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.display.MultiKeyEvent;
 import com.boomaa.opends.display.RobotMode;
-import com.boomaa.opends.display.StdOutRedirect;
+import com.boomaa.opends.display.StdRedirect;
 import com.boomaa.opends.display.TeamNumListener;
 import com.boomaa.opends.display.TeamNumPersist;
 import com.boomaa.opends.display.elements.GBCPanelBuilder;
@@ -35,9 +35,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -158,14 +155,14 @@ public class MainFrame implements MainJDEC {
         Debug.println("Initialized listeners for display elements");
 
         if (!Parameter.DISABLE_HOTKEYS.isPresent()) {
-            StdOutRedirect.toNull();
+            StdRedirect.OUT.toNull();
             GlobalScreen.addNativeKeyListener(GlobalKeyListener.INSTANCE
                 .addKeyEvent(NativeKeyEvent.VC_ENTER, () -> MainJDEC.IS_ENABLED.setSelected(false))
                 .addKeyEvent(NativeKeyEvent.VC_SPACE, MainJDEC.ESTOP_BTN::doClick)
                 .addMultiKeyEvent(new MultiKeyEvent(() -> MainJDEC.IS_ENABLED.setSelected(MainJDEC.IS_ENABLED.isEnabled()),
                         NativeKeyEvent.VC_OPEN_BRACKET, NativeKeyEvent.VC_CLOSE_BRACKET, NativeKeyEvent.VC_BACK_SLASH))
             );
-            StdOutRedirect.reset();
+            StdRedirect.OUT.reset();
             Debug.println("Registered global hotkey hooks (JNativeHook)");
         }
     }
