@@ -13,7 +13,6 @@ import com.boomaa.opends.util.PacketCounters;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class NetworkClock extends Clock {

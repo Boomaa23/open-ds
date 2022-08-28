@@ -20,11 +20,15 @@ import com.boomaa.opends.util.EventSeverity;
 import com.boomaa.opends.util.InitChecker;
 import com.boomaa.opends.util.Libraries;
 import com.boomaa.opends.util.Parameter;
+import org.jnativehook.GlobalScreen;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 public class DisplayEndpoint implements MainJDEC {
     public static final String CURRENT_VERSION_TAG = "v0.2.4";
@@ -69,7 +73,13 @@ public class DisplayEndpoint implements MainJDEC {
         Parameter.parseArgs(args);
         Libraries.init();
         ControlDevices.init();
-        MainFrame.display();
+        LogManager.getLogManager().reset();
+        Logger.getLogger(GlobalScreen.class.getPackage().getName()).setLevel(Level.OFF);
+        if (Parameter.HEADLESS.isPresent()) {
+            HeadlessController.init();
+        } else {
+            MainFrame.display();
+        }
         doProtocolUpdate();
         Debug.println("Backend robot interface classes initialized.");
 

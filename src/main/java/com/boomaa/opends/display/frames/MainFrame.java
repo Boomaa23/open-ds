@@ -65,9 +65,6 @@ public class MainFrame implements MainJDEC {
         CONTENT.setLayout(new GridBagLayout());
         TITLE.setText(TITLE.getText() + " " + DisplayEndpoint.CURRENT_VERSION_TAG);
 
-        LogManager.getLogManager().reset();
-        Logger.getLogger(GlobalScreen.class.getPackage().getName()).setLevel(Level.OFF);
-
         valueInit();
         layoutInit();
         listenerInit();
@@ -119,10 +116,12 @@ public class MainFrame implements MainJDEC {
             unsetAllInterfaces();
             Debug.println("Connecting to robot over USB");
         }));
+        RESTART_CODE_BTN.init();
         RESTART_CODE_BTN.addActionListener((e) -> {
             IS_ENABLED.setSelected(false);
             Debug.println("Restarting robot code");
         });
+        ESTOP_BTN.init();
         ESTOP_BTN.addActionListener((e) -> {
             IS_ENABLED.setSelected(false);
             Debug.println("Emergency Stop (ESTOP) initiated");
@@ -130,6 +129,7 @@ public class MainFrame implements MainJDEC {
 
         // Debug println method checks this, but checking before adding a listener improves performance
         if (Parameter.DEBUG.isPresent()) {
+            RESTART_ROBO_RIO_BTN.init();
             RESTART_ROBO_RIO_BTN.addActionListener((e) -> Debug.println("Restarting RoboRIO"));
             IS_ENABLED.addItemListener((e) -> Debug.println(e.getStateChange() == ItemEvent.SELECTED
                     ? "Robot Enabled" : "Robot Disabled"));
@@ -154,7 +154,7 @@ public class MainFrame implements MainJDEC {
             });
         }
 
-        TEAM_NUMBER.getDocument().addDocumentListener(new TeamNumListener());
+        TEAM_NUMBER.addDocumentListener(new TeamNumListener());
         Debug.println("Initialized listeners for display elements");
 
         if (!Parameter.DISABLE_HOTKEYS.isPresent()) {

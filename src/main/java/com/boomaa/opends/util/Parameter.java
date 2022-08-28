@@ -12,19 +12,20 @@ import javax.swing.JComponent;
 import javax.swing.JTextField;
 
 public enum Parameter {
-    ALLIANCE_COLOR("--alliance-color", Type.STRING, MainJDEC.ALLIANCE_COLOR, "Red", "Blue"),
-    ALLIANCE_NUMBER("--alliance-num", Type.INTEGER,  MainJDEC.ALLIANCE_NUM, 1, 2, 3),
+    HEADLESS("--headless", Type.BOOLEAN),
+
+    ALLIANCE_COLOR("--alliance-color", Type.STRING, MainJDEC.ALLIANCE_COLOR.getElement(), "Red", "Blue"),
+    ALLIANCE_NUMBER("--alliance-num", Type.INTEGER,  MainJDEC.ALLIANCE_NUM.getElement(), 1, 2, 3),
     DEBUG("--debug", Type.BOOLEAN),
     DISABLE_HOTKEYS("--disable-hotkeys", Type.BOOLEAN),
     DISABLE_LOG("--disable-log", Type.BOOLEAN),
     DISABLE_NETTABLES("--disable-nettables", Type.BOOLEAN),
-    FMS_CONNECT("--fms", Type.BOOLEAN,  MainJDEC.FMS_CONNECT),
-    GAME_DATA("--game-data", Type.STRING,  MainJDEC.GAME_DATA),
-    HEADLESS("--headless", Type.BOOLEAN),
-    PROTOCOL_YEAR("--protocol-year", Type.INTEGER, MainJDEC.PROTOCOL_YEAR, getProtocolYears()),
+    FMS_CONNECT("--fms", Type.BOOLEAN,  MainJDEC.FMS_CONNECT.getElement()),
+    GAME_DATA("--game-data", Type.STRING,  MainJDEC.GAME_DATA.getElement()),
+    PROTOCOL_YEAR("--protocol-year", Type.INTEGER, MainJDEC.PROTOCOL_YEAR.getElement(), getProtocolYears()),
     ROBOT_DRIVE_MODE("--robot-mode", Type.STRING, MainJDEC.ROBOT_DRIVE_MODE, getRobotModes()),
-    TEAM_NUMBER("--team-num", Type.INTEGER, MainJDEC.TEAM_NUMBER),
-    USB_CONNECT("--usb", Type.BOOLEAN, MainJDEC.USB_CONNECT);
+    TEAM_NUMBER("--team-num", Type.INTEGER, MainJDEC.TEAM_NUMBER.getElement()),
+    USB_CONNECT("--usb", Type.BOOLEAN, MainJDEC.USB_CONNECT.getElement());
 
     private final String flag;
     private final Type type;
@@ -83,6 +84,9 @@ public enum Parameter {
 
     private JComponent getJDECLink() {
         return jdecLink;
+    }
+
+    public static void init() {
     }
 
     public static void parseArgs(String[] args) {

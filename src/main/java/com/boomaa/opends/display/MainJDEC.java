@@ -1,9 +1,10 @@
 package com.boomaa.opends.display;
 
 import com.boomaa.opends.display.elements.HCheckBox;
+import com.boomaa.opends.display.elements.HComboBox;
+import com.boomaa.opends.display.elements.HOverlayField;
 import com.boomaa.opends.display.elements.HideableLabel;
 import com.boomaa.opends.display.elements.MultiValueLabel;
-import com.boomaa.opends.display.elements.OverlayField;
 import com.boomaa.opends.display.elements.StickyButton;
 import com.boomaa.opends.display.frames.MainFrame;
 import com.boomaa.opends.display.tabs.JoystickTab;
@@ -13,7 +14,6 @@ import com.boomaa.opends.display.tabs.StatsTab;
 
 import java.awt.Container;
 import java.awt.GridBagLayout;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -33,17 +33,17 @@ public interface MainJDEC {
     HCheckBox IS_ENABLED = new HCheckBox("Enable");
     JComboBox<RobotMode> ROBOT_DRIVE_MODE = new JComboBox<>(RobotMode.values());
 
-    JComboBox<String> ALLIANCE_COLOR = new JComboBox<>(new String[] { "Red", "Blue" });
-    JComboBox<Integer> ALLIANCE_NUM = new JComboBox<>(new Integer[] { 1, 2, 3 });
+    HComboBox<String> ALLIANCE_COLOR = new HComboBox<>("Red", "Blue");
+    HComboBox<Integer> ALLIANCE_NUM = new HComboBox<>(1, 2, 3);
 
     StickyButton RESTART_CODE_BTN = new StickyButton("Restart Robot Code", 10);
     StickyButton RESTART_ROBO_RIO_BTN = new StickyButton("Restart RoboRIO", 10);
     StickyButton ESTOP_BTN = new StickyButton("Emergency Stop", 10);
 
-    OverlayField GAME_DATA = new OverlayField("Game Data", 6);
-    OverlayField TEAM_NUMBER = new OverlayField("Team Number", 6);
+    HOverlayField GAME_DATA = new HOverlayField("Game Data", 6);
+    HOverlayField TEAM_NUMBER = new HOverlayField("Team Number", 6);
 
-    JComboBox<Integer> PROTOCOL_YEAR = new JComboBox<>(DisplayEndpoint.VALID_PROTOCOL_YEARS);
+    HComboBox<Integer> PROTOCOL_YEAR = new HComboBox<>(DisplayEndpoint.VALID_PROTOCOL_YEARS);
     HCheckBox FMS_CONNECT = new HCheckBox("Connect FMS");
     HCheckBox USB_CONNECT = new HCheckBox("Use USB");
 
