@@ -2,7 +2,7 @@ USB_SRC := src/main/java/com/boomaa/opends/usb
 LIB_OUT := src/main/resources
 LIB_NAME := opends-lib
 
-LINUX_INCLUDE_PATH := /usr/lib/jvm/java-8-openjdk-arm64/include
+LINUX_INCLUDE_PATH := /usr/lib/jvm/java-8-openjdk-amd64/include
 OSX_INCLUDE_PATH = LINUX_INCLUDE_PATH
 WIN32_INCLUDE_PATH := "C:\Program Files\Java\jdk1.8.0_251\include"
 
