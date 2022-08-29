@@ -2,7 +2,7 @@ package com.boomaa.opends.util;
 
 public enum Architecture {
     AMD64("amd64", "x86_64"),
-    AARCH64("aarch64, aarch64e");
+    AARCH64("aarch64", "aarch64e");
 
     private final String[] archNames;
 
