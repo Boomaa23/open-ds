@@ -1,8 +1,5 @@
 package com.boomaa.opends.display;
 
-import com.boomaa.opends.display.elements.HCheckBox;
-import com.boomaa.opends.display.elements.HComboBox;
-import com.boomaa.opends.display.elements.HOverlayField;
 import com.boomaa.opends.display.elements.HideableLabel;
 import com.boomaa.opends.display.elements.MultiValueLabel;
 import com.boomaa.opends.display.elements.StickyButton;
@@ -11,19 +8,20 @@ import com.boomaa.opends.display.tabs.JoystickTab;
 import com.boomaa.opends.display.tabs.LogTab;
 import com.boomaa.opends.display.tabs.NTTab;
 import com.boomaa.opends.display.tabs.StatsTab;
+import com.boomaa.opends.headless.HCheckBox;
+import com.boomaa.opends.headless.HComboBox;
+import com.boomaa.opends.headless.HFrame;
+import com.boomaa.opends.headless.HOverlayField;
 
-import java.awt.Container;
 import java.awt.GridBagLayout;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 // JDEC = (J)ava (D)isplay (E)lement (C)onstants
 public interface MainJDEC {
-    JFrame FRAME = new JFrame("OpenDS");
-    Container CONTENT = FRAME.getContentPane();
+    HFrame FRAME = new HFrame("OpenDS");
     JPanel TAB_CONTAINER = new JPanel(new GridBagLayout());
     JTabbedPane TAB = new JTabbedPane();
 
@@ -51,7 +49,6 @@ public interface MainJDEC {
     NTTab NT_TAB = new NTTab();
     StatsTab STATS_TAB = new StatsTab();
     LogTab LOG_TAB = new LogTab();
-
 
     JLabel BAT_VOLTAGE = new JLabel("0.00 V");
     MultiValueLabel ROBOT_CONNECTION_STATUS = new MultiValueLabel(false, "Connected", "Simulated");

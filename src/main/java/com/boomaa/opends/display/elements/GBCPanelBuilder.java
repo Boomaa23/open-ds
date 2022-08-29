@@ -1,6 +1,7 @@
 package com.boomaa.opends.display.elements;
 
 import com.boomaa.opends.display.frames.MainFrame;
+import com.boomaa.opends.headless.HideComponent;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -78,8 +79,8 @@ public class GBCPanelBuilder {
         return this;
     }
 
-    public void build(HideBase<?> comp) {
-        if (comp.getElement() != null) {
+    public void build(HideComponent<?> comp) {
+        if (!comp.isHeadless()) {
             build.add(comp.getElement(), gbc);
         }
     }

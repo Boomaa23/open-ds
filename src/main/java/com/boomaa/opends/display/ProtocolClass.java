@@ -2,11 +2,10 @@ package com.boomaa.opends.display;
 
 public class ProtocolClass {
     private final String baseClass;
-    private int year;
+    private int year = -1;
 
     public ProtocolClass(String baseClass) {
         this.baseClass = baseClass;
-        this.year = MainJDEC.getProtocolYear();
     }
 
     public ProtocolClass update() {
@@ -21,6 +20,9 @@ public class ProtocolClass {
 
     @Override
     public String toString() {
+        if (year == -1) {
+            year = MainJDEC.getProtocolYear();
+        }
         return baseClass + year;
     }
 }

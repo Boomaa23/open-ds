@@ -1,11 +1,13 @@
-package com.boomaa.opends.display.elements;
+package com.boomaa.opends.headless;
+
+import com.boomaa.opends.display.elements.KButton;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HButton extends HideBase<KButton> {
+public class HButton extends HideComponent<KButton> {
     private final List<ActionListener> listeners = new ArrayList<>();
     private final ActionEvent event = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "mouseLeftClick");
 
@@ -14,7 +16,7 @@ public class HButton extends HideBase<KButton> {
     }
 
     public void addActionListener(ActionListener listener) {
-        if (getElement() != null) {
+        if (!isHeadless()) {
             getElement().addActionListener(listener);
         } else {
             listeners.add(listener);
@@ -22,7 +24,7 @@ public class HButton extends HideBase<KButton> {
     }
 
     public void doClick() {
-        if (getElement() != null) {
+        if (!isHeadless()) {
             getElement().doClick();
         } else {
             for (ActionListener l : listeners) {

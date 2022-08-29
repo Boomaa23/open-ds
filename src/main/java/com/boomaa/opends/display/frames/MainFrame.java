@@ -59,7 +59,9 @@ public class MainFrame implements MainJDEC {
 
     public static void display() {
         FRAME.setIconImage(MainFrame.ICON);
-        CONTENT.setLayout(new GridBagLayout());
+        if (!FRAME.isHeadless()) {
+            FRAME.getContentPane().setLayout(new GridBagLayout());
+        }
         TITLE.setText(TITLE.getText() + " " + DisplayEndpoint.CURRENT_VERSION_TAG);
 
         valueInit();
@@ -75,7 +77,9 @@ public class MainFrame implements MainJDEC {
                 e.printStackTrace();
             }
         }
-        SwingUtilities.updateComponentTreeUI(FRAME);
+        if (!FRAME.isHeadless()) {
+            SwingUtilities.updateComponentTreeUI(FRAME.getElement());
+        }
         FRAME.pack();
         FRAME.setLocationRelativeTo(null);
         FRAME.setVisible(true);

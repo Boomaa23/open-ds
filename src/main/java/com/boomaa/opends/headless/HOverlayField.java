@@ -1,12 +1,13 @@
-package com.boomaa.opends.display.elements;
+package com.boomaa.opends.headless;
 
 import com.boomaa.opends.display.NullDocumentEvent;
+import com.boomaa.opends.display.elements.OverlayField;
 
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.event.DocumentListener;
 
-public class HOverlayField extends HideBase<OverlayField> {
+public class HOverlayField extends HideComponent<OverlayField> {
     private final List<DocumentListener> listeners = new ArrayList<>();
     private String text;
 
@@ -15,11 +16,11 @@ public class HOverlayField extends HideBase<OverlayField> {
     }
 
     public String getText() {
-        return getElement() == null ? text : getElement().getText();
+        return isHeadless() ? text : getElement().getText();
     }
 
     public void setText(String text) {
-        if (getElement() != null) {
+        if (!isHeadless()) {
             getElement().setText(text);
         } else {
             this.text = text;
@@ -30,7 +31,7 @@ public class HOverlayField extends HideBase<OverlayField> {
     }
 
     public void addDocumentListener(DocumentListener listener) {
-        if (getElement() != null) {
+        if (!isHeadless()) {
             getElement().getDocument().addDocumentListener(listener);
         } else {
             listeners.add(listener);
@@ -38,7 +39,7 @@ public class HOverlayField extends HideBase<OverlayField> {
     }
 
     public int checkedIntParse() {
-        return getElement() == null ? checkedIntParse(-1) : getElement().checkedIntParse();
+        return isHeadless() ? checkedIntParse(-1) : getElement().checkedIntParse();
     }
 
     public int checkedIntParse(int defRtn) {

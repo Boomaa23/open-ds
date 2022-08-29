@@ -1,4 +1,4 @@
-package com.boomaa.opends.display.elements;
+package com.boomaa.opends.headless;
 
 import java.awt.ItemSelectable;
 import java.awt.event.ActionListener;
@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JComboBox;
 
-public class HComboBox<T> extends HideBase<JComboBox<T>> implements ItemSelectable {
+public class HComboBox<T> extends HideComponent<JComboBox<T>> implements ItemSelectable {
     private final T[] items;
     private final List<ItemListener> listeners = new ArrayList<>();
     private int selectedIndex;
@@ -20,11 +20,11 @@ public class HComboBox<T> extends HideBase<JComboBox<T>> implements ItemSelectab
     }
 
     public Object getSelectedItem() {
-        return getElement() == null ? items[selectedIndex] : getElement().getSelectedItem();
+        return isHeadless() ? items[selectedIndex] : getElement().getSelectedItem();
     }
 
     public void setSelectedItem(T item) {
-        if (getElement() != null) {
+        if (!isHeadless()) {
             getElement().setSelectedItem(item);
         } else {
             int prevSelected = selectedIndex;
@@ -44,11 +44,11 @@ public class HComboBox<T> extends HideBase<JComboBox<T>> implements ItemSelectab
     }
 
     public int getSelectedIndex() {
-        return getElement() == null ? selectedIndex : getElement().getSelectedIndex();
+        return isHeadless() ? selectedIndex : getElement().getSelectedIndex();
     }
 
     public void addItemListener(ItemListener listener) {
-        if (getElement() != null) {
+        if (!isHeadless()) {
             getElement().addItemListener(listener);
         } else {
             listeners.add(listener);
@@ -56,7 +56,7 @@ public class HComboBox<T> extends HideBase<JComboBox<T>> implements ItemSelectab
     }
 
     public void removeItemListener(ItemListener listener) {
-        if (getElement() != null) {
+        if (!isHeadless()) {
             getElement().removeItemListener(listener);
         } else {
             listeners.remove(listener);
