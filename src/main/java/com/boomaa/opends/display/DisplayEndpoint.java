@@ -8,6 +8,7 @@ import com.boomaa.opends.display.elements.HyperlinkBox;
 import com.boomaa.opends.display.frames.MainFrame;
 import com.boomaa.opends.display.frames.MessageBox;
 import com.boomaa.opends.display.updater.ElementUpdater;
+import com.boomaa.opends.headless.HeadlessController;
 import com.boomaa.opends.networking.AddressConstants;
 import com.boomaa.opends.networking.NetworkClock;
 import com.boomaa.opends.networktables.NTConnection;
@@ -75,9 +76,7 @@ public class DisplayEndpoint implements MainJDEC {
         ControlDevices.init();
         LogManager.getLogManager().reset();
         Logger.getLogger(GlobalScreen.class.getPackage().getName()).setLevel(Level.OFF);
-        if (Parameter.HEADLESS.isPresent()) {
-            HeadlessController.init();
-        } else {
+        if (!Parameter.HEADLESS.isPresent()) {
             MainFrame.display();
         }
         doProtocolUpdate();
@@ -97,6 +96,9 @@ public class DisplayEndpoint implements MainJDEC {
 
         controlUpdater.start();
         Debug.println("All threaded processes started");
+        if (Parameter.HEADLESS.isPresent()) {
+            HeadlessController.start();
+        }
     }
 
     public static void doProtocolUpdate() {
