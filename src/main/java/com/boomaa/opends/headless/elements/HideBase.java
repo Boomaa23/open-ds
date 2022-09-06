@@ -1,12 +1,12 @@
-package com.boomaa.opends.headless;
+package com.boomaa.opends.headless.elements;
 
 import java.util.function.Supplier;
 
 public abstract class HideBase<T> {
-    private final StickySupplier<T> elementSupplier;
+    private final LazySupplier<T> elementSupplier;
 
     public HideBase(Supplier<T> supplier) {
-        this.elementSupplier = new StickySupplier<>(supplier);
+        this.elementSupplier = new LazySupplier<>(supplier);
     }
 
     public T getElement() {

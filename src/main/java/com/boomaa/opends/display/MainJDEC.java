@@ -8,10 +8,10 @@ import com.boomaa.opends.display.tabs.JoystickTab;
 import com.boomaa.opends.display.tabs.LogTab;
 import com.boomaa.opends.display.tabs.NTTab;
 import com.boomaa.opends.display.tabs.StatsTab;
-import com.boomaa.opends.headless.HCheckBox;
-import com.boomaa.opends.headless.HComboBox;
-import com.boomaa.opends.headless.HFrame;
-import com.boomaa.opends.headless.HOverlayField;
+import com.boomaa.opends.headless.elements.HCheckBox;
+import com.boomaa.opends.headless.elements.HComboBox;
+import com.boomaa.opends.headless.elements.HFrame;
+import com.boomaa.opends.headless.elements.HOverlayField;
 
 import java.awt.GridBagLayout;
 import javax.swing.JComboBox;

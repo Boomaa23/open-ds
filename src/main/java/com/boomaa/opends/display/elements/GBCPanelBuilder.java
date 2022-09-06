@@ -1,7 +1,7 @@
 package com.boomaa.opends.display.elements;
 
 import com.boomaa.opends.display.frames.MainFrame;
-import com.boomaa.opends.headless.HideComponent;
+import com.boomaa.opends.headless.elements.HideComponent;
 
 import java.awt.Component;
 import java.awt.Container;

@@ -1,6 +1,6 @@
 package com.boomaa.opends.display.elements;
 
-import com.boomaa.opends.headless.HButton;
+import com.boomaa.opends.headless.elements.HButton;
 
 public class StickyButton extends HButton {
     private final int stickyDuration;

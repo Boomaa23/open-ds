@@ -1,20 +1,25 @@
 package com.boomaa.opends.headless;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class CTable {
-    private final List<String[]> rows;
-    private final int numCols;
-    private final boolean useRowDividers;
-    private final String[] headerRow;
-    private final int[] colMaxWidths;
+public class ConsoleTable {
+    //TODO rework for suppliers (i.e. be able to have values that will auto-update when the CTable is printed)
+    protected final List<String[]> rows;
+    protected final int numCols;
+    protected final boolean useRowDividers;
+    protected final String[] headerRow;
+    protected final int[] colMaxWidths;
+    protected final Map<String, Integer> leftColMap;
     private String asString;
 
-    public CTable(boolean useRowDividers, String... headerRow) {
+    public ConsoleTable(boolean useRowDividers, String... headerRow) {
         this.useRowDividers = useRowDividers;
         this.headerRow = headerRow;
         this.rows = new ArrayList<>();
+        this.leftColMap = new HashMap<>();
         this.numCols = headerRow.length;
         this.colMaxWidths = new int[numCols];
 
@@ -24,11 +29,14 @@ public class CTable {
         recreateString();
     }
 
-    public CTable(String... headerRow) {
+    public ConsoleTable(String... headerRow) {
         this(false, headerRow);
     }
 
-    public CTable set(int r, int c, String value) {
+    public ConsoleTable set(int r, int c, String value) {
+        if (c == 0) {
+            leftColMap.put(rows.get(r)[c], r);
+        }
         rawSet(r, c, value);
         findColMaxWidths(c);
         recreateString();
@@ -55,13 +63,18 @@ public class CTable {
         }
     }
 
-    public CTable appendRow(String... values) {
+    public int getRowIdx(String leftColValue) {
+        Integer retval = leftColMap.get(leftColValue);
+        return retval == null ? -1 : retval;
+    }
+
+    public ConsoleTable appendRow(String... values) {
         if (values.length != numCols) {
             throw new IndexOutOfBoundsException(
                     String.format("Column index %s out of bounds for length %s",
                             values.length, numCols));
         }
-
+        leftColMap.put(values[0], rows.size());
         rows.add(values);
         for (int c = 0; c < values.length; c++) {
             findColMaxWidths(c);

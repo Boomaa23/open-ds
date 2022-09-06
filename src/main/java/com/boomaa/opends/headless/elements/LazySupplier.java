@@ -1,14 +1,14 @@
-package com.boomaa.opends.headless;
+package com.boomaa.opends.headless.elements;
 
 import com.boomaa.opends.util.Parameter;
 
 import java.util.function.Supplier;
 
-class StickySupplier<T> {
+public class LazySupplier<T> {
     private final Supplier<T> supplier;
     private T element;
 
-    public StickySupplier(Supplier<T> supplier) {
+    public LazySupplier(Supplier<T> supplier) {
         this.supplier = supplier;
     }
 

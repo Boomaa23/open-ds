@@ -1,4 +1,4 @@
-package com.boomaa.opends.headless;
+package com.boomaa.opends.headless.elements;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
