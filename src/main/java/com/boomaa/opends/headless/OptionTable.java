@@ -11,30 +11,35 @@ public class OptionTable extends ConsoleTable {
             'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
     };
     private final Map<Character, Runnable> operationMap = new HashMap<>();
-    private boolean useValueCol;
+    private final boolean useValueCol;
+    private int lastOptionRow;
 
-    public OptionTable(boolean useValueCol) {
-        super(useValueCol
-                ? new String[] { "Name", "Keycode", "Value" }
-                : new String[] { "Name", "Keycode" }
-        );
+    public OptionTable(int rows, boolean useValueCol, boolean useRowDividers) {
+        super(rows, useValueCol ? 3 : 2, useRowDividers);
         this.useValueCol = useValueCol;
+        getEntry(0, 0).setValue("Name");
+        getEntry(0, 1).setValue("Keycode");
+        if (useValueCol) {
+            getEntry(0, 2).setValue("Value");
+        }
+        this.lastOptionRow = 1;
     }
 
-    public OptionTable appendOption(String option, Runnable operation, Supplier<String> valueSupplier) {
-        int idx = rows.size();
-        if (idx >= KEYCODE_SET.length) {
+    public OptionTable appendOption(String option, Runnable operation, Supplier<String> supplier) {
+        if (lastOptionRow >= KEYCODE_SET.length) {
             throw new IndexOutOfBoundsException("OptionTable is full (36 values). Create a new table or reduce.");
         }
+        getEntry(lastOptionRow, 0).setValue(option);
+        getEntry(lastOptionRow, 1).setValue(String.valueOf(KEYCODE_SET[lastOptionRow - 1]));
         if (useValueCol) {
-            if (valueSupplier == null) {
+            if (supplier != null) {
+                getEntry(lastOptionRow, 2).setSupplier(supplier);
+            } else {
                 throw new IllegalArgumentException("Value supplier must not be null if a value column is used.");
             }
-            appendRow(option, String.valueOf(KEYCODE_SET[idx]), valueSupplier.get());
-        } else {
-            appendRow(option, String.valueOf(KEYCODE_SET[idx]));
         }
-        operationMap.put(KEYCODE_SET[idx], operation);
+        operationMap.put(KEYCODE_SET[lastOptionRow - 1], operation);
+        lastOptionRow++;
         return this;
     }
 
@@ -42,10 +47,11 @@ public class OptionTable extends ConsoleTable {
         return appendOption(option, operation, null);
     }
 
-    public void runOperation(char keycode) {
+    public boolean runOperation(char keycode) {
         Runnable operation = operationMap.get(keycode);
         if (operation != null) {
             operation.run();
         }
+        return operation != null;
     }
 }

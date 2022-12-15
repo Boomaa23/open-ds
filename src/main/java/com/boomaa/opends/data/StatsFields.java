@@ -1,6 +1,7 @@
 package com.boomaa.opends.data;
 
 import com.boomaa.opends.display.tabs.StatsTab;
+import com.boomaa.opends.util.Parameter;
 
 import java.awt.Color;
 
@@ -32,7 +33,7 @@ public enum StatsFields {
 
     public void updateTableValue(Object value) {
         this.value = String.valueOf(value);
-        if (this.ordinal() < StatsTab.TABLE_MODEL.getRowCount()) {
+        if (!Parameter.HEADLESS.isPresent() && this.ordinal() < StatsTab.TABLE_MODEL.getRowCount()) {
             StatsTab.TABLE_MODEL.setValueAt(value, this.ordinal(), 2);
         }
     }

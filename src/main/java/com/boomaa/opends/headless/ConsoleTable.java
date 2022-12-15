@@ -1,98 +1,141 @@
 package com.boomaa.opends.headless;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.boomaa.opends.util.Debug;
+import com.boomaa.opends.util.EventSeverity;
+
+import java.util.function.Supplier;
 
 public class ConsoleTable {
-    //TODO rework for suppliers (i.e. be able to have values that will auto-update when the CTable is printed)
-    protected final List<String[]> rows;
-    protected final int numCols;
+    protected final Entry[][] entries;
+    protected final int[] colWidths;
+    protected final int rows;
+    protected final int cols;
     protected final boolean useRowDividers;
-    protected final String[] headerRow;
-    protected final int[] colMaxWidths;
-    protected final Map<String, Integer> leftColMap;
-    private String asString;
+    protected String asString;
 
-    public ConsoleTable(boolean useRowDividers, String... headerRow) {
+    public ConsoleTable(int rows, int cols, boolean useRowDividers) {
+        this.rows = rows;
+        this.cols = cols;
         this.useRowDividers = useRowDividers;
-        this.headerRow = headerRow;
-        this.rows = new ArrayList<>();
-        this.leftColMap = new HashMap<>();
-        this.numCols = headerRow.length;
-        this.colMaxWidths = new int[numCols];
-
-        for (int i = 0; i < numCols; i++) {
-            colMaxWidths[i] = headerRow[i].length();
+        this.entries = new Entry[rows][cols];
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                entries[r][c] = new Entry(r, c, this);
+            }
         }
-        recreateString();
+        this.colWidths = new int[cols];
     }
 
-    public ConsoleTable(String... headerRow) {
-        this(false, headerRow);
+    public ConsoleTable(int rows, int cols) {
+        this(rows, cols, false);
     }
 
-    public ConsoleTable set(int r, int c, String value) {
-        if (c == 0) {
-            leftColMap.put(rows.get(r)[c], r);
+    public Entry getEntry(int row, int col) {
+        if (isValidCell(row, col)) {
+            return entries[row][col];
+        } else {
+            Debug.println(String.format("Table entry location (%d, %d) out of bounds for (%d, %d) max)",
+                row, col, rows - 1, cols - 1), EventSeverity.ERROR);
         }
-        rawSet(r, c, value);
-        findColMaxWidths(c);
-        recreateString();
-        return this;
+        return null;
     }
 
-    private void rawSet(int r, int c, String value) {
-        if (c >= numCols) {
-            throw new IndexOutOfBoundsException(String.format("Table does not have %s columns", c));
-        }
-
-        while (r >= rows.size()) {
-            rows.add(new String[numCols]);
-        }
-        rows.get(r)[c] = value;
+    private boolean isValidCell(int row, int col) {
+        return row < rows && col < cols;
     }
 
-    private void findColMaxWidths(int c) {
-        for (String[] row : rows) {
-            int colLen = row[c].length();
-            if (colLen > colMaxWidths[c]) {
-                colMaxWidths[c] = colLen;
+    public void setCol(int startRow, int startCol, String... values) {
+        int ctr = startRow;
+        for (String v : values) {
+            Entry e = getEntry(ctr, startCol);
+            if (e != null) {
+                e.setValue(v);
+                ctr++;
+            } else {
+                Debug.println("No entry found at (" + ctr + ", " + startCol + ")", EventSeverity.ERROR);
+                return;
             }
         }
     }
 
-    public int getRowIdx(String leftColValue) {
-        Integer retval = leftColMap.get(leftColValue);
-        return retval == null ? -1 : retval;
+    @SafeVarargs
+    public final void setCol(int startRow, int startCol, Supplier<String>... values) {
+        int ctr = startRow;
+        for (Supplier<String> v : values) {
+            Entry e = getEntry(ctr, startCol);
+            if (e != null) {
+                e.setSupplier(v);
+                ctr++;
+            } else {
+                Debug.println("No entry found at (" + ctr + ", " + startCol + ")", EventSeverity.ERROR);
+                return;
+            }
+        }
     }
 
-    public ConsoleTable appendRow(String... values) {
-        if (values.length != numCols) {
-            throw new IndexOutOfBoundsException(
-                    String.format("Column index %s out of bounds for length %s",
-                            values.length, numCols));
+    public void setRow(int startRow, int startCol, String... values) {
+        int ctr = startCol;
+        for (String v : values) {
+            Entry e = getEntry(startRow, ctr);
+            if (e != null) {
+                e.setValue(v);
+                ctr++;
+            } else {
+                Debug.println("No entry found at (" + startRow + ", " + ctr + ")", EventSeverity.ERROR);
+                return;
+            }
         }
-        leftColMap.put(values[0], rows.size());
-        rows.add(values);
-        for (int c = 0; c < values.length; c++) {
-            findColMaxWidths(c);
+    }
+
+    @SafeVarargs
+    public final void setRow(int startRow, int startCol, Supplier<String>... values) {
+        int ctr = startCol;
+        for (Supplier<String> v : values) {
+            Entry e = getEntry(startRow, ctr);
+            if (e != null) {
+                e.setSupplier(v);
+                ctr++;
+            } else {
+                Debug.println("No entry found at (" + startRow + ", " + ctr + ")", EventSeverity.ERROR);
+                return;
+            }
+        }
+    }
+
+    public void updateAll() {
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                getEntry(r, c).update();
+            }
         }
         recreateString();
-        return this;
     }
 
-    private void recreateString() {
+    private void updateMaxWidths(int col, int newLength) {
+        if (newLength > colWidths[col]) {
+            colWidths[col] = newLength;
+        } else {
+            colWidths[col] = 0;
+            for (int r = 0; r < rows; r++) {
+                Entry entry = entries[r][col];
+                int len = entry.length();
+                if (len > colWidths[col]) {
+                    colWidths[col] = len;
+                }
+            }
+        }
+    }
+
+    public void recreateString() {
         StringBuilder sb = new StringBuilder();
-        for (int r = -1; r < rows.size(); r++) {
-            if (r == -1) {
+        for (int r = 0; r < rows; r++) {
+            if (r == 0) {
                 appendDividerLine(sb, '=');
-                appendPaddedRow(sb, headerRow);
+                appendPaddedRow(sb, entries[r]);
                 appendDividerLine(sb, '=');
             } else {
-                appendPaddedRow(sb, rows.get(r));
-                if (useRowDividers || r == rows.size() - 1) {
+                appendPaddedRow(sb, entries[r]);
+                if (useRowDividers || r == rows - 1) {
                     appendDividerLine(sb, '-');
                 }
             }
@@ -100,10 +143,10 @@ public class ConsoleTable {
         asString = sb.toString();
     }
 
-    private void appendPaddedRow(StringBuilder sb, String[] row) {
+    private void appendPaddedRow(StringBuilder sb, Entry[] row) {
         for (int c = 0; c < row.length; c++) {
             sb.append('|').append(' ').append(row[c]);
-            for (int j = 0; j < colMaxWidths[c] - row[c].length(); j++) {
+            for (int j = 0; j < colWidths[c] - row[c].length(); j++) {
                 sb.append(' ');
             }
             sb.append(' ');
@@ -112,7 +155,7 @@ public class ConsoleTable {
     }
 
     private void appendDividerLine(StringBuilder sb, char c) {
-        for (int maxWidth : colMaxWidths) {
+        for (int maxWidth : colWidths) {
             sb.append('+');
             // + 2 is for padding left and right (min +1 on each side)
             for (int i = 0; i < maxWidth + 2; i++) {
@@ -124,6 +167,53 @@ public class ConsoleTable {
 
     @Override
     public String toString() {
+        recreateString();
         return asString;
+    }
+
+    public static class Entry {
+        private final int row;
+        private final int col;
+        private final ConsoleTable parent;
+        private String value;
+        private Supplier<String> supplier;
+
+        public Entry(int row, int col, ConsoleTable parent) {
+            this.row = row;
+            this.col = col;
+            this.parent = parent;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public Entry setValue(String value) {
+            this.value = value;
+            parent.updateMaxWidths(col, length());
+            return this;
+        }
+
+        public Entry setSupplier(Supplier<String> supplier) {
+            this.supplier = supplier;
+            return this;
+        }
+
+        public Entry update() {
+            if (supplier != null) {
+                value = supplier.get();
+                parent.updateMaxWidths(col, length());
+            }
+            return this;
+        }
+
+        public int length() {
+            return getValue() == null ? 0 : getValue().length();
+        }
+
+        @Override
+        public String toString() {
+            return getValue() == null ? "" : getValue();
+        }
     }
 }

@@ -38,6 +38,11 @@ public class HideableLabel extends JLabel {
     }
 
     @Override
+    public String getText() {
+        return isDisplayed() ? super.getText() : "";
+    }
+
+    @Override
     public void setText(String text) {
         setDisplay(true);
         super.setText(text);

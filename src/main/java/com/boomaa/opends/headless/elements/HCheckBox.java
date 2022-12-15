@@ -15,7 +15,7 @@ public class HCheckBox extends HideComponent<JCheckBox> {
 
     public void setSelected(boolean selected) {
         if (!isHeadless()) {
-            getElement().setEnabled(selected);
+            getElement().setSelected(selected);
         } else {
             this.selected = selected;
         }
