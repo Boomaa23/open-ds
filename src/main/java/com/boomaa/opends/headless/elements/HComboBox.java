@@ -70,4 +70,12 @@ public class HComboBox<T> extends HideComponent<JComboBox<T>> implements ItemSel
     public void addActionListener(ActionListener listener) {
         //TODO make this work
     }
+
+    public T[] getItems() {
+        return items;
+    }
+
+    public int getItemCount() {
+        return items.length;
+    }
 }

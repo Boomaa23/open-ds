@@ -29,7 +29,7 @@ public interface MainJDEC {
     JLabel LINK = MainFrame.createLinkLabel("github.com/Boomaa23/open-ds");
 
     HCheckBox IS_ENABLED = new HCheckBox("Enable");
-    JComboBox<RobotMode> ROBOT_DRIVE_MODE = new JComboBox<>(RobotMode.values());
+    HComboBox<RobotMode> ROBOT_DRIVE_MODE = new HComboBox<>(RobotMode.values());
 
     HComboBox<String> ALLIANCE_COLOR = new HComboBox<>("Red", "Blue");
     HComboBox<Integer> ALLIANCE_NUM = new HComboBox<>(1, 2, 3);

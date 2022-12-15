@@ -1,11 +1,15 @@
 package com.boomaa.opends.headless;
 
 import com.boomaa.opends.data.StatsFields;
+import com.boomaa.opends.display.DisplayEndpoint;
+import com.boomaa.opends.display.Logger;
 import com.boomaa.opends.display.MainJDEC;
+import com.boomaa.opends.display.RobotMode;
 import com.boomaa.opends.util.OperatingSystem;
 
 import java.io.IOException;
 import java.util.Scanner;
+import java.util.function.Supplier;
 
 public class HeadlessController {
     public static final String LOGO_ASCII = ""
@@ -18,8 +22,13 @@ public class HeadlessController {
     private static final Scanner inputScanner = new Scanner(System.in);
     private static final ConsoleTable statusTable = new ConsoleTable(7, 2);
     private static final ConsoleTable statisticsTable = new ConsoleTable(StatsFields.values().length + 1, 2);
-    private static final OptionTable mainActionsTable = new OptionTable(18, false, false);
-    private static final OptionTable jsActionsTable = new OptionTable(0, false, false);
+    private static final OptionTable mainActionsTable = new OptionTable(18, true, false);
+    private static final OptionTable jsActionsTable = new OptionTable(18, true, false); //TODO
+    private static final ConsoleTable shuffleboardTable = new ConsoleTable(7, 2); //TODO
+
+    private static final OptionTable changeModeTable = new OptionTable(RobotMode.values().length + 1, false, false);
+    private static final OptionTable changeANumTable = new OptionTable(MainJDEC.ALLIANCE_NUM.getItemCount() + 1, false, false);
+    private static final OptionTable changeAColorTable = new OptionTable(MainJDEC.ALLIANCE_COLOR.getItemCount() + 1, false, false);
 
     static {
         statusTable.setRow(0, 0, "Key", "Value");
@@ -37,55 +46,191 @@ public class HeadlessController {
         for (int i = 0; i < StatsFields.values().length; i++) {
             statisticsTable.getEntry(i + 1, 0).setValue(StatsFields.values()[i].getKey());
         }
+
+        for (RobotMode mode : RobotMode.values()) {
+            changeModeTable.appendOption(mode.toString(), () -> {
+                MainJDEC.ROBOT_DRIVE_MODE.setSelectedItem(mode);
+                return OperationReturn.CONTINUE;
+            });
+        }
+        changeModeTable.appendOption("(go back)", () -> OperationReturn.CONTINUE);
+
+        for (int i = 1; i < MainJDEC.ALLIANCE_NUM.getItemCount() + 1; i++) {
+            int finalI = i;
+            changeANumTable.appendOption(String.valueOf(i), () -> {
+                MainJDEC.ALLIANCE_NUM.setSelectedItem(finalI);
+                return OperationReturn.CONTINUE;
+            });
+        }
+        changeANumTable.appendOption("(go back)", () -> OperationReturn.CONTINUE);
+
+        for (int i = 0; i < MainJDEC.ALLIANCE_COLOR.getItemCount(); i++) {
+            String item = MainJDEC.ALLIANCE_COLOR.getItems()[i];
+            changeAColorTable.appendOption(item, () -> {
+                MainJDEC.ALLIANCE_COLOR.setSelectedItem(item);
+                return OperationReturn.CONTINUE;
+            });
+        }
+        changeAColorTable.appendOption("(go back)", () -> OperationReturn.CONTINUE);
+
+
         //TODO option operation runnables
-        mainActionsTable.appendOption("Toggle Enable", () -> MainJDEC.IS_ENABLED.setSelected(true))
-                .appendOption("Change Mode", NullOperation.getInstance()) //TODO
-                .appendOption("Restart Robot Code", MainJDEC.RESTART_CODE_BTN::doClick)
-                .appendOption("Restart RoboRIO", MainJDEC.RESTART_ROBO_RIO_BTN::doClick)
-                .appendOption("Emergency Stop", MainJDEC.ESTOP_BTN::doClick)
-                .appendOption("Change Alliance Number", NullOperation.getInstance()) //TODO
-                .appendOption("Change Alliance Color", NullOperation.getInstance()) //TODO
-                .appendOption("Change Team Number", NullOperation.getInstance()) //TODO
-                .appendOption("Enter Game Data", NullOperation.getInstance()) //TODO
-                .appendOption("Toggle FMS Connection", () -> MainJDEC.FMS_CONNECT.setSelected(true))
-                .appendOption("Toggle USB Connection", () -> MainJDEC.USB_CONNECT.setSelected(true))
-                .appendOption("Change Protocol Year", NullOperation.getInstance())
-                .appendOption("View Statistics", () -> System.out.println(statisticsTable))
-                .appendOption("View OpenDS Log", NullOperation.getInstance()) //TODO
-                .appendOption("View Shuffleboard", NullOperation.getInstance()) //TODO
-                .appendOption("Configure/Test Joysticks", NullOperation.getInstance()) //TODO
-                .appendOption("Quit", () -> System.exit(0));
-        //TODO joystick options table
+        mainActionsTable.appendOption("Toggle Enable",
+                    () -> {
+                        if (MainJDEC.IS_ENABLED.isEnabled()) {
+                            MainJDEC.IS_ENABLED.setSelected(!MainJDEC.IS_ENABLED.isSelected());
+                            return OperationReturn.CONTINUE;
+                        } else {
+                            System.err.println("Robot cannot be enabled.");
+                            return OperationReturn.INVALID;
+                        }
+                     },
+                    () -> MainJDEC.IS_ENABLED.isSelected() ? "Enabled" : "Disabled")
+            .appendOption("Change Mode",
+                    () -> {
+                        System.out.println(changeModeTable);
+                        return runOperation(changeModeTable);
+                    },
+                    () -> MainJDEC.ROBOT_DRIVE_MODE.getSelectedItem().toString())
+            .appendOption("Restart Robot Code",
+                    () -> {
+                        MainJDEC.RESTART_CODE_BTN.doClick();
+                        return OperationReturn.CONTINUE;
+                    })
+            .appendOption("Restart RoboRIO",
+                    () -> {
+                        MainJDEC.RESTART_ROBO_RIO_BTN.doClick();
+                        return OperationReturn.CONTINUE;
+                    })
+            .appendOption("Emergency Stop",
+                    () -> {
+                        MainJDEC.ESTOP_BTN.doClick();
+                        return OperationReturn.CONTINUE;
+                    })
+            .appendOption("Change Alliance Number",
+                    () -> {
+                        System.out.println(changeANumTable);
+                        return runOperation(changeANumTable);
+                    },
+                    () -> MainJDEC.ALLIANCE_NUM.getSelectedItem().toString())
+            .appendOption("Change Alliance Color",
+                    () -> {
+                        System.out.println(changeAColorTable);
+                        return runOperation(changeAColorTable);
+                    },
+                    () -> MainJDEC.ALLIANCE_COLOR.getSelectedItem().toString())
+            .appendOption("Change Team Number",
+                    () -> {
+                        MainJDEC.TEAM_NUMBER.setText(prompt("Enter new team number: "));
+                        return OperationReturn.CONTINUE;
+                    },
+                    () -> MainJDEC.TEAM_NUMBER.getText())
+            .appendOption("Enter Game Data",
+                    () -> {
+                        MainJDEC.GAME_DATA.setText(prompt("Enter new game data: "));
+                        return OperationReturn.CONTINUE;
+                    },
+                    () -> MainJDEC.GAME_DATA.getText())
+            .appendOption("Toggle FMS Connection",
+                    () -> {
+                        MainJDEC.FMS_CONNECT.setSelected(true);
+                        return OperationReturn.CONTINUE;
+                    })
+            .appendOption("Toggle USB Connection",
+                    () -> {
+                        MainJDEC.USB_CONNECT.setSelected(true);
+                        return OperationReturn.CONTINUE;
+                    })
+            .appendOption("Change Protocol Year",
+                    () -> {
+                        String response = prompt("Enter new team number: ");
+                        try {
+                            int year = Integer.parseInt(response);
+                            boolean valid = false;
+                            for (int validYear : DisplayEndpoint.VALID_PROTOCOL_YEARS) {
+                                if (year == validYear) {
+                                    valid = true;
+                                    break;
+                                }
+                            }
+                            if (valid) {
+                                MainJDEC.PROTOCOL_YEAR.setSelectedItem(year);
+                                return OperationReturn.CONTINUE;
+                            } else {
+                                System.err.println("Invalid protocol year entered.");
+                                return OperationReturn.INVALID;
+                            }
+                        } catch (NumberFormatException e) {
+                            System.err.println("Protocol year entered could not be parsed.");
+                            return OperationReturn.INVALID;
+                        }
+                    },
+                    () -> MainJDEC.PROTOCOL_YEAR.getSelectedItem().toString())
+            .appendOption("View Statistics",
+                    () -> {
+                        System.out.println(statisticsTable);
+                        return OperationReturn.WAIT;
+                    })
+            .appendOption("View OpenDS Log",
+                    () -> {
+                        System.out.println(Logger.LOGGER.getAppender().getValues());
+                        return OperationReturn.WAIT;
+                    }) //TODO
+            .appendOption("View Shuffleboard",
+                    () -> {
+                        System.out.println(shuffleboardTable);
+                        return OperationReturn.WAIT;
+                    }) //TODO
+            .appendOption("Configure/Test Joysticks",
+                    () -> {
+                        System.out.println(jsActionsTable);
+                        return runOperation(jsActionsTable);
+                    }) //TODO
+            .appendOption("Quit",
+                    () -> {
+                        System.exit(0);
+                        return OperationReturn.CONTINUE;
+                    });
     }
 
     private HeadlessController() {
     }
 
     public static void start() {
-
         printMenu();
         while (true) {
-            String response = prompt("Select an action: ");
-            if (response.length() != 1) {
-                System.err.println("Input was too long. Please try again.");
-                continue;
+            OperationReturn retval = runOperation(mainActionsTable);
+            if (retval != OperationReturn.CONTINUE) {
+                String response = "";
+                while (!response.equals("y")) {
+                    response = prompt("Return to menu? [y]: ").toLowerCase();
+                }
             }
-            if (!mainActionsTable.runOperation(response.charAt(0))) {
-                System.err.println("Invalid input keycode. Please try again.");
-                continue;
-            }
-            clear();
 
-            response = "";
-            while (!response.equals("Y") && !response.equals("n")) {
-                response = prompt("Return to menu? [Y/n]: ");
-            }
             clear();
             printMenu();
         }
     }
 
+    private static OperationReturn runOperation(OptionTable table) {
+        OperationReturn retval = null;
+        while (retval == null) {
+            String response = prompt("Select an action: ");
+            if (response.length() != 1) {
+                System.err.println("Input was too long. Please try again.");
+                continue;
+            }
+            retval = table.runOperation(response.charAt(0));
+            if (retval == null) {
+                System.err.println("Invalid input. Please try again.");
+            }
+        }
+        return retval;
+    }
+
     public static void printMenu() {
+        statusTable.updateAll();
+        mainActionsTable.updateAll();
         System.out.println(LOGO_ASCII
             + "by Boomaa23\n"
             + "------------------\n\n"

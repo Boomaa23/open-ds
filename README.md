@@ -79,4 +79,4 @@ If you find a bug or issue with OpenDS, please report it on the "Issues" section
 For protocol changes in future years, OpenDS is easily modifiable. Ports, IP addresses, display layouts, and packet creation/parsing are all re-formattable.
 
 ## Acknowledgements
-Thank you to Jessica Creighton for the FRCture documentation and to Alex Spataru for his work on LibDS.
+Thank you to Jessica Creighton and Alex Spataru for their work on the FRCture documentation and LibDS respectively.

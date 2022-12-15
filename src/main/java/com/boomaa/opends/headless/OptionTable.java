@@ -6,11 +6,10 @@ import java.util.function.Supplier;
 
 public class OptionTable extends ConsoleTable {
     private static final char[] KEYCODE_SET = new char[] {
-            '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
             'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
             'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
     };
-    private final Map<Character, Runnable> operationMap = new HashMap<>();
+    private final Map<Character, Supplier<OperationReturn>> operationMap = new HashMap<>();
     private final boolean useValueCol;
     private int lastOptionRow;
 
@@ -25,7 +24,7 @@ public class OptionTable extends ConsoleTable {
         this.lastOptionRow = 1;
     }
 
-    public OptionTable appendOption(String option, Runnable operation, Supplier<String> supplier) {
+    public OptionTable appendOption(String option, Supplier<OperationReturn> operation, Supplier<String> supplier) {
         if (lastOptionRow >= KEYCODE_SET.length) {
             throw new IndexOutOfBoundsException("OptionTable is full (36 values). Create a new table or reduce.");
         }
@@ -34,8 +33,6 @@ public class OptionTable extends ConsoleTable {
         if (useValueCol) {
             if (supplier != null) {
                 getEntry(lastOptionRow, 2).setSupplier(supplier);
-            } else {
-                throw new IllegalArgumentException("Value supplier must not be null if a value column is used.");
             }
         }
         operationMap.put(KEYCODE_SET[lastOptionRow - 1], operation);
@@ -43,15 +40,12 @@ public class OptionTable extends ConsoleTable {
         return this;
     }
 
-    public OptionTable appendOption(String option, Runnable operation) {
+    public OptionTable appendOption(String option, Supplier<OperationReturn> operation) {
         return appendOption(option, operation, null);
     }
 
-    public boolean runOperation(char keycode) {
-        Runnable operation = operationMap.get(keycode);
-        if (operation != null) {
-            operation.run();
-        }
-        return operation != null;
+    public OperationReturn runOperation(char keycode) {
+        Supplier<OperationReturn> operation = operationMap.get(keycode);
+        return operation != null ? operation.get() : null;
     }
 }

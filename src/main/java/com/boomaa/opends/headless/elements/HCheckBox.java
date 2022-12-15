@@ -5,6 +5,8 @@ import java.awt.event.ItemListener;
 import javax.swing.JCheckBox;
 
 public class HCheckBox extends HideComponent<JCheckBox> {
+    protected boolean selected;
+
     public HCheckBox(String text) {
         super(() -> new JCheckBox(text));
     }

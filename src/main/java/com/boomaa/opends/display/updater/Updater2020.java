@@ -152,7 +152,7 @@ public class Updater2020 extends ElementUpdater {
         List<Control> ctrlSignals = fmsUdp.getControl();
         for (RobotMode mode : RobotMode.values()) {
             if (ctrlSignals.contains(mode.getControlFlag())) {
-                ROBOT_DRIVE_MODE.setSelectedItem(mode.getControlFlag());
+                ROBOT_DRIVE_MODE.setSelectedItem(mode);
             }
         }
         if (!station.equals(new AllianceStation(ALLIANCE_NUM.getSelectedIndex() - 1,

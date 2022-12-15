@@ -13,6 +13,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 public class Logger extends OutputStream {
+    public static Logger LOGGER;
     public static PrintStream OUT;
     public static JScrollPane PANE;
     private final byte[] oneByte;
@@ -29,7 +30,8 @@ public class Logger extends OutputStream {
         });
         textArea.setEditable(false);
 
-        OUT = new PrintStream(new Logger(textArea));
+        LOGGER = new Logger(textArea);
+        OUT = new PrintStream(LOGGER);
         PANE = new JScrollPane(textArea,
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     }
@@ -37,6 +39,10 @@ public class Logger extends OutputStream {
     public Logger(JTextArea textArea) {
         oneByte = new byte[1];
         appender = new Appender(textArea);
+    }
+
+    public Appender getAppender() {
+        return appender;
     }
 
     public synchronized void clear() {
@@ -91,6 +97,10 @@ public class Logger extends OutputStream {
             curLength = 0;
             clear = false;
             queue = true;
+        }
+
+        public List<String> getValues() {
+            return values;
         }
 
         public synchronized void append(String val) {

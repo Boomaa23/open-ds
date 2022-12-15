@@ -4,7 +4,6 @@ import java.util.function.Supplier;
 import javax.swing.JComponent;
 
 public abstract class HideComponent<T extends JComponent> extends HideBase<T> {
-    protected boolean selected;
     protected boolean enabled;
 
     public HideComponent(Supplier<T> elementSupplier) {
