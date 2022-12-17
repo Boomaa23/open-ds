@@ -1,8 +1,8 @@
 package com.boomaa.opends.display;
 
 import com.boomaa.opends.util.Debug;
-import org.jnativehook.keyboard.NativeKeyEvent;
-import org.jnativehook.keyboard.NativeKeyListener;
+import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
+import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;

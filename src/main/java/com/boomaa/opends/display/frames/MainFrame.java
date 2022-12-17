@@ -13,9 +13,9 @@ import com.boomaa.opends.display.tabs.TabChangeListener;
 import com.boomaa.opends.util.Debug;
 import com.boomaa.opends.util.OperatingSystem;
 import com.boomaa.opends.util.Parameter;
-import org.jnativehook.GlobalScreen;
-import org.jnativehook.NativeHookException;
-import org.jnativehook.keyboard.NativeKeyEvent;
+import com.github.kwhat.jnativehook.GlobalScreen;
+import com.github.kwhat.jnativehook.NativeHookException;
+import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
 
 import java.awt.Component;
 import java.awt.Container;

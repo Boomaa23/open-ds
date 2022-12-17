@@ -21,7 +21,7 @@ import com.boomaa.opends.util.EventSeverity;
 import com.boomaa.opends.util.InitChecker;
 import com.boomaa.opends.util.Libraries;
 import com.boomaa.opends.util.Parameter;
-import org.jnativehook.GlobalScreen;
+import com.github.kwhat.jnativehook.GlobalScreen;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
