@@ -8,10 +8,13 @@ import com.boomaa.opends.display.tabs.JoystickTab;
 import com.boomaa.opends.display.tabs.LogTab;
 import com.boomaa.opends.display.tabs.NTTab;
 import com.boomaa.opends.display.tabs.StatsTab;
-import com.boomaa.opends.headless.elements.*;
+import com.boomaa.opends.headless.elements.HButton;
+import com.boomaa.opends.headless.elements.HCheckBox;
+import com.boomaa.opends.headless.elements.HComboBox;
+import com.boomaa.opends.headless.elements.HFrame;
+import com.boomaa.opends.headless.elements.HOverlayField;
 
 import java.awt.GridBagLayout;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
