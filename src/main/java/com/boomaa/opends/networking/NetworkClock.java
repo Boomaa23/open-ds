@@ -35,7 +35,7 @@ public class NetworkClock extends Clock {
                 if (DisplayEndpoint.NET_IF_INIT.get(remote, protocol)) {
                     iface.write(DisplayEndpoint.CREATOR.create(remote, protocol));
                     byte[] data = iface.read();
-                    if (data == null || (protocol == Protocol.UDP && data.length == 0)) {
+                    if (data == null) {
                         Debug.println(makeDebugStr("invalid data"), EventSeverity.WARNING, true);
                         DisplayEndpoint.UPDATER.update(ParserNull.getInstance(), remote, protocol);
                         DisplayEndpoint.NET_IF_INIT.set(false, remote, protocol);

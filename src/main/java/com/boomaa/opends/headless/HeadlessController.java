@@ -26,9 +26,9 @@ public class HeadlessController {
     private static final OptionTable jsActionsTable = new OptionTable(18, true, false); //TODO
     private static final ConsoleTable shuffleboardTable = new ConsoleTable(7, 2); //TODO
 
-    private static final OptionTable changeModeTable = new OptionTable(RobotMode.values().length + 1, false, false);
-    private static final OptionTable changeANumTable = new OptionTable(MainJDEC.ALLIANCE_NUM.getItemCount() + 1, false, false);
-    private static final OptionTable changeAColorTable = new OptionTable(MainJDEC.ALLIANCE_COLOR.getItemCount() + 1, false, false);
+    private static final OptionTable changeModeTable = new OptionTable(RobotMode.values().length + 2, false, false);
+    private static final OptionTable changeANumTable = new OptionTable(MainJDEC.ALLIANCE_NUM.getItemCount() + 2, false, false);
+    private static final OptionTable changeAColorTable = new OptionTable(MainJDEC.ALLIANCE_COLOR.getItemCount() + 2, false, false);
 
     static {
         statusTable.setRow(0, 0, "Key", "Value");
@@ -55,7 +55,7 @@ public class HeadlessController {
         }
         changeModeTable.appendOption("(go back)", () -> OperationReturn.CONTINUE);
 
-        for (int i = 1; i < MainJDEC.ALLIANCE_NUM.getItemCount() + 1; i++) {
+        for (int i = 1; i <= MainJDEC.ALLIANCE_NUM.getItemCount(); i++) {
             int finalI = i;
             changeANumTable.appendOption(String.valueOf(i), () -> {
                 MainJDEC.ALLIANCE_NUM.setSelectedItem(finalI);
