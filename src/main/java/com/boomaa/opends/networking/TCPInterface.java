@@ -63,11 +63,12 @@ public class TCPInterface implements NetworkInterface {
     }
 
     @Override
-    public void write(byte[] data) {
+    public boolean write(byte[] data) {
         checkAction((d) -> {
             socket.getOutputStream().write(d);
             return null;
         }, data);
+        return true;
     }
 
     public <T> Object checkAction(NetworkAction<T> func, T param) {

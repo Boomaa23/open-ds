@@ -1,5 +1,6 @@
 package com.boomaa.opends.display.frames;
 
+import com.boomaa.opends.data.receive.parser.ParserNull;
 import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.display.GlobalKeyListener;
 import com.boomaa.opends.display.MainJDEC;
@@ -10,6 +11,7 @@ import com.boomaa.opends.display.TeamNumListener;
 import com.boomaa.opends.display.TeamNumPersist;
 import com.boomaa.opends.display.elements.GBCPanelBuilder;
 import com.boomaa.opends.display.tabs.TabChangeListener;
+import com.boomaa.opends.networking.NetworkClock;
 import com.boomaa.opends.util.Debug;
 import com.boomaa.opends.util.OperatingSystem;
 import com.boomaa.opends.util.Parameter;
@@ -127,6 +129,10 @@ public class MainFrame implements MainJDEC {
             IS_ENABLED.setSelected(false);
             Debug.println("Emergency Stop (ESTOP) initiated");
         });
+        RECONNECT_BTN.addActionListener((e) -> {
+            Debug.println("Reconnecting/resetting robot interfaces");
+            unsetAllInterfaces();
+        });
 
         // Debug println method checks this, but checking before adding a listener improves performance
         if (Parameter.DEBUG.isPresent()) {
@@ -211,6 +217,9 @@ public class MainFrame implements MainJDEC {
         base.clone().setPos(2, 4, 2, 1).build(ESTOP_BTN);
         base.clone().setPos(2, 5, 1, 1).build(FMS_CONNECT);
         base.clone().setPos(3, 5, 1, 1).build(USB_CONNECT);
+
+        endr.clone().setPos(2, 7, 1, 1).build(new JLabel("Reconnect: "));
+        base.clone().setPos(3, 7, 1, 1).build(RECONNECT_BTN);
 
         base.clone().setPos(4, 2, 2, 1).setFill(GridBagConstraints.NONE).build(BAT_VOLTAGE);
         endr.clone().setPos(4, 3, 1, 1).build(new JLabel("Robot:"));

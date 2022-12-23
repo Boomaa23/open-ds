@@ -30,22 +30,26 @@ public class NetworkClock extends Clock {
     @Override
     public void onCycle() {
         boolean connFms = remote != Remote.FMS || MainJDEC.FMS_CONNECT.isSelected();
-        boolean reset = false;
         if (DisplayEndpoint.UPDATER != null && DisplayEndpoint.CREATOR != null) {
             if (connFms) {
                 if (DisplayEndpoint.NET_IF_INIT.get(remote, protocol)) {
-                    iface.write(DisplayEndpoint.CREATOR.create(remote, protocol));
-                    byte[] data = iface.read();
-                    if (data == null) {
-                        Debug.println(makeDebugStr("invalid data"), EventSeverity.WARNING, true);
+                    if (!iface.write(DisplayEndpoint.CREATOR.create(remote, protocol))) {
+                        Debug.println(makeDebugStr("network error"), EventSeverity.WARNING, true);
                         DisplayEndpoint.UPDATER.update(ParserNull.getInstance(), remote, protocol);
-                        DisplayEndpoint.NET_IF_INIT.set(false, remote, protocol);
-                    } else if (data.length != 0 || protocol != Protocol.UDP) {
-                        PacketParser packetParser = DisplayEndpoint.getPacketParser(remote, protocol, data);
-                        DisplayEndpoint.UPDATER.update(packetParser, remote, protocol);
-                        Debug.println(remote + " " + protocol + " interface connected to " + iface.toString(), EventSeverity.INFO, true);
-                        Debug.removeSticky(makeDebugStr("network error"));
-                        Debug.removeSticky(makeDebugStr("invalid data"));
+                        reloadInterface();
+                    } else {
+                        byte[] data = iface.read();
+                        if (data == null) {
+                            Debug.println(makeDebugStr("invalid data"), EventSeverity.WARNING, true);
+                            DisplayEndpoint.UPDATER.update(ParserNull.getInstance(), remote, protocol);
+                            DisplayEndpoint.NET_IF_INIT.set(false, remote, protocol);
+                        } else if (data.length != 0 || protocol != Protocol.UDP) {
+                            PacketParser packetParser = DisplayEndpoint.getPacketParser(remote, protocol, data);
+                            DisplayEndpoint.UPDATER.update(packetParser, remote, protocol);
+                            Debug.println(remote + " " + protocol + " interface connected to " + iface.toString(), EventSeverity.INFO, true);
+                            Debug.removeSticky(makeDebugStr("network error"));
+                            Debug.removeSticky(makeDebugStr("invalid data"));
+                        }
                     }
                 } else {
                     Debug.println(makeDebugStr("network error"), EventSeverity.WARNING, true);

@@ -36,14 +36,16 @@ public class UDPInterface implements NetworkInterface {
     }
 
     @Override
-    public void write(byte[] data) {
+    public boolean write(byte[] data) {
         if (!closed) {
             try {
                 clientSocket.send(new DatagramPacket(data, data.length, ip, clientPort));
+                return true;
             } catch (IOException e) {
-                e.printStackTrace();
+                close();
             }
         }
+        return false;
     }
 
     @Override
