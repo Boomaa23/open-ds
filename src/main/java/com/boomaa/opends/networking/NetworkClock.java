@@ -30,6 +30,7 @@ public class NetworkClock extends Clock {
     @Override
     public void onCycle() {
         boolean connFms = remote != Remote.FMS || MainJDEC.FMS_CONNECT.isSelected();
+        boolean reset = false;
         if (DisplayEndpoint.UPDATER != null && DisplayEndpoint.CREATOR != null) {
             if (connFms) {
                 if (DisplayEndpoint.NET_IF_INIT.get(remote, protocol)) {
@@ -39,7 +40,7 @@ public class NetworkClock extends Clock {
                         Debug.println(makeDebugStr("invalid data"), EventSeverity.WARNING, true);
                         DisplayEndpoint.UPDATER.update(ParserNull.getInstance(), remote, protocol);
                         DisplayEndpoint.NET_IF_INIT.set(false, remote, protocol);
-                    } else {
+                    } else if (data.length != 0 || protocol != Protocol.UDP) {
                         PacketParser packetParser = DisplayEndpoint.getPacketParser(remote, protocol, data);
                         DisplayEndpoint.UPDATER.update(packetParser, remote, protocol);
                         Debug.println(remote + " " + protocol + " interface connected to " + iface.toString(), EventSeverity.INFO, true);
