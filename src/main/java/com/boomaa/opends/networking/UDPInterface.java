@@ -32,18 +32,20 @@ public class UDPInterface implements NetworkInterface {
     }
 
     public UDPInterface(String clientIp, int clientPort, int serverPort) throws SocketException {
-        this(clientIp, clientPort, serverPort, 1000);
+        this(clientIp, clientPort, serverPort, 2000);
     }
 
     @Override
-    public void write(byte[] data) {
+    public boolean write(byte[] data) {
         if (!closed) {
             try {
                 clientSocket.send(new DatagramPacket(data, data.length, ip, clientPort));
+                return true;
             } catch (IOException e) {
-                e.printStackTrace();
+                close();
             }
         }
+        return false;
     }
 
     @Override
@@ -55,7 +57,9 @@ public class UDPInterface implements NetworkInterface {
                 return new byte[0];
             }
             serverSocket.receive(packet);
-        } catch (SocketTimeoutException | SocketException e) {
+        } catch (SocketTimeoutException e) {
+            return new byte[0];
+        } catch (SocketException e) {
             close();
             return new byte[0];
         } catch (IOException e) {

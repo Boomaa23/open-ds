@@ -8,13 +8,13 @@ import com.boomaa.opends.display.tabs.JoystickTab;
 import com.boomaa.opends.display.tabs.LogTab;
 import com.boomaa.opends.display.tabs.NTTab;
 import com.boomaa.opends.display.tabs.StatsTab;
+import com.boomaa.opends.headless.elements.HButton;
 import com.boomaa.opends.headless.elements.HCheckBox;
 import com.boomaa.opends.headless.elements.HComboBox;
 import com.boomaa.opends.headless.elements.HFrame;
 import com.boomaa.opends.headless.elements.HOverlayField;
 
 import java.awt.GridBagLayout;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -44,6 +44,7 @@ public interface MainJDEC {
     HComboBox<Integer> PROTOCOL_YEAR = new HComboBox<>(DisplayEndpoint.VALID_PROTOCOL_YEARS);
     HCheckBox FMS_CONNECT = new HCheckBox("Connect FMS");
     HCheckBox USB_CONNECT = new HCheckBox("Use USB");
+    HButton RECONNECT_BTN = new HButton("↻");
 
     JoystickTab JS_TAB = new JoystickTab();
     NTTab NT_TAB = new NTTab();

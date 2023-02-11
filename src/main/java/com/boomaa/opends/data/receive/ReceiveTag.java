@@ -117,7 +117,7 @@ public enum ReceiveTag {
             RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<Float>) (packet, size) -> new TagValueMap<Float>()
-                .addTo("Utilization %", NumberUtils.getFloat(ArrayUtils.slice(packet, 0, 4)))
+                .addTo("Utilization %", NumberUtils.getFloat(ArrayUtils.slice(packet, 0, 4)) * 100)
                 .addTo("Bus Off", (float) NumberUtils.getUInt32(ArrayUtils.slice(packet, 4, 8)))
                 .addTo("TX Full", (float) NumberUtils.getUInt32(ArrayUtils.slice(packet, 8, 12)))
                 .addTo("RX Errors", (float) packet[12])

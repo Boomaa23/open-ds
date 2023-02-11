@@ -1,7 +1,7 @@
 package com.boomaa.opends.networking;
 
 public interface NetworkInterface {
-    void write(byte[] data);
+    boolean write(byte[] data);
 
     byte[] read();
 
