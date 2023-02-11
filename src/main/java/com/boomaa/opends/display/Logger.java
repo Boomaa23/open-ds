@@ -103,6 +103,10 @@ public class Logger extends OutputStream {
             return values;
         }
 
+        public JTextArea getTextArea() {
+            return textArea;
+        }
+
         public synchronized void append(String val) {
             values.add(val);
             if (queue) {

@@ -24,11 +24,11 @@ public class OptionTable extends ConsoleTable {
         this.lastOptionRow = 1;
     }
 
-    public OptionTable appendOption(String option, Supplier<OperationReturn> operation, Supplier<String> supplier) {
+    public OptionTable appendOption(String optionName, Supplier<OperationReturn> operation, Supplier<String> supplier) {
         if (lastOptionRow >= KEYCODE_SET.length) {
             throw new IndexOutOfBoundsException("OptionTable is full (36 values). Create a new table or reduce.");
         }
-        getEntry(lastOptionRow, 0).setValue(option);
+        getEntry(lastOptionRow, 0).setValue(optionName);
         getEntry(lastOptionRow, 1).setValue(String.valueOf(KEYCODE_SET[lastOptionRow - 1]));
         if (useValueCol) {
             if (supplier != null) {
@@ -40,8 +40,8 @@ public class OptionTable extends ConsoleTable {
         return this;
     }
 
-    public OptionTable appendOption(String option, Supplier<OperationReturn> operation) {
-        return appendOption(option, operation, null);
+    public OptionTable appendOption(String optionName, Supplier<OperationReturn> operation) {
+        return appendOption(optionName, operation, null);
     }
 
     public OperationReturn runOperation(char keycode) {
