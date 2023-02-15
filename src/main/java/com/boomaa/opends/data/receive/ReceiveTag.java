@@ -15,6 +15,7 @@ public enum ReceiveTag {
     JOYSTICK_OUTPUT(0x01, Protocol.UDP, Remote.ROBO_RIO, InLog.NEVER,
             RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
+            RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<String>) (packet, size) -> {
                 TagValueMap<String> map = new TagValueMap<>();
                 if (size >= 6) {
@@ -38,6 +39,7 @@ public enum ReceiveTag {
     DISK_INFO(0x04, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS,
             RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
+            RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<Integer>) (packet, size) -> new TagValueMap<Integer>()
                 .addTo("Block", NumberUtils.getUInt32(ArrayUtils.slice(packet, 0, 4)))
                 .addTo("Free Space", NumberUtils.getUInt32(ArrayUtils.slice(packet, 4, 8))),
@@ -47,6 +49,7 @@ public enum ReceiveTag {
             NullReceiveTag.getInstance()
     ),
     CPU_INFO(0x05, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS,
+            RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<Float>) (packet, size) -> {
@@ -70,6 +73,7 @@ public enum ReceiveTag {
     //TODO fix this, not correct
     // are channels ordered backwards? https://www.chiefdelphi.com/t/alternate-viewer-for-driver-station-logs-dslog/120629/13?u=boomaa
     PDP_LOG(0x08, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS,
+            RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<Double>) (packet, size) -> {
@@ -108,12 +112,14 @@ public enum ReceiveTag {
     UDP_R2D_UNKNOWN(0x09, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS,
             RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
+            RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<Byte>) TagValueMap::passPackets,
             NullReceiveTag.getInstance(),
             NullReceiveTag.getInstance(),
             NullReceiveTag.getInstance()
     ),
     CAN_METRICS(0x0E, Protocol.UDP, Remote.ROBO_RIO, InLog.ALWAYS,
+            RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<Float>) (packet, size) -> new TagValueMap<Float>()
@@ -130,6 +136,7 @@ public enum ReceiveTag {
     RADIO_EVENTS(0x00, Protocol.TCP, Remote.ROBO_RIO, InLog.ALWAYS,
             RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
+            RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<String>) (packet, size) ->
                 TagValueMap.singleton("Message", new String(packet)),
             NullReceiveTag.getInstance(),
@@ -139,6 +146,7 @@ public enum ReceiveTag {
     USAGE_REPORT(0x01, Protocol.TCP, Remote.ROBO_RIO, InLog.ALWAYS,
             RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
+            RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<String>) UsageReporting::decode,
             NullReceiveTag.getInstance(),
             NullReceiveTag.getInstance(),
@@ -146,6 +154,7 @@ public enum ReceiveTag {
     ),
     //TODO fix disable and rail faults (record more data?)
     DISABLE_FAULTS(0x04, Protocol.TCP, Remote.ROBO_RIO, InLog.ALWAYS,
+            RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<Integer>) (packet, size) -> new TagValueMap<Integer>()
@@ -158,6 +167,7 @@ public enum ReceiveTag {
     RAIL_FAULTS(0x05, Protocol.TCP, Remote.ROBO_RIO, InLog.ALWAYS,
             RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
+            RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<Integer>) (packet, size) -> new TagValueMap<Integer>(),
             // .addTo("6V", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 0, 2)))
             // .addTo("5V", NumberUtils.getUInt16(ArrayUtils.sliceArr(packet, 2, 4)))
@@ -167,6 +177,7 @@ public enum ReceiveTag {
             NullReceiveTag.getInstance()
     ),
     VERSION_INFO(0x0A, Protocol.TCP, Remote.ROBO_RIO, InLog.ALWAYS,
+            RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<String>) (packet, size) -> {
@@ -203,6 +214,7 @@ public enum ReceiveTag {
     ERROR_MESSAGE(0x0B, Protocol.TCP, Remote.ROBO_RIO, InLog.ALWAYS,
             RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
+            RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<String>) (packet, size) -> {
                 TagValueMap<String> map = new TagValueMap<String>()
                     .addTo("Timestamp", String.valueOf(NumberUtils.getFloat(ArrayUtils.slice(packet, 0, 4))))
@@ -228,6 +240,7 @@ public enum ReceiveTag {
     STANDARD_OUT(0x0C, Protocol.TCP, Remote.ROBO_RIO, InLog.ALWAYS,
             RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
+            RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<String>) (packet, size) -> new TagValueMap<String>()
                 .addTo("Timestamp", String.valueOf(NumberUtils.getFloat(ArrayUtils.slice(packet, 0, 4))))
                 .addTo("Sequence Num", String.valueOf(NumberUtils.getUInt16(ArrayUtils.slice(packet, 4, 6))))
@@ -239,6 +252,7 @@ public enum ReceiveTag {
     TCP_R2D_UNKNOWN(0x0D, Protocol.TCP, Remote.ROBO_RIO, InLog.ALWAYS,
             RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
+            RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<Byte>) TagValueMap::passPackets,
             NullReceiveTag.getInstance(),
             NullReceiveTag.getInstance(),
@@ -246,6 +260,7 @@ public enum ReceiveTag {
     ),
 
     WPILIB_VER(0x00, Protocol.TCP, Remote.FMS, InLog.ALWAYS,
+            RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<String>) (packet, size) -> {
@@ -270,6 +285,7 @@ public enum ReceiveTag {
     EVENT_CODE(0x14, Protocol.TCP, Remote.FMS, InLog.ALWAYS,
             RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
+            RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<String>) (packet, size) ->
                 TagValueMap.singleton("Event Name", new String(ArrayUtils.slice(packet, 1))),
             NullReceiveTag.getInstance(),
@@ -277,6 +293,7 @@ public enum ReceiveTag {
             NullReceiveTag.getInstance()
     ),
     STATION_INFO(0x19, Protocol.TCP, Remote.FMS, InLog.ALWAYS,
+            RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<AllianceStation>) (packet, size) ->
@@ -287,6 +304,7 @@ public enum ReceiveTag {
             NullReceiveTag.getInstance()
     ),
     CHALLENGE_QUESTION(0x1A, Protocol.TCP, Remote.FMS, InLog.ALWAYS,
+            RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
             RefRecieveTag.yearOfAction(2020),
             (ReceiveTagAction<Integer>) (packet, size) ->

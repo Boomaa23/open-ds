@@ -27,9 +27,11 @@ public enum SendTag {
             NullSendTag.getInstance(),
             NullSendTag.getInstance(),
             NullSendTag.getInstance(),
+            NullSendTag.getInstance(),
             NullSendTag.getInstance()
     ),
     JOYSTICK(0x0C, Protocol.UDP, Remote.ROBO_RIO,
+            RefSendTag.yearOfAction(2020),
             RefSendTag.yearOfAction(2020),
             RefSendTag.yearOfAction(2020),
             () -> {
@@ -64,12 +66,14 @@ public enum SendTag {
     DATE(0x0F, Protocol.UDP, Remote.ROBO_RIO,
             RefSendTag.yearOfAction(2020),
             RefSendTag.yearOfAction(2020),
+            RefSendTag.yearOfAction(2020),
             () -> Date.now().toSendBytes(),
             RefSendTag.yearOfAction(2015),
             RefSendTag.yearOfAction(2020),
             NullSendTag.getInstance()
     ),
     TIMEZONE(0x10, Protocol.UDP, Remote.ROBO_RIO,
+            RefSendTag.yearOfAction(2020),
             RefSendTag.yearOfAction(2020),
             RefSendTag.yearOfAction(2020),
             () -> Calendar.getInstance().getTimeZone().getDisplayName().getBytes(),
@@ -79,6 +83,7 @@ public enum SendTag {
     ),
 
     JOYSTICK_DESC(0x02, Protocol.TCP, Remote.ROBO_RIO,
+            RefSendTag.yearOfAction(2020),
             RefSendTag.yearOfAction(2020),
             RefSendTag.yearOfAction(2020),
             () -> {
@@ -117,9 +122,11 @@ public enum SendTag {
             NullSendTag.getInstance(),
             NullSendTag.getInstance(),
             NullSendTag.getInstance(),
+            NullSendTag.getInstance(),
             NullSendTag.getInstance()
     ),
     GAME_DATA(0x0E, Protocol.TCP, Remote.ROBO_RIO,
+            RefSendTag.yearOfAction(2020),
             RefSendTag.yearOfAction(2020),
             RefSendTag.yearOfAction(2020),
             () -> MainJDEC.GAME_DATA.getText().getBytes(),
@@ -134,6 +141,7 @@ public enum SendTag {
             NullSendTag.getInstance(),
             NullSendTag.getInstance(),
             NullSendTag.getInstance(),
+            NullSendTag.getInstance(),
             NullSendTag.getInstance()
     ),
     COMMS_METRICS(0x01, Protocol.UDP, Remote.FMS,
@@ -142,9 +150,11 @@ public enum SendTag {
             NullSendTag.getInstance(),
             NullSendTag.getInstance(),
             NullSendTag.getInstance(),
+            NullSendTag.getInstance(),
             NullSendTag.getInstance()
     ),
     LAPTOP_METRICS(0x02, Protocol.UDP, Remote.FMS,
+            RefSendTag.yearOfAction(2020),
             RefSendTag.yearOfAction(2020),
             RefSendTag.yearOfAction(2020),
             () -> {
@@ -165,6 +175,7 @@ public enum SendTag {
             //TODO bandwidth utilization (uint16)
             RefSendTag.yearOfAction(2020),
             RefSendTag.yearOfAction(2020),
+            RefSendTag.yearOfAction(2020),
             () -> new PacketBuilder().addInt(WlanConnection.getRadio().getSignal())
                     .addInt(0x00).addInt(0x00).build(),
             NullSendTag.getInstance(),
@@ -172,6 +183,7 @@ public enum SendTag {
             NullSendTag.getInstance()
     ),
     PD_INFO(0x04, Protocol.UDP, Remote.FMS,
+            RefSendTag.yearOfAction(2020),
             RefSendTag.yearOfAction(2020),
             RefSendTag.yearOfAction(2020),
             () -> new byte[0],
@@ -187,9 +199,11 @@ public enum SendTag {
             NullSendTag.getInstance(),
             NullSendTag.getInstance(),
             NullSendTag.getInstance(),
+            NullSendTag.getInstance(),
             NullSendTag.getInstance()
     ),
     RIO_VER(0x01, Protocol.TCP, Remote.FMS,
+            NullSendTag.getInstance(),
             NullSendTag.getInstance(),
             NullSendTag.getInstance(),
             NullSendTag.getInstance(),
@@ -203,9 +217,11 @@ public enum SendTag {
             NullSendTag.getInstance(),
             NullSendTag.getInstance(),
             NullSendTag.getInstance(),
+            NullSendTag.getInstance(),
             NullSendTag.getInstance()
     ),
     PDP_VER(0x03, Protocol.TCP, Remote.FMS,
+            NullSendTag.getInstance(),
             NullSendTag.getInstance(),
             NullSendTag.getInstance(),
             NullSendTag.getInstance(),
@@ -219,9 +235,11 @@ public enum SendTag {
             NullSendTag.getInstance(),
             NullSendTag.getInstance(),
             NullSendTag.getInstance(),
+            NullSendTag.getInstance(),
             NullSendTag.getInstance()
     ),
     CANJAG_VER(0x05, Protocol.TCP, Remote.FMS,
+            NullSendTag.getInstance(),
             NullSendTag.getInstance(),
             NullSendTag.getInstance(),
             NullSendTag.getInstance(),
@@ -235,6 +253,7 @@ public enum SendTag {
             NullSendTag.getInstance(),
             NullSendTag.getInstance(),
             NullSendTag.getInstance(),
+            NullSendTag.getInstance(),
             NullSendTag.getInstance()
     ),
     THIRD_PARTY_DEVICE_VER(0x07, Protocol.TCP, Remote.FMS,
@@ -243,9 +262,11 @@ public enum SendTag {
             NullSendTag.getInstance(),
             NullSendTag.getInstance(),
             NullSendTag.getInstance(),
+            NullSendTag.getInstance(),
             NullSendTag.getInstance()
     ),
     USAGE_REPORT(0x15, Protocol.TCP, Remote.FMS,
+            RefSendTag.yearOfAction(2020),
             RefSendTag.yearOfAction(2020),
             RefSendTag.yearOfAction(2020),
             () -> {
@@ -260,6 +281,7 @@ public enum SendTag {
             NullSendTag.getInstance()
     ),
     LOG_DATA(0x16, Protocol.TCP, Remote.FMS,
+            RefSendTag.yearOfAction(2020),
             RefSendTag.yearOfAction(2020),
             RefSendTag.yearOfAction(2020),
             () -> {
@@ -306,9 +328,11 @@ public enum SendTag {
             NullSendTag.getInstance(),
             NullSendTag.getInstance(),
             NullSendTag.getInstance(),
+            NullSendTag.getInstance(),
             NullSendTag.getInstance()
     ),
     TEAM_NUMBER(0x18, Protocol.TCP, Remote.FMS,
+            RefSendTag.yearOfAction(2020),
             RefSendTag.yearOfAction(2020),
             RefSendTag.yearOfAction(2020),
             () -> NumberUtils.intToBytePair(MainJDEC.TEAM_NUMBER.checkedIntParse()),
@@ -319,12 +343,14 @@ public enum SendTag {
     CHALLENGE_RESPONSE(0x1B, Protocol.TCP, Remote.FMS,
             RefSendTag.yearOfAction(2020),
             RefSendTag.yearOfAction(2020),
+            RefSendTag.yearOfAction(2020),
             () ->  MainJDEC.CHALLENGE_RESPONSE.getText().getBytes(),
             NullSendTag.getInstance(),
             NullSendTag.getInstance(),
             NullSendTag.getInstance()
     ),
     DS_PING(0x1C, Protocol.TCP, Remote.FMS,
+            RefSendTag.yearOfAction(2020),
             RefSendTag.yearOfAction(2020),
             RefSendTag.yearOfAction(2020),
             () -> new byte[0],
