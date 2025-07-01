@@ -32,7 +32,6 @@ endif
 
 ifndef ARCH_TYPE
 	ifeq ($(OS),Windows_NT)
-		LIB_OUT_WIN32 = $(subst /,\\,$(LIB_OUT))
 		ifeq ($(PROCESSOR_ARCHITEW6432),AMD64)
 			ARCH_TYPE = amd64
 		else
@@ -59,6 +58,7 @@ endif
 
 ifeq ($(OS_TYPE),win32)
 	CWD = ${CURDIR}
+	LIB_OUT_WIN32 = $(subst /,\\,$(LIB_OUT))
 else
 	CWD = $(shell pwd)
 endif
@@ -69,11 +69,13 @@ ifeq ($(ARCH_TYPE),aarch64)
 	endif
 	ifeq ($(OS_TYPE),win32)
 		CC = aarch64-w64-mingw32-gcc
+		VCVARS_SELECTOR = amd64_arm64
 	endif
 endif
 ifeq ($(ARCH_TYPE),amd64)
 	ifeq ($(OS_TYPE),win32)
 		CC = x86_64-w64-mingw32-gcc
+		VCVARS_SELECTOR = 64
 	endif
 endif
 
@@ -130,7 +132,7 @@ native-osx:
 	rm com_boomaa_opends_usb_IOKit.o com_boomaa_opends_usb_IOKitDevice.o
 
 native-win32:
-	$(VS_PATH)\\BuildTools\\VC\\Auxiliary\\Build\\vcvars64.bat && \
+	$(VS_PATH)\\BuildTools\\VC\\Auxiliary\\Build\\vcvars$(VCVARS_SELECTOR).bat && \
 	cl.exe /LD /I$(WIN32_JDK_INCLUDE_PATH) /I$(WIN32_JDK_INCLUDE_PATH)\\win32 $(USB_SRC)/win32/*.c /O1 /MD /Zc:inline
 	del *.exp *.lib *.obj
 	move /y com_boomaa_opends_usb_DirectInput.dll "$(LIB_OUT_WIN32)\\"
