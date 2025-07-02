@@ -2,9 +2,7 @@ USB_SRC := src/main/java/com/boomaa/opends/usb
 LIB_OUT := src/main/resources
 LIB_NAME := opends-lib
 
-ifndef CC
-	CC := gcc
-endif
+CC := gcc
 
 ifndef UNIX_JDK_INCLUDE_PATH
 	UNIX_JDK_INCLUDE_PATH := /usr/lib/jvm/java-8-openjdk-amd64/include

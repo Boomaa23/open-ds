@@ -16,6 +16,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,10 +81,6 @@ public class NTTab extends TabBase {
         populateTab("");
     }
 
-    private String truncate(String in, int max, boolean addDots) {
-        return in.substring(0, Math.min(in.length(), max)) + (in.length() > max && addDots ? "..." : "");
-    }
-
     public void populateTab(String name) {
         currentTab = name;
         entryDisplay.removeAll();
@@ -110,7 +107,12 @@ public class NTTab extends TabBase {
                     JLabel key = new JLabel(entry.getKey(), SwingConstants.CENTER);
                     Font f = key.getFont();
                     key.setFont(f.deriveFont(f.getStyle() | Font.BOLD));
-                    JLabel value = new JLabel(String.valueOf(entry.getValue()), SwingConstants.CENTER);
+                    String entryValue = entryValueToString(entry.getValue());
+                    Class<?> entryValueClazz = entry.getValue().getClass();
+                    if (entryValueClazz.isArray() && entryValueClazz.getComponentType().isPrimitive()) {
+                        entryValue = "<html>" + entryValue.replaceAll(" ", "<br>") + "</html>";
+                    }
+                    JLabel value = new JLabel(entryValue, SwingConstants.CENTER);
                     tempPanel.add(key, BorderLayout.NORTH);
                     tempPanel.add(value, BorderLayout.SOUTH);
                     tempPanel.setBorder(emptyBorder);
@@ -157,6 +159,26 @@ public class NTTab extends TabBase {
             } else {
                 populateTab(currentTab);
             }
+        }
+    }
+
+    private static String truncate(String in, int max, boolean addDots) {
+        return in.substring(0, Math.min(in.length(), max)) + (in.length() > max && addDots ? "..." : "");
+    }
+
+    private static String entryValueToString(Object value) {
+        if (value.getClass().isArray()) {
+            if (value instanceof double[]) {
+                return Arrays.toString((double[]) value);
+            } else if (value instanceof int[]) {
+                return Arrays.toString((int[]) value);
+            } else if (value instanceof long[]) {
+                return Arrays.toString((long[]) value);
+            } else {
+                return Arrays.toString((Object[]) value);
+            }
+        } else {
+            return String.valueOf(value);
         }
     }
 }
