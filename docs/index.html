@@ -65,6 +65,7 @@
       <li class="nonlogo"><a href="#features">Features</a></li>
       <li class="nonlogo"><a href="#params">Parameters</a></li>
       <li class="nonlogo"><a href="#source">Source</a></li>
+      <li class="nonlogo"><a href="#build">Build</a></li>
       <li class="nonlogo"><a href="#other">Other</a></li>
       <li class="rightlogo"><img src="icon.png" height="44px"></li>
     </ul>
@@ -270,6 +271,20 @@
         Consider using the <span class="code">DataBase</span> system for year-centric data storage and identification.</p>
       <p>Make sure that naming schemes are followed. Add another integer entry to the array <span class="code">DisplayEndpoint:VALID_PROTOCOL_YEARS</span>
         when all three main classes have been created. This will allow the selection of the new protocol by the user. Put in decreasing year order.</p>
+    </div>
+    <div class="content-item build">
+      <a class="anchor" id="build"></a>
+      <div class="subheader">Build</div>
+      <p>To build OpenDS, use the included Maven buildscript (<span class="code">mvn -B package</span>).
+        The output JAR will be <span class="code">target/open-ds-vX.X.X-jar-with-dependencies.jar</span>.
+        Alternatively, you can use the included Makefile target, <span class="code">make build</span>.
+        Checkstyle and clean targets also exist, <span class="code">make check</span> and <span class="code">make clean</span> respectively.</p>
+      <p>Similarly, if you need to modify any of the native libraries (<span class="code">*.c</span> files), these can be built using the Makefile.
+        <span class="code">make native</span> automatically builds the native for your system,
+        while <span class="code">make native-all-docker</span> builds for all supported systems using a Docker container.
+        To override the build target, specify <span class="code">OS_TYPE=win32/linux/osx</span> and/or <span class="code">ARCH_TYPE=aarch64/amd64</span> as environment variables.
+        Notably <span class="code">OS_TYPE=win32</span> will automatically use MSVC as the compiler.
+        To use <span class="code">mingw-gcc<span>, use target <span class="code">make native-win32-gcc</span>.</p>
     </div>
     <div id="other" class="content-item">
       <div class="subheader">Other</div>
