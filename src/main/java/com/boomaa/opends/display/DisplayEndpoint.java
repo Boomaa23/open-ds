@@ -32,7 +32,7 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 public class DisplayEndpoint implements MainJDEC {
-    public static final String CURRENT_VERSION_TAG = "v0.2.4";
+    public static final String CURRENT_VERSION_TAG = "v0.3.0";
 
     public static DSLog FILE_LOGGER = new DSLog();
     public static NTConnection NETWORK_TABLES = new NTConnection();
