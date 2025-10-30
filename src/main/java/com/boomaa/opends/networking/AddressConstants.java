@@ -11,6 +11,10 @@ public class AddressConstants {
     private static PortTriple fmsPorts;
     private static PortQuad rioPorts;
 
+    static {
+        reloadProtocol();
+    }
+
     private AddressConstants() {
     }
 
