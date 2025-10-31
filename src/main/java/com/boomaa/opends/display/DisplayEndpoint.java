@@ -37,7 +37,7 @@ public class DisplayEndpoint implements MainJDEC {
     public static DSLog FILE_LOGGER = new DSLog();
     public static NTConnection NETWORK_TABLES = new NTConnection();
     public static InitChecker NET_IF_INIT = new InitChecker();
-    public static Integer[] VALID_PROTOCOL_YEARS = { 2023, 2022, 2021, 2020, 2016, 2015, 2014 };
+    public static Integer[] VALID_PROTOCOL_YEARS = { 2024, 2023, 2022, 2021, 2020, 2016, 2015, 2014 };
 
     private static final ProtocolClass parserClass = new ProtocolClass("com.boomaa.opends.data.receive.parser.Parser");
     private static final ProtocolClass creatorClass = new ProtocolClass("com.boomaa.opends.data.send.creator.Creator");
