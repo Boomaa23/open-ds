@@ -1,6 +1,7 @@
 package com.boomaa.opends.display;
 
 import com.boomaa.opends.display.elements.HideableLabel;
+import com.boomaa.opends.display.elements.RSLIndicator;
 import com.boomaa.opends.display.elements.MultiValueLabel;
 import com.boomaa.opends.display.elements.StickyButton;
 import com.boomaa.opends.display.frames.MainFrame;
@@ -29,6 +30,7 @@ public interface MainJDEC {
     JLabel LINK = MainFrame.createLinkLabel("github.com/Boomaa23/open-ds");
 
     HCheckBox IS_ENABLED = new HCheckBox("Enable");
+    RSLIndicator RSL_INDICATOR = new RSLIndicator();
     HComboBox<RobotMode> ROBOT_DRIVE_MODE = new HComboBox<>(RobotMode.values());
 
     HComboBox<String> ALLIANCE_COLOR = new HComboBox<>("Red", "Blue");

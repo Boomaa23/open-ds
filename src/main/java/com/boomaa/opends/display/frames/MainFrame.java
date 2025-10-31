@@ -114,6 +114,8 @@ public class MainFrame implements MainJDEC {
         }));
         TAB.addChangeListener(TabChangeListener.getInstance());
 
+        IS_ENABLED.addItemListener((e) -> RSL_INDICATOR.setFlashing(e.getStateChange() == ItemEvent.SELECTED));
+
         USB_CONNECT.addActionListener(makeAsyncListener((e) -> {
             unsetAllInterfaces();
             Debug.println("Connecting to robot over USB");
@@ -199,6 +201,7 @@ public class MainFrame implements MainJDEC {
         base.clone().setPos(5, 0, 1, 2).setFill(GridBagConstraints.NONE).build(new JLabel(new ImageIcon(MainFrame.ICON_MIN)));
 
         base.clone().setPos(0, 2, 1, 1).build(IS_ENABLED);
+        base.clone().setPos(0, 0, 1, 2).build(RSL_INDICATOR);
         base.clone().setPos(1, 2, 1, 1).build(ROBOT_DRIVE_MODE);
 
         base.clone().setPos(0, 3, 2, 1).setFill(GridBagConstraints.NONE).build(new JLabel("Alliance Station"));
