@@ -15,39 +15,55 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Objects;
 
 public class DSLog extends Clock {
     private static final long LABVIEW_UNIX_EPOCH_DIFF = -2_212_122_495L;
     private static final DateTimeFormatter TS_FORMAT = DateTimeFormatter.ofPattern("yyyy_MM_dd HH_mm_ss EEE");
+    private static final int FIRST_DSLOGS_DEFAULT_DIR_YEAR = 2025;
     public static byte[] PDP_STATS = new byte[24];
     private static final LockedQueue<byte[]> eventQueue = new LockedQueue<>();
-    private final FileOutputStream eventsOut;
-    private final FileOutputStream logOut;
-    boolean flag = false;
+    private FileOutputStream eventsOut;
+    private FileOutputStream logOut;
 
     public DSLog() {
         super(20);
-        //TODO fix fully
-        String folderName = OperatingSystem.isWindows() ? "C:\\Users\\Public\\Documents\\FRC\\Log Files\\"
+    }
+
+    @Override
+    public void start() {
+        restart();
+        super.start();
+    }
+
+    public void restart() {
+        eventQueue.clear();
+
+        String windowsFolderPath = "C:\\Users\\Public\\Documents\\FRC\\Log Files\\";
+        if (MainJDEC.getProtocolYear() >= FIRST_DSLOGS_DEFAULT_DIR_YEAR) {
+            windowsFolderPath += "DSLogs\\";
+        }
+        String folderName = OperatingSystem.isWindows() ? windowsFolderPath
                 : System.getProperty("user.home") + "/opends/";
         File folder = new File(folderName);
         if (!folder.isDirectory()) {
             folder.mkdirs();
         }
-        String filepath = folderName + LocalDateTime.now().format(TS_FORMAT);
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        double currentTimeMs = currentDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+        String filepath = folderName + currentDateTime.format(TS_FORMAT);
         this.logOut = createFile(filepath + ".dslog");
         this.eventsOut = createFile(filepath + ".dsevents");
 
+        // TODO fix fully (?)
         final byte[] header = new PacketBuilder()
                 .pad(0x00, 3)
                 .addInt(0x03) // only observed value
                 .pad(0x00, 4)
-                .addBytes(secondTimestamp())
-                .addBytes(millisecondTimestamp())
+                .addBytes(secondTimestamp(currentTimeMs))
+                .addBytes(millisecondTimestamp(currentTimeMs))
                 .build();
         writeData(Objects.requireNonNull(logOut), header);
         writeData(Objects.requireNonNull(eventsOut), header);
@@ -70,7 +86,7 @@ public class DSLog extends Clock {
     @Override
     public void onCycle() {
         //TODO make ROBOT_mode reflect changes in robot connection
-        int trace = 0xFF;
+        int trace = 0x00;
         WlanConnection radio = WlanConnection.getRadio();
         double bat = checkedNumParse(MainJDEC.BAT_VOLTAGE.getText().replaceAll(" V", ""));
 
@@ -78,23 +94,19 @@ public class DSLog extends Clock {
             if (MainJDEC.IS_ENABLED.isSelected()) {
                 RobotMode selMode = (RobotMode) MainJDEC.ROBOT_DRIVE_MODE.getSelectedItem();
                 if (selMode == RobotMode.TELEOPERATED) {
-                    trace -= Trace.DS_TELEOP.flag + Trace.ROBOT_TELEOP.flag;
+                    trace |= Trace.DS_TELEOP.flag | Trace.ROBOT_TELEOP.flag;
                 } else if (selMode == RobotMode.AUTONOMOUS) {
-                    trace -= Trace.DS_AUTO.flag + Trace.ROBOT_AUTO.flag;
+                    trace |= Trace.DS_AUTO.flag | Trace.ROBOT_AUTO.flag;
                 }
             } else {
-                trace -= Trace.DS_DISABLED.flag + Trace.ROBOT_DISABLED.flag;
+                trace |= Trace.DS_DISABLED.flag | Trace.ROBOT_DISABLED.flag;
             }
             // < 6.8 volts = roboRIO brownout voltage
             if (bat < 6.8) {
-                trace -= Trace.BROWNOUT.flag;
+                trace |= Trace.BROWNOUT.flag;
             }
         }
-        // TODO what does this subtraction do / why is it here?
-        if (flag) {
-            trace -= Trace.BROWNOUT.flag;
-        }
-        flag = !flag;
+        trace = ~trace;
 
         writeData(logOut, new PacketBuilder()
             .addInts(encodeTripTime(0x00), encodePacketLoss(0x00))
@@ -116,9 +128,10 @@ public class DSLog extends Clock {
     public static void queueEvent(String event, EventSeverity level) {
         event = (level == EventSeverity.ERROR ? level.name() :
                 StringUtils.toTitleCase(level.name())) + " " + event;
+        double currentTimeMs = System.currentTimeMillis();
         byte[] data = new PacketBuilder().pad(0, 4)
-                .addBytes(secondTimestamp())
-                .addBytes(millisecondTimestamp())
+                .addBytes(secondTimestamp(currentTimeMs))
+                .addBytes(millisecondTimestamp(currentTimeMs))
                 .addBytes(NumberUtils.intToByteQuad(event.length()))
                 .addBytes(event.getBytes())
                 .build();
@@ -126,12 +139,12 @@ public class DSLog extends Clock {
     }
 
     // Seconds 1904 to 1970 (labview/unix epoch) + after
-    private static byte[] secondTimestamp() {
-        return NumberUtils.intToByteQuad((int) (LABVIEW_UNIX_EPOCH_DIFF + (int) (System.currentTimeMillis() / 1000)));
+    private static byte[] secondTimestamp(double currentTimeMs) {
+        return NumberUtils.intToByteQuad((int) (LABVIEW_UNIX_EPOCH_DIFF + (int) (currentTimeMs / 1000)));
     }
 
-    private static byte[] millisecondTimestamp() {
-        double ms = (System.currentTimeMillis() % 1000) / 1000.0;
+    private static byte[] millisecondTimestamp(double currentTimeMs) {
+        double ms = (currentTimeMs % 1000) / 1000.0;
         BigDecimal time = BigDecimal.valueOf(2).pow(64).multiply(BigDecimal.valueOf(ms));
         return NumberUtils.longToByteOctet(time.longValue());
     }
