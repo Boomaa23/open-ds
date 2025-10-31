@@ -7,10 +7,12 @@ import com.boomaa.opends.usb.HIDDevice;
 import com.boomaa.opends.util.Clock;
 import com.boomaa.opends.util.Debug;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionListener;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.JButton;
@@ -26,18 +28,16 @@ public class AutoOrderFrame extends FrameBase {
     }
 
     @Override
-    public void config() {
-        super.config();
+    public void preConfig() {
+        super.preConfig();
 
         devices.clear();
-        if (EmbeddedJDEC.SKIP_BTN.getActionListeners().length == 0) {
-            EmbeddedJDEC.SKIP_BTN.addActionListener(e -> {
-                EmbeddedJDEC.JS_NAMES[idxCtr++].setText("<skipped>");
-                if (idxCtr == EmbeddedJDEC.JS_NAMES.length) {
-                    EmbeddedJDEC.SKIP_BTN.setEnabled(false);
-                }
-            });
-        }
+        EmbeddedJDEC.SKIP_BTN.addActionListener(e -> {
+            EmbeddedJDEC.JS_NAMES[idxCtr++].setText("<skipped>");
+            if (idxCtr == EmbeddedJDEC.JS_NAMES.length) {
+                EmbeddedJDEC.SKIP_BTN.setEnabled(false);
+            }
+        });
 
         EmbeddedJDEC.DONE_BTN.addActionListener(e -> {
             JoystickTab.EmbeddedJDEC.LIST_MODEL.clear();
@@ -70,6 +70,13 @@ public class AutoOrderFrame extends FrameBase {
         }
         valueUpdater.start();
         Debug.println("Auto Order Frame value updater thread started");
+    }
+
+    @Override
+    public void postConfig() {
+        // setDefaultButton does not work
+        // Focus request must occur after frame is visible
+        EmbeddedJDEC.DONE_BTN.requestFocus();
     }
 
     @Override

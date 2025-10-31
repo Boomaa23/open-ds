@@ -3,10 +3,13 @@ package com.boomaa.opends.display.frames;
 import com.boomaa.opends.util.Debug;
 import com.boomaa.opends.util.OperatingSystem;
 
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.event.ActionListener;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 
 public abstract class FrameBase extends JFrame {
@@ -28,20 +31,24 @@ public abstract class FrameBase extends JFrame {
         applyNonWindowsScaling(dimension);
         this.content = this.getContentPane();
         Debug.println(title + " frame configuration started");
-        config();
+        preConfig();
         Debug.println(title + " frame configured");
         super.pack();
         super.setLocationRelativeTo(null);
         forceShow();
+        postConfig();
     }
 
-    public void config() {
+    public void preConfig() {
         // Default config goes here
         this.setPreferredSize(dimension);
         this.setIconImage(MainFrame.ICON);
         this.setLocationRelativeTo(null);
         this.setResizable(true);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    }
+
+    public void postConfig() {
     }
 
     public void forceShow() {
@@ -81,8 +88,20 @@ public abstract class FrameBase extends JFrame {
     }
 
     public void forceDispose() {
+        removeActionListeners();
         removeAlive(this.getClass());
         super.dispose();
+    }
+
+    public void removeActionListeners() {
+        for (Component component : content.getComponents()) {
+            if (component instanceof JButton) {
+                JButton button = ((JButton) component);
+                for (ActionListener listener : button.getActionListeners().clone()) {
+                    button.removeActionListener(listener);
+                }
+            }
+        }
     }
 
     public static void applyNonWindowsScaling(Dimension dimension) {

@@ -24,7 +24,7 @@ public class DSLog extends Clock {
     private static final long LABVIEW_UNIX_EPOCH_DIFF = -2_212_122_495L;
     private static final DateTimeFormatter TS_FORMAT = DateTimeFormatter.ofPattern("yyyy_MM_dd HH_mm_ss EEE");
     public static byte[] PDP_STATS = new byte[24];
-    private static final List<byte[]> eventQueue = new LinkedList<>();
+    private static final LockedQueue<byte[]> eventQueue = new LockedQueue<>();
     private final FileOutputStream eventsOut;
     private final FileOutputStream logOut;
     boolean flag = false;
@@ -90,6 +90,7 @@ public class DSLog extends Clock {
                 trace -= Trace.BROWNOUT.flag;
             }
         }
+        // TODO what does this subtraction do / why is it here?
         if (flag) {
             trace -= Trace.BROWNOUT.flag;
         }
@@ -108,9 +109,7 @@ public class DSLog extends Clock {
             .build()
         );
 
-        for (byte[] e : eventQueue) {
-            writeData(eventsOut, e);
-        }
+        eventQueue.forEach(e -> writeData(eventsOut, e));
         eventQueue.clear();
     }
 

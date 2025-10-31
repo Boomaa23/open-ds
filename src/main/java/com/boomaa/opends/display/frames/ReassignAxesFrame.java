@@ -35,8 +35,8 @@ public class ReassignAxesFrame extends FrameBase {
     }
 
     @Override
-    public void config() {
-        super.config();
+    public void preConfig() {
+        super.preConfig();
         this.setLayout(new GridBagLayout());
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         device = JoystickTab.EmbeddedJDEC.LIST.getSelectedValue();
