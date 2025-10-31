@@ -65,7 +65,12 @@ If you do not have Java and/or want a single install/run script, download [this 
 ### Troubleshooting
 If you run into issues, ensure that you are running a 64-bit installation of either Windows 7/8.1/10/11, Linux kernel version 2.6.35 or greater, or macOS 10 (OSX) or newer.
 
-Try launching from the command line (`java -jar open-ds.jar`) and observing the console output for additional details.
+Try launching from the command line (`java -jar open-ds.jar`) and observing the console output for additional details. You can also launch with debug (`--debug`) to print more information to the console.
+
+If you are using the WPILib simulator (instead of a physical robot), ensure you have the following line in your `build.gradle` (or equivalent in `build.gradle.kts`).
+```groovy
+wpi.sim.addDriverstation().defaultEnabled = true
+```
 
 If issues persist, please report them on the "Issues" section of the GitHub [here](https://github.com/Boomaa23/open-ds/issues) and they will be resolved as soon as possible.
 

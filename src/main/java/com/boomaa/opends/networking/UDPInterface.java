@@ -9,37 +9,37 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
 public class UDPInterface implements NetworkInterface {
-    private DatagramSocket clientSocket;
-    private DatagramSocket serverSocket;
+    private DatagramSocket txSocket;
+    private DatagramSocket rxSocket;
     private InetAddress ip;
-    private int clientPort;
+    private int txPort;
     private int bufSize = 1024;
     private boolean closed;
 
-    public UDPInterface(String clientIp, int clientPort, int serverPort, int timeout) throws SocketException {
+    public UDPInterface(String ip, int txPort, int rxPort, int timeout) throws SocketException {
         try {
-            this.ip = InetAddress.getByName(clientIp);
-            this.clientPort = clientPort;
-            this.clientSocket = new DatagramSocket();
-            this.serverSocket = new DatagramSocket(serverPort);
+            this.ip = InetAddress.getByName(ip);
+            this.txPort = txPort;
+            this.txSocket = new DatagramSocket();
+            this.rxSocket = new DatagramSocket(rxPort);
             if (timeout != -1) {
-                clientSocket.setSoTimeout(timeout);
-                serverSocket.setSoTimeout(timeout);
+                txSocket.setSoTimeout(timeout);
+                rxSocket.setSoTimeout(timeout);
             }
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
     }
 
-    public UDPInterface(String clientIp, int clientPort, int serverPort) throws SocketException {
-        this(clientIp, clientPort, serverPort, 2000);
+    public UDPInterface(String ip, int txPort, int rxPort) throws SocketException {
+        this(ip, txPort, rxPort, 2000);
     }
 
     @Override
     public boolean write(byte[] data) {
         if (!closed) {
             try {
-                clientSocket.send(new DatagramPacket(data, data.length, ip, clientPort));
+                txSocket.send(new DatagramPacket(data, data.length, ip, txPort));
                 return true;
             } catch (IOException e) {
                 close();
@@ -56,7 +56,7 @@ public class UDPInterface implements NetworkInterface {
             if (closed) {
                 return new byte[0];
             }
-            serverSocket.receive(packet);
+            rxSocket.receive(packet);
         } catch (SocketTimeoutException e) {
             return new byte[0];
         } catch (SocketException e) {
@@ -75,8 +75,8 @@ public class UDPInterface implements NetworkInterface {
     @Override
     public void close() {
         closed = true;
-        clientSocket.close();
-        serverSocket.close();
+        txSocket.close();
+        rxSocket.close();
     }
 
     @Override
@@ -86,6 +86,6 @@ public class UDPInterface implements NetworkInterface {
 
     @Override
     public String toString() {
-        return ip.getHostName() + ":RX" + serverSocket.getLocalPort() + "/TX" + clientPort;
+        return ip.getHostName() + ":RX" + rxSocket.getLocalPort() + "/TX" + txPort;
     }
 }

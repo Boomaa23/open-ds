@@ -2,24 +2,24 @@ package com.boomaa.opends.networking;
 
 public class PortTriple {
     private final int tcp;
-    private final int udpClient;
-    private final int udpServer;
+    private final int udpTx;
+    private final int udpRx;
 
-    public PortTriple(int tcp, int udpClient, int udpServer) {
+    public PortTriple(int tcp, int udpTx, int udpRx) {
         this.tcp = tcp;
-        this.udpClient = udpClient;
-        this.udpServer = udpServer;
+        this.udpTx = udpTx;
+        this.udpRx = udpRx;
     }
 
     public int getTcp() {
         return tcp;
     }
 
-    public int getUdpClient() {
-        return udpClient;
+    public int getUdpTx() {
+        return udpTx;
     }
 
-    public int getUdpServer() {
-        return udpServer;
+    public int getUdpRx() {
+        return udpRx;
     }
 }

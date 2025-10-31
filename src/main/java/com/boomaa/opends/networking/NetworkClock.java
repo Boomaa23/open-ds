@@ -97,7 +97,7 @@ public class NetworkClock extends Clock {
                     : AddressConstants.getRioPorts();
             iface = protocol == Protocol.TCP
                     ? new TCPInterface(ip, ports.getTcp())
-                    : new UDPInterface(ip, ports.getUdpClient(), ports.getUdpServer());
+                    : new UDPInterface(ip, ports.getUdpTx(), ports.getUdpRx());
             DisplayEndpoint.NET_IF_INIT.set(true, remote, protocol);
         } catch (IOException e) {
             uninitialize(isFms);
