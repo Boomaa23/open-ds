@@ -13,14 +13,14 @@ public class IOKitElement implements Component {
         this.cookie = cookie;
         this.min = min;
         this.max = max;
-        boolean axisValid = isAxis() && usage >= IOKitFlags.GD_USAGE_AXISMIN
-            && usage < Axis.values().length + IOKitFlags.GD_USAGE_AXISMIN;
-        boolean buttonValid = isButton() && usage < Button.values().length;
-        this.componentId = axisValid ? Component.Axis.values()[usage - IOKitFlags.GD_USAGE_AXISMIN] :
-            buttonValid ? Component.Button.values()[usage] : Component.NullIdentifier.NONE;
         this.isButton = usagePage == IOKitFlags.UP_BUTTON && type == IOKitFlags.ET_BUTTON;
         this.isAxis = usagePage == IOKitFlags.UP_GENERIC_DESKTOP
                 && (type == IOKitFlags.ET_AXIS || type == IOKitFlags.ET_MISC);
+        boolean axisValid = isAxis && usage >= IOKitFlags.GD_USAGE_AXISMIN
+                && usage < Axis.values().length + IOKitFlags.GD_USAGE_AXISMIN;
+        boolean buttonValid = isButton && usage < Button.values().length;
+        this.componentId = axisValid ? Component.Axis.values()[usage - IOKitFlags.GD_USAGE_AXISMIN] :
+                buttonValid ? Component.Button.values()[usage] : Component.NullIdentifier.NONE;
     }
 
     public long getCookie() {
