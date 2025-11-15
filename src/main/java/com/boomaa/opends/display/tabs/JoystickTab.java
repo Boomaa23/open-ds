@@ -65,6 +65,10 @@ public class JoystickTab extends TabBase {
         EmbeddedJDEC.INDEX_SET.setColumns(4);
 
         EmbeddedJDEC.LIST.getSelectionModel().addListSelectionListener((e) -> {
+            if (e.getValueIsAdjusting()) {
+                // ListSelectionListener fires twice per event
+                return;
+            }
             HIDDevice device = EmbeddedJDEC.LIST.getSelectedValue();
             if (device != null) {
                 Debug.println("Selected joystick: " + device);
