@@ -9,31 +9,25 @@ typedef struct {
 	jobject obj;
 } DIDEnumContext;
 
-static jint numericGUID(const GUID *guid) {
+static jint numericAxisGUID(const GUID *guid) {
     if (IsEqualGUID(guid, &GUID_XAxis)) {
-		return 1;
+		return 0;
     } else if (IsEqualGUID(guid, &GUID_YAxis)) {
-        return 2;
+        return 1;
     } else if (IsEqualGUID(guid, &GUID_ZAxis)) {
-        return 3;
+        return 2;
     } else if (IsEqualGUID(guid, &GUID_RxAxis)) {
-        return 4;
+        return 3;
     } else if (IsEqualGUID(guid, &GUID_RyAxis)) {
-        return 5;
+        return 4;
     } else if (IsEqualGUID(guid, &GUID_RzAxis)) {
-        return 6;
+        return 5;
     } else if (IsEqualGUID(guid, &GUID_Slider)) {
-		return 7;
-	} else if (IsEqualGUID(guid, &GUID_Button)) {
-		return 8;
-	} else if (IsEqualGUID(guid, &GUID_Key)) {
-        return 9;
+		return 6;
     } else if (IsEqualGUID(guid, &GUID_POV)) {
-		return 10;
-	} else {
-		return 11;
-    }
-return 0;
+		return 7;
+	}
+    return 8;
 }
 
 static BOOL CALLBACK enumObjectsCallback(LPCDIDEVICEOBJECTINSTANCE lpddoi, LPVOID pvRef) {
@@ -48,14 +42,13 @@ static BOOL CALLBACK enumObjectsCallback(LPCDIDEVICEOBJECTINSTANCE lpddoi, LPVOI
                     env,
                     (*env) -> GetObjectClass(env, enumContext -> obj),
                     "addObject",
-                    "([BIIIIILjava/lang/String;)V"
+                    "([BIIIILjava/lang/String;)V"
             ),
             wrapGUID(env, guidType),
-            numericGUID(guidType),
             (jint) dwType,
-            (jint) DIDFT_GETTYPE(dwType),
             (jint) DIDFT_GETINSTANCE(dwType),
-            (jint) lpddoi->dwFlags,
+            (jint) DIDFT_GETTYPE(dwType),
+            numericAxisGUID(guidType),
             (*env) -> NewStringUTF(env, lpddoi -> tszName)
     );
     if ((*env) -> ExceptionOccurred(env)) {
@@ -87,7 +80,9 @@ JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_DirectInputDevice_enumObjects
  * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_DirectInputDevice_poll
-  (JNIEnv *env, jclass unused, jlong address) {
+  (JNIEnv *env, jclass obj, jlong address) {
+    UNUSED(env);  // suppress C4100
+    UNUSED(obj);  // suppress C4100
 	LPDIRECTINPUTDEVICE8 lpDevice = (LPDIRECTINPUTDEVICE8)(INT_PTR) address;
     return IDirectInputDevice8_Poll(lpDevice);
 }
@@ -98,7 +93,9 @@ JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_DirectInputDevice_poll
  * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_DirectInputDevice_acquire
-  (JNIEnv *env, jclass unused, jlong address) {
+  (JNIEnv *env, jclass obj, jlong address) {
+    UNUSED(env);  // suppress C4100
+    UNUSED(obj);  // suppress C4100
 	LPDIRECTINPUTDEVICE8 lpDevice = (LPDIRECTINPUTDEVICE8)(INT_PTR) address;
     return IDirectInputDevice8_Acquire(lpDevice);
 }
@@ -109,7 +106,9 @@ JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_DirectInputDevice_acquire
  * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_DirectInputDevice_unacquire
-  (JNIEnv *env, jclass unused, jlong address) {
+  (JNIEnv *env, jclass obj, jlong address) {
+    UNUSED(env);  // suppress C4100
+    UNUSED(obj);  // suppress C4100
 	LPDIRECTINPUTDEVICE8 lpDevice = (LPDIRECTINPUTDEVICE8)(INT_PTR) address;
     return IDirectInputDevice8_Unacquire(lpDevice);
 }
@@ -120,7 +119,9 @@ JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_DirectInputDevice_unacquire
  * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_DirectInputDevice_release
-  (JNIEnv *env, jclass unused, jlong address) {
+  (JNIEnv *env, jclass obj, jlong address) {
+    UNUSED(env);  // suppress C4100
+    UNUSED(obj);  // suppress C4100
 	LPDIRECTINPUTDEVICE8 lpDevice = (LPDIRECTINPUTDEVICE8)(INT_PTR) address;
     return IDirectInputDevice8_Release(lpDevice);
 }
@@ -131,7 +132,9 @@ JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_DirectInputDevice_release
  * Signature: (J[I)I
  */
 JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_DirectInputDevice_fetchDeviceState
-  (JNIEnv *env, jclass unused, jlong address, jintArray deviceStateArray) {
+  (JNIEnv *env, jclass obj, jlong address, jintArray deviceStateArray) {
+    UNUSED(env);  // suppress C4100
+    UNUSED(obj);  // suppress C4100
 	LPDIRECTINPUTDEVICE8 lpDevice = (LPDIRECTINPUTDEVICE8)(INT_PTR) address;
 	jsize state_length = (*env)->GetArrayLength(env, deviceStateArray);
 	DWORD state_size = state_length * sizeof(jint);
@@ -152,7 +155,8 @@ JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_DirectInputDevice_fetchDeviceS
  */
 
 JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_DirectInputDevice_setDataFormat
-(JNIEnv* env, jclass unused, jlong address, jint flags, jobjectArray objects) {
+(JNIEnv* env, jclass obj, jlong address, jint flags, jobjectArray objects) {
+    UNUSED(obj);  // suppress C4100
 	LPDIRECTINPUTDEVICE8 lpDevice = (LPDIRECTINPUTDEVICE8)(INT_PTR)address;
 	DIDATAFORMAT data_format;
 	jsize num_objects = (*env)->GetArrayLength(env, objects);
@@ -167,16 +171,13 @@ JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_DirectInputDevice_setDataForma
 	HRESULT res;
 	jclass clazz;
 	jmethodID getGUID_method;
-	jmethodID getFlags_method;
-	jmethodID getType_method;
-	jmethodID getInstance_method;
+	jmethodID getDIDFTType_method;
+	jmethodID getDIDFTInstance_method;
 	jobject object;
 	jint type;
-	jint object_flags;
 	jint instance;
 	jobject guid_array;
 	DWORD composite_type;
-	DWORD flags_masked;
 	LPDIOBJECTDATAFORMAT object_format;
 
 	data_format.dwSize = sizeof(DIDATAFORMAT);
@@ -191,14 +192,11 @@ JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_DirectInputDevice_setDataForma
 	getGUID_method = (*env)->GetMethodID(env, clazz, "getGUID", "()[B");
 	if (getGUID_method == NULL)
 		return -1;
-	getFlags_method = (*env)->GetMethodID(env, clazz, "getFlags", "()I");
-	if (getFlags_method == NULL)
+	getDIDFTType_method = (*env)->GetMethodID(env, clazz, "getDIDFTType", "()I");
+	if (getDIDFTType_method == NULL)
 		return -1;
-	getType_method = (*env)->GetMethodID(env, clazz, "getType", "()I");
-	if (getType_method == NULL)
-		return -1;
-	getInstance_method = (*env)->GetMethodID(env, clazz, "getInstance", "()I");
-	if (getInstance_method == NULL)
+	getDIDFTInstance_method = (*env)->GetMethodID(env, clazz, "getDIDFTInstance", "()I");
+	if (getDIDFTInstance_method == NULL)
 		return -1;
 
 	guids = (GUID*)malloc(num_objects * sizeof(GUID));
@@ -231,19 +229,13 @@ JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_DirectInputDevice_setDataForma
 			free(object_formats);
 			return -1;
 		}
-		type = (*env)->CallIntMethod(env, object, getType_method);
+		type = (*env)->CallIntMethod(env, object, getDIDFTType_method);
 		if ((*env)->ExceptionOccurred(env)) {
 			free(guids);
 			free(object_formats);
 			return -1;
 		}
-		object_flags = (*env)->CallIntMethod(env, object, getFlags_method);
-		if ((*env)->ExceptionOccurred(env)) {
-			free(guids);
-			free(object_formats);
-			return -1;
-		}
-		instance = (*env)->CallIntMethod(env, object, getInstance_method);
+		instance = (*env)->CallIntMethod(env, object, getDIDFTInstance_method);
 		if ((*env)->ExceptionOccurred(env)) {
 			free(guids);
 			free(object_formats);
@@ -251,11 +243,10 @@ JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_DirectInputDevice_setDataForma
 		}
 		(*env)->DeleteLocalRef(env, object);
 		composite_type = type | DIDFT_MAKEINSTANCE(instance);
-		flags_masked = flags & (DIDOI_ASPECTACCEL | DIDOI_ASPECTFORCE | DIDOI_ASPECTPOSITION | DIDOI_ASPECTVELOCITY);
 		object_format = object_formats + i;
 		object_format->pguid = guids + i;
 		object_format->dwType = composite_type;
-		object_format->dwFlags = flags_masked;
+		object_format->dwFlags = flags;
 		// dwOfs must be multiple of 4, but sizeof(jint) is 4, so we're safe
 		object_format->dwOfs = i * sizeof(jint);
 	}
@@ -273,7 +264,9 @@ JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_DirectInputDevice_setDataForma
  * Signature: (JJI)I
  */
 JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_DirectInputDevice_setCooperativeLevel
-  (JNIEnv *env, jclass unused, jlong address, jlong hwndAddress, jint flags) {
+  (JNIEnv *env, jclass obj, jlong address, jlong hwndAddress, jint flags) {
+    UNUSED(env);  // suppress C4100
+    UNUSED(obj);  // suppress C4100
 	LPDIRECTINPUTDEVICE8 lpDevice = (LPDIRECTINPUTDEVICE8)(INT_PTR) address;
 	HWND hwnd = (HWND)(INT_PTR) hwndAddress;
 	HRESULT res;
@@ -287,7 +280,9 @@ JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_DirectInputDevice_setCooperati
  * Signature: (JI[J)I
  */
 JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_DirectInputDevice_fetchRangeProperty
-  (JNIEnv *env, jclass unused, jlong address, jint objectId, jlongArray rangeArrayObj) {
+  (JNIEnv *env, jclass obj, jlong address, jint objectId, jlongArray rangeArrayObj) {
+    UNUSED(env);  // suppress C4100
+    UNUSED(obj);  // suppress C4100
 	LPDIRECTINPUTDEVICE8 lpDevice = (LPDIRECTINPUTDEVICE8)(INT_PTR) address;
 	DIPROPRANGE range;
 	HRESULT res;
@@ -301,28 +296,4 @@ JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_DirectInputDevice_fetchRangePr
 	range_array[1] = range.lMax;
 	(*env)->SetLongArrayRegion(env, rangeArrayObj, 0, 2, range_array);
 	return res;
-}
-
-/*
- * Class:     com_boomaa_opends_usb_DirectInputDevice
- * Method:    fetchDeadbandProperty
- * Signature: (JI)I
- */
-JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_DirectInputDevice_fetchDeadbandProperty
-  (JNIEnv *env, jclass unused, jlong address, jint objectId) {
-	LPDIRECTINPUTDEVICE8 lpDevice = (LPDIRECTINPUTDEVICE8)(INT_PTR)address;
-	DIPROPDWORD deadzone;
-	HRESULT res;
-
-	deadzone.diph.dwSize = sizeof(deadzone);
-	deadzone.diph.dwHeaderSize = sizeof(DIPROPHEADER);
-	deadzone.diph.dwObj = objectId;
-	deadzone.diph.dwHow = DIPH_BYID;
-	res = IDirectInputDevice8_GetProperty(lpDevice, DIPROP_DEADZONE, &(deadzone.diph));
-	if (res == DIERR_UNSUPPORTED) {
-		return -1;
-	}
-	if (res != DI_OK && res != S_FALSE)
-		throwIOException(env, "Failed to get deadzone property (%x)\n", res);
-	return deadzone.dwData;
 }

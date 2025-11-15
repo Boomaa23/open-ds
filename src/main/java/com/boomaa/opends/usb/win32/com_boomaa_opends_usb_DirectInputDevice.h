@@ -79,14 +79,6 @@ JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_DirectInputDevice_setCooperati
 JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_DirectInputDevice_fetchRangeProperty
   (JNIEnv *, jclass, jlong, jint, jlongArray);
 
-/*
- * Class:     com_boomaa_opends_usb_DirectInputDevice
- * Method:    fetchDeadbandProperty
- * Signature: (JI)I
- */
-JNIEXPORT jint JNICALL Java_com_boomaa_opends_usb_DirectInputDevice_fetchDeadbandProperty
-  (JNIEnv *, jclass, jlong, jint);
-
 #ifdef __cplusplus
 }
 #endif

@@ -1,6 +1,8 @@
 #include <jni.h>
 #include <windows.h>
 
+#include "win32util.h"
+
 #ifndef _Included_com_boomaa_opends_usb_PlaceholderWindow
 #define _Included_com_boomaa_opends_usb_PlaceholderWindow
 #ifdef __cplusplus
@@ -19,7 +21,9 @@ static LRESULT CALLBACK ProcWindow(HWND hWnd, UINT message, WPARAM wParam, LPARA
  * Signature: ()J
  */
 JNIEXPORT jlong JNICALL Java_com_boomaa_opends_usb_PlaceholderWindow_createWindow
-  (JNIEnv *env, jclass clazz) {
+  (JNIEnv *env, jclass obj) {
+    UNUSED(env);  // suppress C4100
+    UNUSED(obj);  // suppress C4100
     HINSTANCE inst = GetModuleHandle(NULL);
 
     WNDCLASSEX wcex;
@@ -54,7 +58,9 @@ JNIEXPORT jlong JNICALL Java_com_boomaa_opends_usb_PlaceholderWindow_createWindo
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_com_boomaa_opends_usb_PlaceholderWindow_destroy
-  (JNIEnv *env, jclass clazz, jlong address) {
+  (JNIEnv *env, jclass obj, jlong address) {
+    UNUSED(env);  // suppress C4100
+    UNUSED(obj);  // suppress C4100
     DestroyWindow((HWND) (INT_PTR) address);
 }
 

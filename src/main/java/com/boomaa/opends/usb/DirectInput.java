@@ -22,8 +22,8 @@ public class DirectInput extends NativeUSBManager<DirectInputDevice> {
 
     private native void enumDevices(long address) throws IOException;
 
-    private void addDevice(long address, byte[] instanceGUID, byte[] productGUID, int devType, int devSubtype, String instanceName, String productName) {
-        DirectInputDevice device = new DirectInputDevice(address, instanceGUID, productGUID, devType, devSubtype, instanceName, productName);
+    private void addDevice(long address, int devType, int devSubtype, String instanceName, String productName) {
+        DirectInputDevice device = new DirectInputDevice(address, devType, devSubtype, instanceName, productName);
         if (!devices.contains(device)) {
             devices.add(device);
         }

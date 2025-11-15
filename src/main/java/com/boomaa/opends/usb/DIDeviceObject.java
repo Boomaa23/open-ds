@@ -3,86 +3,69 @@ package com.boomaa.opends.usb;
 public class DIDeviceObject implements Component {
     private final DirectInputDevice device;
     private final byte[] guid;
-    private final int guidType;
-    private final int objectId;
-    private final int type;
-    private final int instance;
-    private final int flags;
+    private final int didftInstance;
+    private final int didftType;
     private final String name;
     private final int formatOffset;
-    private final int deadband;
     private final long min;
     private final long max;
+    private final boolean isButton;
+    private final boolean isAxis;
+    private final boolean isRelative;
     private Component.Identifier componentId;
 
-    public DIDeviceObject(DirectInputDevice device, byte[] guid, int guidType, int objectId, int type, int instance, int flags, String name, int formatOffset) {
+    public DIDeviceObject(DirectInputDevice device, byte[] guid, int dwType,
+                          int didftInstance, int didftType, int axisIdIdx, String name, int formatOffset) {
         this.device = device;
         this.guid = guid;
-        this.guidType = guidType;
-        this.objectId = objectId;
-        this.type = type;
-        this.instance = instance;
-        this.flags = flags;
+        this.didftInstance = didftInstance;
+        this.didftType = didftType;
         this.name = name;
         this.formatOffset = formatOffset;
-        if (guidType == DIFlags.BUTTON_GUID) {
-            int numButtons = device.incrementNumButtons();
-            for (Component.Button searchGuid : Component.Button.values()) {
-                if (searchGuid.ordinal() == numButtons) {
-                    componentId = searchGuid;
-                    break;
-                }
-            }
-        } else {
+
+        this.isButton = (didftType & DIFlags.DIDFT_BUTTON) != 0;
+        this.isAxis = (didftType & DIFlags.DIDFT_AXIS) != 0;
+        this.isRelative = isAxis && ((didftType & DIFlags.DIDFT_RELAXIS) != 0);
+
+        if (isButton) {
+            int newNumButtons = device.incrementNumButtons();
+            componentId = Component.Button.values()[newNumButtons];
+        } else if (isAxis) {
             device.incrementNumAxes();
-            for (Component.Axis searchGuid : Component.Axis.values()) {
-                if (searchGuid.guid() == guidType) {
-                    componentId = searchGuid;
-                    break;
-                }
-            }
+            componentId = Component.Axis.values()[axisIdIdx];
         }
         if (componentId == null) {
             componentId = Component.Axis.UNKNOWN;
         }
-        this.deadband = device.fetchDeadband(objectId);
-        long[] range = device.fetchRange(objectId);
+        long[] range = device.fetchRange(dwType);
         this.min = range[0];
         this.max = range[1];
     }
 
     @Override
     public boolean isButton() {
-        return (type & DIFlags.DIDFT_BUTTON) != 0;
+        return isButton;
     }
 
     @Override
     public boolean isAxis() {
-        return (type & DIFlags.DIDFT_AXIS) != 0;
+        return isAxis;
     }
 
     public final boolean isRelative() {
-        return isAxis() && (type & DIFlags.DIDFT_RELAXIS) != 0;
+        return isRelative;
     }
 
     public byte[] getGUID() {
         return guid;
     }
 
-    public int getFlags() {
-        return flags;
+    public int getDIDFTInstance() {
+        return didftInstance;
     }
 
-    public int getType() {
-        return type;
-    }
-
-    public int getInstance() {
-        return instance;
-    }
-
-    public double getDeadband() {
-        return deadband;
+    public int getDIDFTType() {
+        return didftType;
     }
 
     @Override
@@ -93,9 +76,9 @@ public class DIDeviceObject implements Component {
     @Override
     public double provideValue() {
         int value = device.getDeviceState()[formatOffset];
-        if (isButton()) {
-            return (value & 0x80) != 0 ? 1 : 0;
-        } else if (isAxis()) {
+        if (isButton) {
+            return (value & 0x80) >> 7;
+        } else if (isAxis) {
             return 2 * (value - min) / (float) (max - min) - 1;
         }
         return value;

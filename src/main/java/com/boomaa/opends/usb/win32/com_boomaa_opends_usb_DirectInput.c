@@ -18,6 +18,8 @@ typedef struct {
  */
 JNIEXPORT jlong JNICALL Java_com_boomaa_opends_usb_DirectInput_create
   (JNIEnv *env, jobject obj) {
+    UNUSED(env);  // suppress C4100
+    UNUSED(obj);  // suppress C4100
     LPDIRECTINPUT8 lpDirectInput;
     DirectInput8Create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, &IID_IDirectInput8, (void *) &lpDirectInput, NULL);
     return (jlong) (INT_PTR) lpDirectInput;
@@ -41,11 +43,9 @@ static BOOL CALLBACK enumDevicesCallback(LPCDIDEVICEINSTANCE inst, LPVOID contex
                             enumContext -> obj
                     ),
                     "addDevice",
-                    "(J[B[BIILjava/lang/String;Ljava/lang/String;)V"
+                    "(JIILjava/lang/String;Ljava/lang/String;)V"
             ),
             (jlong) (INT_PTR) lpDevice,
-            wrapGUID(enumContext -> env, &(inst -> guidInstance)),
-            wrapGUID(enumContext -> env, &(inst -> guidProduct)),
             GET_DIDEVICE_TYPE(inst -> dwDevType),
             GET_DIDEVICE_SUBTYPE(inst -> dwDevType),
             (*enumContext -> env) -> NewStringUTF(enumContext -> env, inst -> tszInstanceName),
@@ -64,7 +64,7 @@ static BOOL CALLBACK enumDevicesCallback(LPCDIDEVICEINSTANCE inst, LPVOID contex
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_com_boomaa_opends_usb_DirectInput_enumDevices
-(JNIEnv* env, jobject obj, jlong address) {
+  (JNIEnv* env, jobject obj, jlong address) {
     LPDIRECTINPUT8 lpDirectInput = (LPDIRECTINPUT8)(INT_PTR)address;
     HRESULT res;
 
@@ -85,5 +85,7 @@ JNIEXPORT void JNICALL Java_com_boomaa_opends_usb_DirectInput_enumDevices
  */
 JNIEXPORT void JNICALL Java_com_boomaa_opends_usb_DirectInput_release
   (JNIEnv *env, jobject obj, jlong address) {
+    UNUSED(env);  // suppress C4100
+    UNUSED(obj);  // suppress C4100
     IDirectInput8_Release((LPDIRECTINPUT8) (INT_PTR) address);
 }

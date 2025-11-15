@@ -1,3 +1,7 @@
+#ifndef WIN32_UTIL_H
+#define WIN32_UTIL_H
+
+#define UNUSED(x) (void)(x)
 #define DXVERSION_H
 #define DIRECTINPUT_VERSION 0x0800
 
@@ -25,3 +29,5 @@ jobject newJObject(JNIEnv *env, const char *class_name, const char *constructor_
 static void throwException(JNIEnv *env, const char *exception_name, const char *format, va_list ap);
 
 void throwIOException(JNIEnv *env, const char *format, ...);
+
+#endif /* WIN32_UTIL_H */

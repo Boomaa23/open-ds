@@ -20,12 +20,6 @@ public interface Component {
     }
 
     interface Identifier {
-        int ordinal();
-
-        default int guid() {
-            return ordinal() + 1;
-        }
-
         String name();
 
         default String getName() {
@@ -54,7 +48,7 @@ public interface Component {
     }
 
     enum Axis implements Identifier {
-        X, Y, Z, RX, RY, RZ, SLIDER, POV, UNKNOWN
+        X, Y, Z, RX, RY, RZ, SLIDER, POV, UNKNOWN;
     }
     
     enum Button implements Identifier {

@@ -131,7 +131,7 @@ native-osx:
 
 native-win32:
 	$(VS_PATH)\\BuildTools\\VC\\Auxiliary\\Build\\vcvars$(VCVARS_SELECTOR).bat && \
-	cl.exe /LD /I$(WIN32_JDK_INCLUDE_PATH) /I$(WIN32_JDK_INCLUDE_PATH)\\win32 $(USB_SRC)/win32/*.c /O1 /MD /Zc:inline
+	cl.exe /LD /I$(WIN32_JDK_INCLUDE_PATH) /I$(WIN32_JDK_INCLUDE_PATH)\\win32 $(USB_SRC)/win32/*.c /O1 /MD /Zc:inline /W4
 	del *.exp *.lib *.obj
 	move /y com_boomaa_opends_usb_DirectInput.dll "$(LIB_OUT_WIN32)\\"
 	del $(LIB_OUT_WIN32)\\$(LIB_NAME)-win32-$(ARCH_TYPE).dll
