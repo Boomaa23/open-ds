@@ -66,14 +66,14 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Visual Studio shell
-        uses: egor-tensin/vs-shell@v2
       - name: Set up JDK ${{ matrix.jdk }}
         uses: actions/setup-java@v5
         with:
-          distribution: 'zulu'
+          distribution: 'microsoft'
           java-version: ${{ matrix.jdk }}
           architecture: ${{ matrix.arch }}
+      - name: Set up Visual Studio shell
+        uses: egor-tensin/vs-shell@v2
       - name: Build native library from Makefile
         shell: cmd
         run: |
