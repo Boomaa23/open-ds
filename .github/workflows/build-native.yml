@@ -16,10 +16,24 @@ jobs:
     strategy:
       matrix:
         include:
-          - { os: macos-15-intel, arch: x64, mkos: osx, mkarch: amd64, jdk: 8 }
+#          - { os: macos-15-intel, arch: x64, mkos: osx, mkarch: amd64, jdk: 8 }
           - { os: macos-15, arch: aarch64, mkos: osx, mkarch: aarch64, jdk: 11 } #TODO change to 8
-          - { os: ubuntu-24.04, arch: x64, mkos: linux, mkarch: amd64, jdk: 8 }
-          - { os: ubuntu-24.04, arch: x64, mkos: linux, mkarch: aarch64, jdk: 8 } # amd64 runner with cross-compiler
+#          - { os: ubuntu-24.04, arch: x64, mkos: linux, mkarch: amd64, jdk: 8 }
+#          - { os: ubuntu-24.04, arch: x64, mkos: linux, mkarch: aarch64, jdk: 8 } # amd64 runner with cross-compiler
+        distribution:
+          - temurin
+          - zulu
+          - adopt
+          - adopt-openj9
+          - liberica
+          - microsoft
+          - corretto
+          - semeru
+          - oracle
+          - dragonwell
+          - sapmachine
+          - graalvm
+          - jetbrains
       fail-fast: false
     env:
       MK_LINUX_AARCH64: ${{ matrix.mkos == 'linux' && matrix.mkarch == 'aarch64' }}
@@ -29,7 +43,7 @@ jobs:
       - name: Set up JDK ${{ matrix.jdk }}
         uses: actions/setup-java@v5
         with:
-          distribution: 'temurin'
+          distribution: ${{ matrix.distribution }}
           java-version: ${{ matrix.jdk }}
           architecture: ${{ matrix.arch }}
       - name: Set up aarch64-linux-musl-cross if needed
@@ -60,22 +74,8 @@ jobs:
     strategy:
       matrix:
         include:
-#          - { os: windows-2025, arch: x64, mkarch: amd64, jdk: 8 }
-          - { os: windows-11-arm, arch: aarch64, mkarch: aarch64, jdk: 8 } #TODO change to 8
-        distribution:
-          - temurin
-          - zulu
-          - adopt
-          - adopt-openj9
-          - liberica
-          - microsoft
-          - corretto
-          - semeru
-          - oracle
-          - dragonwell
-          - sapmachine
-          - graalvm
-          - jetbrains
+          - { os: windows-2025, arch: x64, mkarch: amd64, jdk: 8 }
+          - { os: windows-11-arm, arch: aarch64, mkarch: aarch64, jdk: 11 } # No jdk8+aarch64+win32 JDK exists
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
@@ -83,7 +83,7 @@ jobs:
       - name: Set up JDK ${{ matrix.jdk }}
         uses: actions/setup-java@v5
         with:
-          distribution: ${{ matrix.distribution }}
+          distribution: 'microsoft'
           java-version: ${{ matrix.jdk }}
           architecture: ${{ matrix.arch }}
       - name: Set up Visual Studio shell
