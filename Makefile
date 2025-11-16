@@ -129,7 +129,7 @@ native-all-docker:
 			opends-linux-build sh -c "make native-win32-gcc"
 
 native-linux:
-	$(CC) -Os -s -I$(UNIX_JDK_INCLUDE_PATH) -I$(UNIX_JDK_INCLUDE_PATH)/linux/ \
+	$(CC) -Os -fvisibility=hidden -flto -g0 -Wl,--gc-sections -s -I$(UNIX_JDK_INCLUDE_PATH) -I$(UNIX_JDK_INCLUDE_PATH)/linux/ \
 		-shared -frandom-seed=$(CC_SEED) -o $(LIB_OUT_PATH) $(USB_SRC)/linux/*.c
 
 native-osx:
