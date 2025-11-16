@@ -7,25 +7,23 @@ jobs:
     strategy:
       matrix:
         include:
-          - { os: macos-15-intel, arch: x64, mkos: osx, mkarch: amd64 }
-          - { os: macos-15, arch: aarch64, mkos: osx, mkarch: aarch64 }
-          - { os: ubuntu-24.04, arch: x64, mkos: linux, mkarch: amd64 }
-          - { os: ubuntu-24.04-arm, arch: aarch64, mkos: linux, mkarch: aarch64 }
-    env:
-      JAVA_VERSION: '21' #TODO change this later to 8
+          - { os: macos-15-intel, arch: x64, mkos: osx, mkarch: amd64, jdk: 8 }
+          - { os: macos-15, arch: aarch64, mkos: osx, mkarch: aarch64, jdk: 8 }
+          - { os: ubuntu-24.04, arch: x64, mkos: linux, mkarch: amd64, jdk: 8 }
+          - { os: ubuntu-24.04-arm, arch: aarch64, mkos: linux, mkarch: aarch64, jdk: 8 }
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK ${{ env.JAVA_VERSION }}
+      - name: Set up JDK ${{ matrix.jdk }}
         uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
-          java-version: ${{ env.JAVA_VERSION }}
+          java-version: ${{ matrix.jdk }}
           architecture: ${{ matrix.arch }}
       - name: Build native library from Makefile
         run: |
           ARCH_UPPER=$(echo ${{ matrix.arch }} | tr a-z A-Z)
-          JDK_PATH=$(eval echo \$JAVA_HOME_${{ env.JAVA_VERSION }}_$ARCH_UPPER)
+          JDK_PATH=$(eval echo \$JAVA_HOME_${{ matrix.jdk }}_$ARCH_UPPER)
           make native-${{ matrix.mkos }} \
             CC=gcc \
             ARCH_TYPE=${{ matrix.mkarch }} \
@@ -35,20 +33,18 @@ jobs:
     strategy:
       matrix:
         include:
-          - { os: windows-2025, arch: x64, mkarch: amd64 }
-          - { os: windows-11-arm, arch: aarch64, mkarch: aarch64 }
-    env:
-      JAVA_VERSION: '21' #TODO change this later to 8
+          - { os: windows-2025, arch: x64, mkarch: amd64, jdk: 8 }
+          - { os: windows-11-arm, arch: aarch64, mkarch: aarch64, jdk: 8 }
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
       - name: Set up Visual Studio shell
         uses: egor-tensin/vs-shell@v2
-      - name: Set up JDK ${{ env.JAVA_VERSION }}
+      - name: Set up JDK ${{ matrix.jdk }}
         uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
-          java-version: ${{ env.JAVA_VERSION }}
+          java-version: ${{ matrix.jdk }}
           architecture: ${{ matrix.arch }}
       - name: Build native library from Makefile
         shell: cmd
@@ -57,4 +53,4 @@ jobs:
             SHELL=cmd ^
             VS_YEAR=2022 ^
             ARCH_TYPE=${{ matrix.mkarch }} ^
-            WIN32_JDK_INCLUDE_PATH=%JAVA_HOME_${{ env.JAVA_VERSION }}_${{ matrix.arch }}%\\include
+            WIN32_JDK_INCLUDE_PATH=%JAVA_HOME_${{ matrix.jdk }}_${{ matrix.arch }}%\\include
