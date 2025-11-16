@@ -33,4 +33,6 @@ public interface DIFlags {
     int DIDOI_ASPECTFORCE = 0x00000400;
     int DIDOI_ASPECTMASK = 0x00000F00;
     int DIDOI_GUIDISUSAGE = 0x00010000;
+
+    int TEST = 0;
 }
