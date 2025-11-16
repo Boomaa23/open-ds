@@ -1,3 +1,5 @@
+export MSYS2_ARG_CONV_EXCL=*
+
 USB_SRC := src/main/java/com/boomaa/opends/usb
 LIB_OUT := src/main/resources
 LIB_NAME := opends-lib
