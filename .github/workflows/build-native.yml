@@ -85,7 +85,7 @@ jobs:
           path: src/main/resources/
           pattern: opends-lib-*
           merge-multiple: true
-      - name: Testing git
+      - name: Commit and push back to repository
         run: |
           git config --global user.name "opends-bot"
           git config --global user.email "opends-bot@users.noreply.github.com"
