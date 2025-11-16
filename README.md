@@ -1,5 +1,7 @@
 # OpenDS
-<a href="https://github.com/Boomaa23/open-ds/actions?query=branch%3Amaster+event%3Apush"><img src="https://github.com/Boomaa23/open-ds/actions/workflows/build.yml/badge.svg" /></a>
+<a href="https://github.com/Boomaa23/open-ds/actions/workflows/build-java.yml"><img src="https://github.com/Boomaa23/open-ds/actions/workflows/build-java.yml/badge.svg" /></a>
+<a href="https://github.com/Boomaa23/open-ds/actions/workflows/checkstyle.yml"><img src="https://github.com/Boomaa23/open-ds/actions/workflows/checkstyle.yml/badge.svg" /></a>
+<a href="https://github.com/Boomaa23/open-ds/actions/workflows/build-native.yml"><img src="https://github.com/Boomaa23/open-ds/actions/workflows/build-native.yml/badge.svg" /></a>
 <a href="https://github.com/Boomaa23/open-ds/releases/latest"><img src="https://img.shields.io/github/v/release/Boomaa23/open-ds" /></a>
 
 A reverse-engineered lightweight FRC Driver Station alternative for Windows, Linux, and macOS
