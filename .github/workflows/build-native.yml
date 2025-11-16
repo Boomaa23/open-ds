@@ -34,9 +34,10 @@ jobs:
           architecture: ${{ matrix.arch }}
       - name: Build native library from Makefile
         run: |
+          export MATRIX_ARCH=${{ matrix.arch }}
           make native-osx \
             ARCH_TYPE=${{ matrix.mkarch }} \
-            UNIX_JDK_INCLUDE_PATH=$${JAVA_HOME_${{ env.JAVA_VERSION }}_${{ matrix.arch }}^^}/include
+            UNIX_JDK_INCLUDE_PATH=$JAVA_HOME_${{ env.JAVA_VERSION }}_${MATRIX_ARCH^^}/include
 
   native-win32:
     strategy:
