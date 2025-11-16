@@ -4,8 +4,6 @@ USB_SRC := src/main/java/com/boomaa/opends/usb
 LIB_OUT := src/main/resources
 LIB_NAME := opends-lib
 
-CC := gcc
-
 UNIX_JDK_INCLUDE_PATH ?= /usr/lib/jvm/java-8-openjdk-amd64/include
 WIN32_JDK_INCLUDE_PATH ?= C:\\Program Files\\Eclipse Foundation\\jdk-8.0.302.8-hotspot\\include
 VS_YEAR ?= 2019
@@ -60,19 +58,20 @@ endif
 
 ifeq ($(ARCH_TYPE),aarch64)
 	ifeq ($(OS_TYPE),linux)
-		CC = /usr/bin/aarch64-linux-musl-gcc
+		CC ?= /usr/bin/aarch64-linux-musl-gcc
 	endif
 	ifeq ($(OS_TYPE),win32)
-		CC = aarch64-w64-mingw32-gcc
+		CC ?= aarch64-w64-mingw32-gcc
 		VCVARS_SELECTOR = amd64_arm64
 	endif
 endif
 ifeq ($(ARCH_TYPE),amd64)
 	ifeq ($(OS_TYPE),win32)
-		CC = x86_64-w64-mingw32-gcc
+		CC ?= x86_64-w64-mingw32-gcc
 		VCVARS_SELECTOR = 64
 	endif
 endif
+CC ?= gcc
 
 .PHONY: build check jar clean native native-all-docker native-linux native-osx native-win32
 

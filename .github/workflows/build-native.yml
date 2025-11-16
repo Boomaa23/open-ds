@@ -27,6 +27,7 @@ jobs:
           ARCH_UPPER=$(echo ${{ matrix.arch }} | tr a-z A-Z)
           JDK_PATH=$(eval echo \$JAVA_HOME_${{ env.JAVA_VERSION }}_$ARCH_UPPER)
           make native-${{ matrix.mkos }} \
+            CC=gcc \
             ARCH_TYPE=${{ matrix.mkarch }} \
             UNIX_JDK_INCLUDE_PATH=$JDK_PATH/include
 
