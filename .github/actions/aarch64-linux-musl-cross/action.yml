@@ -11,10 +11,12 @@ runs:
         key: aarch64-linux-musl-cross
     - name: Download muslcc files
       if: ${{ steps.cache-restore.outputs.cache-hit != 'true' }}
+      shell: bash
       run: |
         wget https://ocf.berkeley.edu/~ncograin/aarch64-linux-musl-cross.tgz
         tar -xvzf aarch64-linux-musl-cross.tgz
     - name: Setup gcc override to muslcc
+      shell: bash
       run: |
         export GCC_OVERRIDE=./aarch64-linux-musl-cross/bin/files
         chmod +x $GCC_OVERRIDE
