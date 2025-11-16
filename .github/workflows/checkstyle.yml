@@ -2,8 +2,6 @@ name: Checkstyle Java
 
 on:
   push:
-    tags:
-      - v**
   pull_request:
     types: [ opened, reopened, synchronize ]
 
