@@ -4,15 +4,10 @@ LIB_NAME := opends-lib
 
 CC := gcc
 
-ifndef UNIX_JDK_INCLUDE_PATH
-	UNIX_JDK_INCLUDE_PATH := /usr/lib/jvm/java-8-openjdk-amd64/include
-endif
-ifndef WIN32_JDK_INCLUDE_PATH
-	WIN32_JDK_INCLUDE_PATH := "C:\\Program Files\\Eclipse Foundation\\jdk-8.0.302.8-hotspot\\include"
-endif
-ifndef VS_PATH
-	VS_PATH := "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\"
-endif
+UNIX_JDK_INCLUDE_PATH ?= /usr/lib/jvm/java-8-openjdk-amd64/include
+WIN32_JDK_INCLUDE_PATH ?= "C:\\Program Files\\Eclipse Foundation\\jdk-8.0.302.8-hotspot\\include"
+VS_YEAR ?= 2019
+VS_PATH ?= "C:\\Program Files (x86)\\Microsoft Visual Studio\\$(VS_YEAR)\\"
 
 ifndef OS_TYPE
 	ifeq ($(OS),Windows_NT)

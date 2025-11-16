@@ -19,7 +19,7 @@ jobs:
     strategy:
       matrix:
         os: [
-          windows-2019     # win32 x64
+          windows-2025     # win32 x64
 #          windows-11-arm    # win32 aarch64
         ]
     runs-on: ${{ matrix.os }}
@@ -29,6 +29,6 @@ jobs:
         uses: egor-tensin/vs-shell@v2
       - name: Build native library from Makefile
         shell: cmd
-        run: make native-win32
+        run: make native-win32 VS_YEAR=2022
 
 
