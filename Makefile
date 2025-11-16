@@ -7,9 +7,9 @@ LIB_NAME := opends-lib
 CC := gcc
 
 UNIX_JDK_INCLUDE_PATH ?= /usr/lib/jvm/java-8-openjdk-amd64/include
-WIN32_JDK_INCLUDE_PATH ?= "C:\\Program Files\\Eclipse Foundation\\jdk-8.0.302.8-hotspot\\include"
+WIN32_JDK_INCLUDE_PATH ?= C:\\Program Files\\Eclipse Foundation\\jdk-8.0.302.8-hotspot\\include
 VS_YEAR ?= 2019
-VS_PATH ?= "C:\\Program Files (x86)\\Microsoft Visual Studio\\$(VS_YEAR)\\"
+VS_PATH ?= C:\\Program Files (x86)\\Microsoft Visual Studio\\$(VS_YEAR)\\
 
 ifndef OS_TYPE
 	ifeq ($(OS),Windows_NT)
@@ -127,8 +127,8 @@ native-osx:
 	rm com_boomaa_opends_usb_IOKit.o com_boomaa_opends_usb_IOKitDevice.o
 
 native-win32:
-	#$(VS_PATH)\\BuildTools\\VC\\Auxiliary\\Build\\vcvars$(VCVARS_SELECTOR).bat && \
-	cl.exe /LD /I$(WIN32_JDK_INCLUDE_PATH) /I$(WIN32_JDK_INCLUDE_PATH)\\win32 $(USB_SRC)/win32/*.c /O1 /MD /Zc:inline /W4
+	#"$(VS_PATH)\\BuildTools\\VC\\Auxiliary\\Build\\vcvars$(VCVARS_SELECTOR).bat" && \
+	cl.exe /LD /I"$(WIN32_JDK_INCLUDE_PATH)" /I"$(WIN32_JDK_INCLUDE_PATH)\\win32" $(USB_SRC)/win32/*.c /O1 /MD /Zc:inline /W4
 	del *.exp *.lib *.obj
 	move /y com_boomaa_opends_usb_DirectInput.dll "$(LIB_OUT_WIN32)\\"
 	del $(LIB_OUT_WIN32)\\$(LIB_NAME)-win32-$(ARCH_TYPE).dll
