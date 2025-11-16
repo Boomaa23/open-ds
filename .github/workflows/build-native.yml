@@ -3,24 +3,14 @@ name: Build Native
 on: [push]
 
 jobs:
-#  native:
-#    strategy:
-#      matrix:
-#        os: [
-#          macos-15,         # osx aarch64
-#          windows-2025,     # win32 x64
-#          ubuntu-24.04,     # linux x64
-#          macos-15-intel    # osx x64
-#          windows-11-arm,   # win32 aarch64
-#          ubuntu-24.04-arm  # linux aarch64
-#        ]
-#    runs-on: ${{ matrix.os }}
-  native-osx:
+  native-unix:
     strategy:
       matrix:
         include:
-          - { os: macos-15-intel, arch: x64, mkarch: amd64 }
-          - { os: macos-15, arch: aarch64, mkarch: aarch64 }
+          - { os: macos-15-intel, arch: x64, mkos: osx, mkarch: amd64 }
+          - { os: macos-15, arch: aarch64, mkos: osx, mkarch: aarch64 }
+          - { os: ubuntu-24.04, arch: x64, mkos: linux, mkarch: amd64 }
+          - { os: ubuntu-24.04-arm, arch: aarch64, mkos: linux, mkarch: aarch64 }
     env:
       JAVA_VERSION: '21' #TODO change this later to 8
     runs-on: ${{ matrix.os }}
@@ -36,7 +26,7 @@ jobs:
         run: |
           ARCH_UPPER=$(echo ${{ matrix.arch }} | tr a-z A-Z)
           JDK_PATH=$(eval echo \$JAVA_HOME_${{ env.JAVA_VERSION }}_$ARCH_UPPER)
-          make native-osx \
+          make native-${{ matrix.mkos }} \
             ARCH_TYPE=${{ matrix.mkarch }} \
             UNIX_JDK_INCLUDE_PATH=$JDK_PATH/include
 
