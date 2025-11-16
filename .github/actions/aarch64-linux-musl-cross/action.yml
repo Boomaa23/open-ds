@@ -18,7 +18,7 @@ runs:
     - name: Setup gcc override to muslcc
       shell: bash
       run: |
-        export GCC_OVERRIDE=./aarch64-linux-musl-cross/bin/files
+        export GCC_OVERRIDE=./aarch64-linux-musl-cross/bin/aarch64-linux-musl-gcc
         chmod +x $GCC_OVERRIDE
         echo "GCC_OVERRIDE=$GCC_OVERRIDE" >> $GITHUB_ENV
     - name: Save muslcc files to cache
