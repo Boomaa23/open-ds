@@ -5,6 +5,7 @@ on:
     paths:
       - 'src/main/java/com/boomaa/opends/usb/**'
       - '.github/workflows/build-native.yml'
+      - '.github/actions/aarch64-linux-musl-cross.yml'
       - 'Makefile'
 
 env:
@@ -31,24 +32,9 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ matrix.jdk }}
           architecture: ${{ matrix.arch }}
-      - name: Retrieve aarch64-linux-musl-gcc from cache if needed
-        if: ${{ env.MK_LINUX_AARCH64 }}
-        id: cache-muslcc
-        uses: actions/cache@v4
-        with:
-          path: aarch64-linux-musl-cross
-          key: aarch64-linux-musl-cross
-      - name: Download aarch64-linux-musl-gcc if needed
-        if: ${{ env.MK_LINUX_AARCH64 && steps.cache-muslcc.outputs.cache-hit != 'true' }}
-        run: |
-          wget https://ocf.berkeley.edu/~ncograin/aarch64-linux-musl-cross.tgz
-          tar -xvzf aarch64-linux-musl-cross.tgz
-      - name: Setup aarch64-linux-musl-gcc if needed
-        if: ${{ env.MK_LINUX_AARCH64 }}
-        run: |
-          export GCC_OVERRIDE=./aarch64-linux-musl-cross/bin/aarch64-linux-musl-gcc
-          chmod +x $GCC_OVERRIDE
-          echo "GCC_OVERRIDE=$GCC_OVERRIDE" >> $GITHUB_ENV
+      - name: Set up aarch64-linux-musl-cross if needed
+        if: ${{ env.MK_LINUX_AARCH64 == 'true' }}
+        uses: ./.github/actions/aarch64-linux-musl-cross.yml
       - name: Build native library from Makefile
         run: |
           ARCH_UPPER=$(echo ${{ matrix.arch }} | tr a-z A-Z)
