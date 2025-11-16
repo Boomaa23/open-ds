@@ -71,3 +71,18 @@ jobs:
             VS_YEAR=2022 ^
             ARCH_TYPE=${{ matrix.mkarch }} ^
             WIN32_JDK_INCLUDE_PATH=%JAVA_HOME_${{ matrix.jdk }}_${{ matrix.arch }}%\\include
+
+  commit-compiled-libraries:
+    needs:
+      - native-win32
+      - native-unix
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v5
+        with:
+          path: src/main/resources/
+          pattern: opends-lib-*
+          merge-multiple: true
+      - name: Testing git
+        run: git add . && git diff --staged
