@@ -35,10 +35,12 @@ jobs:
       - name: Get native library path
         run: export LIB_OUT_PATH=`make lib-out-path`
       - name: Upload native library
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v5
         with:
           name: $LIB_OUT_PATH
           path: $LIB_OUT_PATH
+          overwrite: true
+          retention-days: 7
 
   native-win32:
     strategy:
