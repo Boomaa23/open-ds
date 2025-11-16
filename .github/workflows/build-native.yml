@@ -1,12 +1,16 @@
 name: Build Native
 
-on: [push]
-#  push:
-#    paths:
-#      - 'src/main/java/com/boomaa/opends/usb/**'
+on:
+  push:
+    paths:
+      - 'src/main/java/com/boomaa/opends/usb/**'
+      - '.github/workflows/build-native.yml'
+
+env:
+  ARTIFACT_RETENTION_DAYS: 7
 
 jobs:
-  native-unix:
+  build-unix:
     strategy:
       matrix:
         include:
@@ -43,9 +47,9 @@ jobs:
           name: ${{ env.LIB_OUT_NAME }}
           path: ${{ env.LIB_OUT_PATH }}
           overwrite: true
-          retention-days: 7
+          retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
 
-  native-win32:
+  build-win32:
     strategy:
       matrix:
         include:
@@ -86,7 +90,7 @@ jobs:
           name: ${{ env.LIB_OUT_NAME }}
           path: ${{ env.LIB_OUT_PATH }}
           overwrite: true
-          retention-days: 7
+          retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
 
   commit-compiled-libraries:
     needs:
