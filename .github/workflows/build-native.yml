@@ -1,6 +1,9 @@
 name: Build Native
 
-on: [push]
+on:
+  push:
+    paths:
+      - 'src/main/java/com/boomaa/opends/usb/**'
 
 jobs:
   native-unix:
