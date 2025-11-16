@@ -60,8 +60,22 @@ jobs:
     strategy:
       matrix:
         include:
-          - { os: windows-2025, arch: x64, mkarch: amd64, jdk: 8 }
+#          - { os: windows-2025, arch: x64, mkarch: amd64, jdk: 8 }
           - { os: windows-11-arm, arch: aarch64, mkarch: aarch64, jdk: 8 } #TODO change to 8
+        distribution:
+          - temurin
+          - zulu
+          - adopt
+          - adopt-openj9
+          - liberica
+          - microsoft
+          - corretto
+          - semeru
+          - oracle
+          - dragonwell
+          - sapmachine
+          - graalvm
+          - jetbrains
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
