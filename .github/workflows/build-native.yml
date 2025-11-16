@@ -5,7 +5,7 @@ on:
     paths:
       - 'src/main/java/com/boomaa/opends/usb/**'
       - '.github/workflows/build-native.yml'
-      - '.github/actions/aarch64-linux-musl-cross.yml'
+      - '.github/actions/aarch64-linux-musl-cross/action.yml'
       - 'Makefile'
 
 env:
@@ -34,7 +34,7 @@ jobs:
           architecture: ${{ matrix.arch }}
       - name: Set up aarch64-linux-musl-cross if needed
         if: ${{ env.MK_LINUX_AARCH64 == 'true' }}
-        uses: ./.github/actions/aarch64-linux-musl-cross.yml
+        uses: ./.github/actions/aarch64-linux-musl-cross
       - name: Build native library from Makefile
         run: |
           ARCH_UPPER=$(echo ${{ matrix.arch }} | tr a-z A-Z)
