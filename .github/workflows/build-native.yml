@@ -34,6 +34,6 @@ jobs:
           architecture: x64
       - name: Build native library from Makefile
         shell: cmd
-        run: make native-win32 VS_YEAR=2022 WIN32_JDK_INCLUDE_PATH="%JAVA_HOME_8_x64%\\include"
+        run: nmake native-win32 VS_YEAR=2022 WIN32_JDK_INCLUDE_PATH="%JAVA_HOME_8_x64%\\include"
 
 
