@@ -121,12 +121,12 @@ native-all-docker:
 	docker build --platform linux/amd64 -t opends-linux-build .
 	docker run -v $(CWD):/opends -e ARCH_TYPE=aarch64 -e OS_TYPE=linux  \
 		opends-linux-build sh -c "make native-linux"
-#	docker run -v $(CWD):/opends -e ARCH_TYPE=amd64 -e OS_TYPE=linux  \
-#		opends-linux-build sh -c "make native-linux"
-#	docker run -v $(CWD):/opends -e ARCH_TYPE=aarch64 -e OS_TYPE=win32  \
-#    		opends-linux-build sh -c "make native-win32-gcc"
-#	docker run -v $(CWD):/opends -e ARCH_TYPE=amd64 -e OS_TYPE=win32  \
-#			opends-linux-build sh -c "make native-win32-gcc"
+	docker run -v $(CWD):/opends -e ARCH_TYPE=amd64 -e OS_TYPE=linux  \
+		opends-linux-build sh -c "make native-linux"
+	docker run -v $(CWD):/opends -e ARCH_TYPE=aarch64 -e OS_TYPE=win32  \
+    		opends-linux-build sh -c "make native-win32-gcc"
+	docker run -v $(CWD):/opends -e ARCH_TYPE=amd64 -e OS_TYPE=win32  \
+			opends-linux-build sh -c "make native-win32-gcc"
 
 native-linux:
 	$(CC) -Os -s -I$(UNIX_JDK_INCLUDE_PATH) -I$(UNIX_JDK_INCLUDE_PATH)/linux/ \
