@@ -18,10 +18,9 @@ jobs:
   native-win32:
     strategy:
       matrix:
-        os: [
-          windows-2025,     # win32 x64
-          windows-11-arm    # win32 aarch64
-        ]
+        include:
+          - { os: windows-2025, arch: x64 }
+          - { os: windows-11-arm, env: aarch64 }
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
@@ -31,9 +30,9 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: '8'
-          architecture: x64
+          architecture: ${{ matrix.arch }}
       - name: Build native library from Makefile
         shell: cmd
-        run: make native-win32 SHELL=cmd VS_YEAR=2022 WIN32_JDK_INCLUDE_PATH=%JAVA_HOME_8_x64%\\include
+        run: make native-win32 SHELL=cmd VS_YEAR=2022 WIN32_JDK_INCLUDE_PATH=%JAVA_HOME_8_${{ matrix.arch }}%\\include
 
 
