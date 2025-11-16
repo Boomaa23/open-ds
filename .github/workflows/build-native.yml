@@ -15,6 +15,28 @@ jobs:
 #          ubuntu-24.04-arm  # linux aarch64
 #        ]
 #    runs-on: ${{ matrix.os }}
+  native-osx:
+    strategy:
+      matrix:
+        include:
+          - { os: macos-15-intel, arch: x64, mkarch: amd64 }
+          - { os: macos-15, arch: aarch64, mkarch: aarch64 }
+    env:
+      JAVA_VERSION: '21' #TODO change this later to 8
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+          architecture: ${{ matrix.arch }}
+      - name: Build native library from Makefile
+        run: |
+          make native-osx
+            ARCH_TYPE=${{ matrix.mkarch }}
+            UNIX_JDK_INCLUDE_PATH=$JAVA_HOME_${{ env.JAVA_VERSION }}_${{ matrix.arch }}/include
   native-win32:
     strategy:
       matrix:
@@ -28,7 +50,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Set up Visual Studio shell
         uses: egor-tensin/vs-shell@v2
-      - name: Set up JDK 8
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
         uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
@@ -42,5 +64,3 @@ jobs:
             VS_YEAR=2022 ^
             ARCH_TYPE=${{ matrix.mkarch }} ^
             WIN32_JDK_INCLUDE_PATH=%JAVA_HOME_${{ env.JAVA_VERSION }}_${{ matrix.arch }}%\\include
-
-
