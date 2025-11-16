@@ -69,7 +69,7 @@ jobs:
       - name: Set up JDK ${{ matrix.jdk }}
         uses: actions/setup-java@v5
         with:
-          distribution: 'microsoft'
+          distribution: 'corretto'
           java-version: ${{ matrix.jdk }}
           architecture: ${{ matrix.arch }}
       - name: Set up Visual Studio shell
