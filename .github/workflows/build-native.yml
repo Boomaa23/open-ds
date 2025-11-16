@@ -9,6 +9,7 @@ on:
       - 'Makefile'
   pull_request:
     types: [ opened, reopened, synchronize ]
+  workflow_dispatch:
 
 env:
   ARTIFACT_RETENTION_DAYS: 7
