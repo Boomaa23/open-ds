@@ -17,7 +17,7 @@ jobs:
       matrix:
         include:
 #          - { os: macos-15-intel, arch: x64, mkos: osx, mkarch: amd64, jdk: 8 }
-          - { os: macos-15, arch: aarch64, mkos: osx, mkarch: aarch64, jdk: 11 } #TODO change to 8
+          - { os: macos-15, arch: aarch64, mkos: osx, mkarch: aarch64, jdk: 8 } #TODO change to 8
 #          - { os: ubuntu-24.04, arch: x64, mkos: linux, mkarch: amd64, jdk: 8 }
 #          - { os: ubuntu-24.04, arch: x64, mkos: linux, mkarch: aarch64, jdk: 8 } # amd64 runner with cross-compiler
         distribution:
