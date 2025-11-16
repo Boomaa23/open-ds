@@ -71,5 +71,4 @@ void throwIOException(JNIEnv *env, const char *format, ...) {
     va_start(ap, format);
     throwException(env, "java/io/IOException", format, ap);
     va_end(ap);
-    (void) ap;
 }

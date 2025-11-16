@@ -1,7 +1,7 @@
 export MSYS2_ARG_CONV_EXCL=*
 
 USB_SRC := src/main/java/com/boomaa/opends/usb
-LIB_OUT := src/main/resources
+LIB_OUT_DIR := src/main/resources
 LIB_NAME := opends-lib
 
 UNIX_JDK_INCLUDE_PATH ?= /usr/lib/jvm/java-8-openjdk-amd64/include
@@ -53,7 +53,7 @@ endif
 
 ifeq ($(OS_TYPE),win32)
 	CWD = ${CURDIR}
-	LIB_OUT_WIN32 = $(subst /,\\,$(LIB_OUT))
+	LIB_OUT_DIR_WIN32 = $(subst /,\\,$(LIB_OUT_DIR))
 else
 	CWD = $(shell pwd)
 endif
@@ -75,7 +75,17 @@ ifeq ($(ARCH_TYPE),amd64)
 endif
 CC ?= gcc
 
-.PHONY: build check jar clean native native-all-docker native-linux native-osx native-win32
+ifeq ($(OS_TYPE),win32)
+	LIB_OUT_PATH ?= $(LIB_OUT_DIR_WIN32)\\$(LIB_NAME)-win32-$(ARCH_TYPE).dll
+endif
+ifeq ($(OS_TYPE),linux)
+	LIB_OUT_PATH ?= $(LIB_OUT_DIR)/$(LIB_NAME)-linux-$(ARCH_TYPE).so
+endif
+ifeq ($(OS_TYPE),osx)
+	LIB_OUT_PATH ?= $(LIB_OUT_DIR)/$(LIB_NAME)-osx-$(ARCH_TYPE).jnilib
+endif
+
+.PHONY: build check jar clean native native-all-docker native-linux native-osx native-win32 lib-out-path
 
 build:
 	mvn -B package --file pom.xml
@@ -120,11 +130,11 @@ native-all-docker:
 
 native-linux:
 	$(CC) -Os -s -I$(UNIX_JDK_INCLUDE_PATH) -I$(UNIX_JDK_INCLUDE_PATH)/linux/ \
-		-shared -frandom-seed=$(CC_SEED) -o $(LIB_OUT)/$(LIB_NAME)-linux-$(ARCH_TYPE).so $(USB_SRC)/linux/*.c
+		-shared -frandom-seed=$(CC_SEED) -o $(LIB_OUT_PATH) $(USB_SRC)/linux/*.c
 
 native-osx:
 	$(CC) -c -fPIC -frandom-seed=$(CC_SEED) -I$(UNIX_JDK_INCLUDE_PATH) -I$(UNIX_JDK_INCLUDE_PATH)/darwin/ $(USB_SRC)/osx/*.c
-	$(CC) -shared -framework IOKit -framework CoreServices -o $(LIB_OUT)/$(LIB_NAME)-osx-$(ARCH_TYPE).jnilib *.o
+	$(CC) -shared -framework IOKit -framework CoreServices -o $(LIB_OUT_PATH) *.o
 	rm com_boomaa_opends_usb_IOKit.o com_boomaa_opends_usb_IOKitDevice.o
 
 native-win32:
@@ -132,10 +142,13 @@ native-win32:
 	if %ERRORLEVEL% NEQ 0 "$(VS_PATH)\\BuildTools\\VC\\Auxiliary\\Build\\vcvars$(VCVARS_SELECTOR).bat"
 	cl.exe /LD /I"$(WIN32_JDK_INCLUDE_PATH)" /I"$(WIN32_JDK_INCLUDE_PATH)\\win32" $(USB_SRC)/win32/*.c /O1 /MD /Zc:inline /W4 /Brepro
 	del *.exp *.lib *.obj
-	move /y com_boomaa_opends_usb_DirectInput.dll "$(LIB_OUT_WIN32)\\"
-	del "$(LIB_OUT_WIN32)\$(LIB_NAME)-win32-$(ARCH_TYPE).dll"
-	ren "$(LIB_OUT_WIN32)\\com_boomaa_opends_usb_DirectInput.dll" "$(LIB_NAME)-win32-$(ARCH_TYPE).dll"
+	move /y com_boomaa_opends_usb_DirectInput.dll "$(LIB_OUT_DIR_WIN32)\\"
+	del "$(LIB_OUT_PATH)"
+	ren "$(LIB_OUT_DIR_WIN32)\\com_boomaa_opends_usb_DirectInput.dll" "$(LIB_NAME)-win32-$(ARCH_TYPE).dll"
 
 native-win32-gcc:
 	$(CC) -Os -s -I$(UNIX_JDK_INCLUDE_PATH) -I$(UNIX_JDK_INCLUDE_PATH)/linux/ \
-		-shared -o $(LIB_OUT)/$(LIB_NAME)-win32-$(ARCH_TYPE).dll $(USB_SRC)/win32/*.c -ldinput8
+		-shared -o $(LIB_OUT_DIR)/$(LIB_NAME)-win32-$(ARCH_TYPE).dll $(USB_SRC)/win32/*.c -ldinput8
+
+lib-out-path:
+	@echo $(LIB_OUT_PATH)

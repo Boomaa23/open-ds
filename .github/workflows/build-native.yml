@@ -1,9 +1,9 @@
 name: Build Native
 
-on:
-  push:
-    paths:
-      - 'src/main/java/com/boomaa/opends/usb/**'
+on: [push]
+#  push:
+#    paths:
+#      - 'src/main/java/com/boomaa/opends/usb/**'
 
 jobs:
   native-unix:
@@ -32,6 +32,13 @@ jobs:
             CC=gcc \
             ARCH_TYPE=${{ matrix.mkarch }} \
             UNIX_JDK_INCLUDE_PATH=$JDK_PATH/include
+      - name: Get native library path
+        run: export LIB_OUT_PATH=`make lib-out-path`
+      - name: Upload native library
+        uses: actions/upload-artifact@v3
+        with:
+          name: $LIB_OUT_PATH
+          path: $LIB_OUT_PATH
 
   native-win32:
     strategy:
