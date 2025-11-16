@@ -1,0 +1,125 @@
+name: Build Native
+
+on:
+  push:
+    paths:
+      - 'src/main/java/com/boomaa/opends/usb/**'
+      - '.github/workflows/build-native.yml'
+      - '.github/actions/aarch64-linux-musl-cross/action.yml'
+      - 'Makefile'
+  pull_request:
+    types: [ opened, reopened, synchronize ]
+
+env:
+  ARTIFACT_RETENTION_DAYS: 7
+
+jobs:
+  build-unix:
+    strategy:
+      matrix:
+        include:
+          - { os: macos-15-intel, arch: x64, mkos: osx, mkarch: amd64, jdk: 8 }
+          - { os: macos-15, arch: aarch64, mkos: osx, mkarch: aarch64, jdk: 8 }
+          - { os: ubuntu-24.04, arch: x64, mkos: linux, mkarch: amd64, jdk: 8 }
+          - { os: ubuntu-24.04, arch: x64, mkos: linux, mkarch: aarch64, jdk: 8 } # amd64 runner with cross-compiler
+      fail-fast: false
+    env:
+      MK_LINUX_AARCH64: ${{ matrix.mkos == 'linux' && matrix.mkarch == 'aarch64' }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK ${{ matrix.jdk }}
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'liberica'
+          java-version: ${{ matrix.jdk }}
+          architecture: ${{ matrix.arch }}
+      - name: Set up aarch64-linux-musl-cross if needed
+        if: ${{ env.MK_LINUX_AARCH64 == 'true' }}
+        uses: ./.github/actions/aarch64-linux-musl-cross
+      - name: Build native library from Makefile
+        run: |
+          ARCH_UPPER=$(echo ${{ matrix.arch }} | tr a-z A-Z)
+          JDK_PATH=$(eval echo \$JAVA_HOME_${{ matrix.jdk }}_$ARCH_UPPER)
+          make native-${{ matrix.mkos }} \
+            CC=${{ env.GCC_OVERRIDE || 'gcc' }} \
+            ARCH_TYPE=${{ matrix.mkarch }} \
+            UNIX_JDK_INCLUDE_PATH=$JDK_PATH/include
+      - name: Get native library path
+        run: |
+          export "LIB_OUT_PATH=$(make lib-out-path ARCH_TYPE=${{ matrix.mkarch }})"
+          echo "LIB_OUT_PATH=$LIB_OUT_PATH" >> $GITHUB_ENV
+          echo "LIB_OUT_NAME=$(basename $LIB_OUT_PATH)" >> $GITHUB_ENV
+      - name: Upload native library
+        uses: actions/upload-artifact@v5
+        with:
+          name: ${{ env.LIB_OUT_NAME }}
+          path: ${{ env.LIB_OUT_PATH }}
+          overwrite: true
+          retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
+
+  build-win32:
+    strategy:
+      matrix:
+        include:
+          - { os: windows-2025, arch: x64, mkarch: amd64, jdk: 8 }
+          - { os: windows-11-arm, arch: aarch64, mkarch: aarch64, jdk: 11 } # No jdk8+aarch64+win32 JDK exists
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK ${{ matrix.jdk }}
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'liberica'
+          java-version: ${{ matrix.jdk }}
+          architecture: ${{ matrix.arch }}
+      - name: Set up Visual Studio shell
+        uses: egor-tensin/vs-shell@v2
+      - name: Build native library from Makefile
+        shell: cmd
+        run: |
+          make native-win32 ^
+            SHELL=cmd ^
+            VS_YEAR=2022 ^
+            ARCH_TYPE=${{ matrix.mkarch }} ^
+            WIN32_JDK_INCLUDE_PATH=%JAVA_HOME_${{ matrix.jdk }}_${{ matrix.arch }}%\\include
+      - name: Get native library path
+        shell: cmd
+        run: |
+          make lib-out-path ARCH_TYPE=${{ matrix.mkarch }} > temp.txt
+          set /p LIB_OUT_PATH=<temp.txt
+          echo LIB_OUT_PATH=%LIB_OUT_PATH%>>%GITHUB_ENV%
+          for %%F in ("%LIB_OUT_PATH%") do set LIB_OUT_NAME=%%~nF
+          echo LIB_OUT_NAME=%LIB_OUT_NAME%>>%GITHUB_ENV%
+          del temp.txt
+      - name: Upload native library
+        uses: actions/upload-artifact@v5
+        with:
+          name: ${{ env.LIB_OUT_NAME }}
+          path: ${{ env.LIB_OUT_PATH }}
+          overwrite: true
+          retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
+
+  commit-compiled-libraries:
+    needs:
+      - build-win32
+      - build-unix
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download all artifacts
+        uses: actions/download-artifact@v5
+        with:
+          path: src/main/resources/
+          pattern: opends-lib-*
+          merge-multiple: true
+      - name: Commit and push back to repository
+        run: |
+          git config --global user.name "opends-bot"
+          git config --global user.email "opends-bot@users.noreply.github.com"
+          git add .
+          git diff --staged --name-only -z \
+            | xargs -0 -I{} sh -c 'echo "Comparing {}:"; git show HEAD:"$1" | cmp - "$1" || true' _ {}
+          export LAST_COMMIT_HASH=$(git rev-parse --short HEAD)
+          git diff-index --quiet HEAD || (git commit -m "[AUTOBUILD] Built native libraries from commit $LAST_COMMIT_HASH" && git push)

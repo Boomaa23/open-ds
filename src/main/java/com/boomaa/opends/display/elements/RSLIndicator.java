@@ -1,11 +1,11 @@
 package com.boomaa.opends.display.elements;
 
-import javax.swing.JComponent;
-import javax.swing.Timer;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import javax.swing.JComponent;
+import javax.swing.Timer;
 
 public class RSLIndicator extends JComponent {
     private static final int FLASH_DELAY_MS = 250;

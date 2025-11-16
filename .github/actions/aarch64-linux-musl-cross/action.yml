@@ -1,0 +1,29 @@
+name: aarch64-linux-musl-cross
+
+runs:
+  using: "composite"
+  steps:
+    - name: Restore muslcc files from cache
+      id: cache-restore
+      uses: actions/cache/restore@v4
+      with:
+        path: aarch64-linux-musl-cross
+        key: aarch64-linux-musl-cross
+    - name: Download muslcc files
+      if: ${{ steps.cache-restore.outputs.cache-hit != 'true' }}
+      shell: bash
+      run: |
+        wget https://ocf.berkeley.edu/~ncograin/aarch64-linux-musl-cross.tgz
+        tar -xvzf aarch64-linux-musl-cross.tgz
+    - name: Setup gcc override to muslcc
+      shell: bash
+      run: |
+        export GCC_OVERRIDE=./aarch64-linux-musl-cross/bin/aarch64-linux-musl-gcc
+        chmod +x $GCC_OVERRIDE
+        echo "GCC_OVERRIDE=$GCC_OVERRIDE" >> $GITHUB_ENV
+    - name: Save muslcc files to cache
+      if: ${{ steps.cache-restore.outputs.cache-hit != 'true' }}
+      uses: actions/cache/save@v4
+      with:
+        path: aarch64-linux-musl-cross
+        key: aarch64-linux-musl-cross
