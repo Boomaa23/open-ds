@@ -33,6 +33,7 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           architecture: ${{ matrix.arch }}
       - name: Build native library from Makefile
+        shell: bash
         run: |
           MATRIX_ARCH=${{ matrix.arch }} &&
           JDK_ENV_VAR=JAVA_HOME_${{ env.JAVA_VERSION }}_${MATRIX_ARCH^^}
