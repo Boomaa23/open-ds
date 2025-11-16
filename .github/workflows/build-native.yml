@@ -34,7 +34,9 @@ jobs:
         run: |
           wget https://ocf.berkeley.edu/~ncograin/aarch64-linux-musl-cross.tgz
           tar -xvzf aarch64-linux-musl-cross.tgz
-          echo "GCC_OVERRIDE=./aarch64-linux-musl-cross/bin/aarch64-linux-musl-gcc" >> $GITHUB_ENV
+          export GCC_OVERRIDE=./aarch64-linux-musl-cross/bin/aarch64-linux-musl-gcc
+          chmod +x $GCC_OVERRIDE
+          echo "GCC_OVERRIDE=$GCC_OVERRIDE" >> $GITHUB_ENV
       - name: Build native library from Makefile
         run: |
           ARCH_UPPER=$(echo ${{ matrix.arch }} | tr a-z A-Z)
