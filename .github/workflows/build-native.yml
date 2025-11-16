@@ -91,7 +91,7 @@ jobs:
   commit-compiled-libraries:
     needs:
       - native-win32
-#      - native-unix
+      - native-unix
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v3
