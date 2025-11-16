@@ -74,11 +74,12 @@ jobs:
       - name: Get native library path
         shell: cmd
         run: |
-          for /f "tokens=*" %F in ('cmd /c "make lib-out-path ARCH_TYPE=${{ matrix.mkarch }}"') do set LIB_OUT_PATH=%F
-          echo LIB_OUT_PATH=%LIB_OUT_PATH%>> %GITHUB_ENV%
-          
-          for /f "tokens=*" %F in ("%LIB_OUT_PATH%") do set LIB_OUT_NAME=%~nF
-          echo LIB_OUT_NAME=%LIB_OUT_NAME%>> %GITHUB_ENV%
+          make lib-out-path ARCH_TYPE=${{ matrix.mkarch }} > temp.txt
+          set /p LIB_OUT_PATH=<temp.txt
+          echo LIB_OUT_PATH=%LIB_OUT_PATH%>>%GITHUB_ENV%
+          for %%F in ("%LIB_OUT_PATH%") do set LIB_OUT_NAME=%%~nF
+          echo LIB_OUT_NAME=%LIB_OUT_NAME%>>%GITHUB_ENV%
+          del temp.txt
       - name: Upload native library
         uses: actions/upload-artifact@v5
         with:
