@@ -66,6 +66,7 @@
       <li class="nonlogo"><a href="#params">Parameters</a></li>
       <li class="nonlogo"><a href="#source">Source</a></li>
       <li class="nonlogo"><a href="#build">Build</a></li>
+      <li class="nonlogo"><a href="#troubleshooting">Troubleshooting</a></li>
       <li class="nonlogo"><a href="#other">Other</a></li>
       <li class="rightlogo"><img src="icon.png" height="44px"></li>
     </ul>
@@ -286,12 +287,19 @@
         Notably <span class="code">OS_TYPE=win32</span> will automatically use MSVC as the compiler.
         To use <span class="code">mingw-gcc<span>, use target <span class="code">make native-win32-gcc</span>.</p>
     </div>
+    <div class="content-item troubleshooting">
+      <a class="anchor" id="troubleshooting"></a>
+      <div class="subheader">Troubleshooting</div>
+      <p>Try launching from the command line (<span class="code">java -jar open-ds-vX.X.X.jar</span>) and observing the console output for additional details.
+        You can also launch with debug (<span class="code">--debug</span>) to print more information to the console.</p>
+      <p>If you are using the WPILib simulator (instead of a physical robot), ensure you have the following line in your <span class="code">build.gradle</span> (or equivalent in <span class="code">build.gradle.kts</span>).</p>
+      <p><blockquote><span class="code">wpi.sim.addDriverstation().defaultEnabled = true</span></blockquote></p>
+      <p>If issues persist, please report them on the "Issues" section of the GitHub <a href="https://github.com/Boomaa23/open-ds/issues">here</a>
+        and they will be resolved as soon as possible.</p>
+    </div>
     <div id="other" class="content-item">
       <div class="subheader">Other</div>
       <ul>
-        <li><b>Troubleshooting:</b> Try launching from the command line (<span class="code">java -jar open-ds-vX.X.X.jar</span>) and observing the console output for additional details.
-          If issues persist, please report them on the "Issues" section of the GitHub <a href="https://github.com/Boomaa23/open-ds/issues">here</a>
-           and they will be resolved as soon as possible.</li>
         <li><b>Acknowledgements:</b> Thank you to Jessica Creighton for the FRCture documentation, to Alex Spataru for his work on LibDS,
            and to the Game Technology Group at Sun Microsystems for JInput.</li>
         <li><b>Contact:</b> cmo93003@yahoo.com</li>
