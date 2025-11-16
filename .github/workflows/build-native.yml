@@ -19,8 +19,10 @@ jobs:
     strategy:
       matrix:
         include:
-          - { os: windows-2025, arch: x64 }
-          - { os: windows-11-arm, arch: aarch64 }
+          - { os: windows-2025, arch: x64, mkarch: amd64 }
+          - { os: windows-11-arm, arch: aarch64, mkarch: aarch64 }
+    env:
+      JAVA_VERSION: '21' #TODO change this later to 8
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
@@ -30,10 +32,15 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
-          java-version: '21' #TODO change this later to 8
+          java-version: ${{ env.JAVA_VERSION }}
           architecture: ${{ matrix.arch }}
       - name: Build native library from Makefile
         shell: cmd
-        run: make native-win32 SHELL=cmd VS_YEAR=2022 WIN32_JDK_INCLUDE_PATH=%JAVA_HOME_8_${{ matrix.arch }}%\\include
+        run: |
+          make native-win32 
+            SHELL=cmd 
+            VS_YEAR=2022 
+            ARCH_TYPE=${{ matrix.mkarch }}
+            WIN32_JDK_INCLUDE_PATH=%JAVA_HOME_${{ env.JAVA_VERSION }}_${{ matrix.arch }}%\\include
 
 
