@@ -34,7 +34,7 @@ jobs:
             UNIX_JDK_INCLUDE_PATH=$JDK_PATH/include
       - name: Get native library path
         run: |
-          export "LIB_OUT_PATH=$(make lib-out-path)"
+          export "LIB_OUT_PATH=$(make lib-out-path ARCH_TYPE=${{ matrix.mkarch }})"
           echo "LIB_OUT_PATH=$LIB_OUT_PATH" >> $GITHUB_ENV
           echo "LIB_OUT_NAME=$(basename $LIB_OUT_PATH)" >> $GITHUB_ENV
       - name: Upload native library
@@ -86,4 +86,9 @@ jobs:
           pattern: opends-lib-*
           merge-multiple: true
       - name: Testing git
-        run: git add . && git diff --staged
+        run: |
+          git add .
+          git diff --staged --name-only -z \
+            | xargs -0 -I{} sh -c 'echo "Comparing {}:"; git show HEAD:"$1" | cmp - "$1"' _ {}
+          export LAST_COMMIT_HASH=$(git rev-parse --short HEAD)
+          git commit -m "[AUTOBUILD] Built native libraries from commit $LAST_COMMIT_HASH"
