@@ -36,7 +36,7 @@ jobs:
         run: |
           make native-osx
             ARCH_TYPE=${{ matrix.mkarch }}
-            UNIX_JDK_INCLUDE_PATH=$JAVA_HOME_${{ env.JAVA_VERSION }}_${{ matrix.arch }}/include
+            UNIX_JDK_INCLUDE_PATH=$JAVA_HOME_${{ env.JAVA_VERSION }}_${${{ matrix.arch }}^^}/include
   native-win32:
     strategy:
       matrix:
