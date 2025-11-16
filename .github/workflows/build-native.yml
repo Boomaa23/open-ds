@@ -93,5 +93,4 @@ jobs:
           git diff --staged --name-only -z \
             | xargs -0 -I{} sh -c 'echo "Comparing {}:"; git show HEAD:"$1" | cmp - "$1" || true' _ {}
           export LAST_COMMIT_HASH=$(git rev-parse --short HEAD)
-          git commit -m "[AUTOBUILD] Built native libraries from commit $LAST_COMMIT_HASH"
-          git push
+          git diff-index --quiet HEAD || (git commit -m "[AUTOBUILD] Built native libraries from commit $LAST_COMMIT_HASH" && git push)
