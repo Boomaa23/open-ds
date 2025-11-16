@@ -71,11 +71,25 @@ jobs:
             VS_YEAR=2022 ^
             ARCH_TYPE=${{ matrix.mkarch }} ^
             WIN32_JDK_INCLUDE_PATH=%JAVA_HOME_${{ matrix.jdk }}_${{ matrix.arch }}%\\include
+      - name: Get native library path
+        shell: cmd
+        run: |
+          FOR /F "tokens=* USEBACKQ" %%F IN (`make lib-out-path ARCH_TYPE=${{ matrix.mkarch }}`) DO ( SET LIB_OUT_PATH=%%F )
+          echo "LIB_OUT_PATH=%LIB_OUT_PATH%" >> $GITHUB_ENV
+          FOR /F "tokens=* USEBACKQ" %%F IN (`for /F %i in (%LIB_OUT_PATH%) do @echo %~ni`) DO ( SET LIB_OUT_NAME=%%F )
+          echo "LIB_OUT_NAME=%LIB_OUT_NAME%" >> $GITHUB_ENV
+      - name: Upload native library
+        uses: actions/upload-artifact@v5
+        with:
+          name: ${{ env.LIB_OUT_NAME }}
+          path: ${{ env.LIB_OUT_PATH }}
+          overwrite: true
+          retention-days: 7
 
   commit-compiled-libraries:
     needs:
-#      - native-win32
-      - native-unix
+      - native-win32
+#      - native-unix
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v3
