@@ -9,6 +9,8 @@ WIN32_JDK_INCLUDE_PATH ?= C:\\Program Files\\Eclipse Foundation\\jdk-8.0.302.8-h
 VS_YEAR ?= 2019
 VS_PATH ?= C:\\Program Files (x86)\\Microsoft Visual Studio\\$(VS_YEAR)\\
 
+CC_SEED ?= 0x58185818
+
 ifndef OS_TYPE
 	ifeq ($(OS),Windows_NT)
 		OS_TYPE = win32
@@ -118,17 +120,17 @@ native-all-docker:
 
 native-linux:
 	$(CC) -Os -s -I$(UNIX_JDK_INCLUDE_PATH) -I$(UNIX_JDK_INCLUDE_PATH)/linux/ \
-		-shared -o $(LIB_OUT)/$(LIB_NAME)-linux-$(ARCH_TYPE).so $(USB_SRC)/linux/*.c
+		-shared -frandom-seed=$(CC_SEED) -o $(LIB_OUT)/$(LIB_NAME)-linux-$(ARCH_TYPE).so $(USB_SRC)/linux/*.c
 
 native-osx:
-	$(CC) -c -fPIC -I$(UNIX_JDK_INCLUDE_PATH) -I$(UNIX_JDK_INCLUDE_PATH)/darwin/ $(USB_SRC)/osx/*.c
+	$(CC) -c -fPIC -frandom-seed=$(CC_SEED) -I$(UNIX_JDK_INCLUDE_PATH) -I$(UNIX_JDK_INCLUDE_PATH)/darwin/ $(USB_SRC)/osx/*.c
 	$(CC) -shared -framework IOKit -framework CoreServices -o $(LIB_OUT)/$(LIB_NAME)-osx-$(ARCH_TYPE).jnilib *.o
 	rm com_boomaa_opends_usb_IOKit.o com_boomaa_opends_usb_IOKitDevice.o
 
 native-win32:
 	where cl.exe
 	if %ERRORLEVEL% NEQ 0 "$(VS_PATH)\\BuildTools\\VC\\Auxiliary\\Build\\vcvars$(VCVARS_SELECTOR).bat"
-	cl.exe /LD /I"$(WIN32_JDK_INCLUDE_PATH)" /I"$(WIN32_JDK_INCLUDE_PATH)\\win32" $(USB_SRC)/win32/*.c /O1 /MD /Zc:inline /W4
+	cl.exe /LD /I"$(WIN32_JDK_INCLUDE_PATH)" /I"$(WIN32_JDK_INCLUDE_PATH)\\win32" $(USB_SRC)/win32/*.c /O1 /MD /Zc:inline /W4 /Brepro
 	del *.exp *.lib *.obj
 	move /y com_boomaa_opends_usb_DirectInput.dll "$(LIB_OUT_WIN32)\\"
 	del "$(LIB_OUT_WIN32)\$(LIB_NAME)-win32-$(ARCH_TYPE).dll"
