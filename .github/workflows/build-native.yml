@@ -33,11 +33,14 @@ jobs:
             ARCH_TYPE=${{ matrix.mkarch }} \
             UNIX_JDK_INCLUDE_PATH=$JDK_PATH/include
       - name: Get native library path
-        run: echo "LIB_OUT_PATH=$(make lib-out-path)" >> $GITHUB_ENV
+        run: |
+          export "LIB_OUT_PATH=$(make lib-out-path)"
+          echo "LIB_OUT_PATH=$LIB_OUT_PATH" >> $GITHUB_ENV
+          echo "LIB_OUT_NAME=$(basename $LIB_OUT_PATH)" >> $GITHUB_ENV
       - name: Upload native library
         uses: actions/upload-artifact@v5
         with:
-          name: ${{ env.LIB_OUT_PATH }}
+          name: ${{ env.LIB_OUT_NAME }}
           path: ${{ env.LIB_OUT_PATH }}
           overwrite: true
           retention-days: 7
