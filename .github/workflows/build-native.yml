@@ -1,0 +1,33 @@
+name: Build Java
+
+on: [push]
+
+jobs:
+#  native:
+#    strategy:
+#      matrix:
+#        os: [
+#          macos-15,         # osx aarch64
+#          windows-2025,     # win32 x64
+#          ubuntu-24.04,     # linux x64
+#          macos-15-intel    # osx x64
+#          windows-11-arm,   # win32 aarch64
+#          ubuntu-24.04-arm  # linux aarch64
+#        ]
+#    runs-on: ${{ matrix.os }}
+  native-win32:
+    strategy:
+      matrix:
+        os: [
+          windows-2025     # win32 x64
+#          windows-11-arm    # win32 aarch64
+        ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Visual Studio shell
+        uses: egor-tensin/vs-shell@v2
+      - name: Build native library from Makefile
+        run: make native-win32
+
+
