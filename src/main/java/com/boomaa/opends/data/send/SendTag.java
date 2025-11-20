@@ -399,7 +399,7 @@ public enum SendTag {
             NullSendTag.getInstance(),
             NullSendTag.getInstance()
     ),
-    DS_PING(0x1C, Protocol.TCP, Remote.FMS,
+    DS_PING(0x1D, Protocol.TCP, Remote.FMS,
             RefSendTag.yearOfAction(2020),
             RefSendTag.yearOfAction(2020),
             RefSendTag.yearOfAction(2020),
