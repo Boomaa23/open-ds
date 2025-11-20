@@ -6,8 +6,14 @@ import com.boomaa.opends.data.holders.Remote;
 import java.lang.reflect.Constructor;
 
 public class PPConstructorStore {
+    private static final String[] subparserKeys = new String[] {
+            "RioToDsUdp",
+            "RioToDsTcp",
+            "FmsToDsUdp",
+            "FmsToDsTcp"
+    };
     private final ProtocolClass parserClass;
-    private final Constructor<?>[] constructors = new Constructor[4];
+    private final Constructor<?>[] subparserCtor = new Constructor[subparserKeys.length];
 
     public PPConstructorStore(ProtocolClass parserClass) {
         this.parserClass = parserClass;
@@ -15,15 +21,15 @@ public class PPConstructorStore {
     }
 
     public Constructor<?> get(Protocol protocol, Remote remote) {
-        return constructors[(remote.ordinal() * 2) + protocol.ordinal()];
+        return subparserCtor[(remote.ordinal() * 2) + protocol.ordinal()];
     }
 
     public void update() {
         try {
-            constructors[0] = Class.forName(parserClass + "$RioToDsUdp").getConstructor(byte[].class);
-            constructors[1] = Class.forName(parserClass + "$RioToDsTcp").getConstructor(byte[].class);
-            constructors[2] = Class.forName(parserClass + "$FmsToDsUdp").getConstructor(byte[].class);
-            constructors[3] = Class.forName(parserClass + "$FmsToDsTcp").getConstructor(byte[].class);
+            for (int i = 0; i < subparserKeys.length; i++) {
+                String subparserClassName = String.format("%s$%s", parserClass, subparserKeys[i]);
+                subparserCtor[i] = Class.forName(subparserClassName).getConstructor(byte[].class);
+            }
         } catch (NoSuchMethodException | ClassNotFoundException e) {
             e.printStackTrace();
         }

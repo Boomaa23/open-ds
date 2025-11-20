@@ -82,7 +82,7 @@ public class HeadlessController implements HeadlessJDEC {
     public static void start() {
         printMenu();
         while (true) {
-            OperationReturn retval = runOperation(MAIN_ACTIONS_TABLE);
+            OperationReturn retval = runOperationFromTable(MAIN_ACTIONS_TABLE);
             if (retval != OperationReturn.CONTINUE) {
                 String response = "";
                 while (!response.equals("y")) {
@@ -95,7 +95,7 @@ public class HeadlessController implements HeadlessJDEC {
         }
     }
 
-    public static OperationReturn runOperation(OptionTable table) {
+    public static OperationReturn runOperationFromTable(OptionTable table) {
         OperationReturn retval = null;
         while (retval == null) {
             String response = prompt("Select an action: ");

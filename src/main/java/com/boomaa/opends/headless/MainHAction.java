@@ -3,7 +3,6 @@ package com.boomaa.opends.headless;
 import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.display.Logger;
 import com.boomaa.opends.display.MainJDEC;
-import com.boomaa.opends.display.StdRedirect;
 
 import java.util.function.Supplier;
 
@@ -23,7 +22,7 @@ public enum MainHAction implements HeadlessJDEC {
     CHANGE_MODE("Change Mode",
         () -> {
             System.out.println(CHANGE_MODE_TABLE);
-            return HeadlessController.runOperation(CHANGE_MODE_TABLE);
+            return HeadlessController.runOperationFromTable(CHANGE_MODE_TABLE);
         },
         () -> MainJDEC.ROBOT_DRIVE_MODE.getSelectedItem().toString()
     ),
@@ -39,7 +38,7 @@ public enum MainHAction implements HeadlessJDEC {
             return OperationReturn.CONTINUE;
         }
     ),
-    EMERGENCY_STOP("Restart RoboRIO",
+    EMERGENCY_STOP("Emergency Stop",
         () -> {
             MainJDEC.ESTOP_BTN.doClick();
             return OperationReturn.CONTINUE;
@@ -48,14 +47,14 @@ public enum MainHAction implements HeadlessJDEC {
     CHANGE_ALLIANCE_NUMBER("Change Alliance Number",
         () -> {
             System.out.println(CHANGE_ANUM_TABLE);
-            return HeadlessController.runOperation(CHANGE_ANUM_TABLE);
+            return HeadlessController.runOperationFromTable(CHANGE_ANUM_TABLE);
         },
         () -> MainJDEC.ALLIANCE_NUM.getSelectedItem().toString()
     ),
     CHANGE_ALLIANCE_COLOR("Change Alliance Color",
         () -> {
             System.out.println(CHANGE_ACOLOR_TABLE);
-            return HeadlessController.runOperation(CHANGE_ACOLOR_TABLE);
+            return HeadlessController.runOperationFromTable(CHANGE_ACOLOR_TABLE);
         },
         () -> MainJDEC.ALLIANCE_COLOR.getSelectedItem().toString()
     ),
@@ -132,13 +131,16 @@ public enum MainHAction implements HeadlessJDEC {
     CONFIG_JOYSTICKS("Configure/Test Joysticks",
         () -> {
             System.out.println(JS_ACTIONS_TABLE);
-            return HeadlessController.runOperation(JS_ACTIONS_TABLE);
+            return HeadlessController.runOperationFromTable(JS_ACTIONS_TABLE);
         }
     ), //TODO
+    REFRESH_DISPLAY("Refresh Display",
+            () -> OperationReturn.CONTINUE
+    ),
     QUIT("Quit",
         () -> {
             System.exit(0);
-            return OperationReturn.CONTINUE;
+            return OperationReturn.INVALID;
         }
     );
 

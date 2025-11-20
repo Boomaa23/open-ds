@@ -7,7 +7,7 @@ import com.boomaa.opends.display.RobotMode;
 public interface HeadlessJDEC {
     ConsoleTable STATUS_TABLE = new ConsoleTable(7, 2);
     ConsoleTable STATISTICS_TABLE = new ConsoleTable(StatsFields.values().length + 1, 2);
-    OptionTable MAIN_ACTIONS_TABLE = new OptionTable(18, true, false);
+    OptionTable MAIN_ACTIONS_TABLE = new OptionTable(MainHAction.values().length + 1, true, false);
     OptionTable JS_ACTIONS_TABLE = new OptionTable(18, true, false); //TODO
     ConsoleTable SHUFFLEBOARD_TABLE = new ConsoleTable(7, 2); //TODO
 
