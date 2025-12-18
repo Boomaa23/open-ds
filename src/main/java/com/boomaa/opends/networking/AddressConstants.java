@@ -36,9 +36,13 @@ public class AddressConstants {
             return USB_RIO_IP;
         }
         int teamNum = MainJDEC.TEAM_NUMBER.checkedIntParse();
-        if (teamNum != -1) {
+        String teamText = MainJDEC.TEAM_NUMBER.getText();
+        
+        if (teamText.matches("^(((?!25?[6-9])[12]\\d|[1-9])?\\d\\.?\\b){4}$")) { // Regex for IPv4
+            return teamText;
+        } else if (teamNum != -1) {
             return "roboRIO-" + teamNum + "-FRC.local";
-        } else if (MainJDEC.TEAM_NUMBER.getText().equalsIgnoreCase("localhost")) {
+        } else if (teamText.equalsIgnoreCase("localhost")) {
             return LOCALHOST;
         }
         // Default case that will always fail
