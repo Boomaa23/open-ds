@@ -6,6 +6,7 @@ public class AddressConstants {
     public static final String LOCALHOST = "localhost";
     public static final String USB_RIO_IP = "172.22.11.2";
     public static final String FMS_IP = "10.0.100.5";
+    public static final String IPV4_REGEX = "^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.?\\b){4}$";
     private static final PortTriple FMS_PORTS_2020 = new PortTriple(1750, 1160, 1121);
     private static final PortQuad RIO_PORTS_2020 = new PortQuad(1740, 1110, 1150, 1735);
     private static PortTriple fmsPorts;
@@ -37,8 +38,8 @@ public class AddressConstants {
         }
         int teamNum = MainJDEC.TEAM_NUMBER.checkedIntParse();
         String teamText = MainJDEC.TEAM_NUMBER.getText();
-        
-        if (teamText.matches("^(((?!25?[6-9])[12]\\d|[1-9])?\\d\\.?\\b){4}$")) { // Regex for IPv4
+
+        if (teamText.matches(IPV4_REGEX)) {
             return teamText;
         } else if (teamNum != -1) {
             return "roboRIO-" + teamNum + "-FRC.local";
