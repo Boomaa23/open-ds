@@ -9,6 +9,7 @@ import com.boomaa.opends.display.tabs.JoystickTab;
 import com.boomaa.opends.display.tabs.LogTab;
 import com.boomaa.opends.display.tabs.NTTab;
 import com.boomaa.opends.display.tabs.StatsTab;
+import com.boomaa.opends.display.tabs.VirtualControllerTab;
 import com.boomaa.opends.headless.elements.HButton;
 import com.boomaa.opends.headless.elements.HCheckBox;
 import com.boomaa.opends.headless.elements.HComboBox;
@@ -49,6 +50,7 @@ public interface MainJDEC {
     HButton RECONNECT_BTN = new HButton("↻");
 
     JoystickTab JS_TAB = new JoystickTab();
+    VirtualControllerTab VCTRL_TAB = new VirtualControllerTab();
     NTTab NT_TAB = new NTTab();
     StatsTab STATS_TAB = new StatsTab();
     LogTab LOG_TAB = new LogTab();
