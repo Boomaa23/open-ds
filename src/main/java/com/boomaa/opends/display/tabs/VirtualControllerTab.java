@@ -9,21 +9,23 @@ import com.boomaa.opends.util.Debug;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Map;
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 
@@ -57,6 +59,9 @@ public class VirtualControllerTab extends TabBase {
     // UI labels for live axis values
     private JLabel lblLX, lblLY, lblRX, lblRY, lblLT, lblRT;
 
+    // Maps key codes to their corresponding on-screen buttons for visual highlighting
+    private Map<Integer, JButton> keyToButton;
+
     public VirtualControllerTab() {
         super(new Dimension(520, 275));
     }
@@ -65,6 +70,7 @@ public class VirtualControllerTab extends TabBase {
     public void config() {
         keyPressActions = new HashMap<>();
         keyReleaseActions = new HashMap<>();
+        keyToButton = new HashMap<>();
 
         virtualCtrl = new VirtualController();
         virtualDevice = new HIDDevice(virtualCtrl);
@@ -73,7 +79,6 @@ public class VirtualControllerTab extends TabBase {
         Debug.println("Virtual gamepad controller registered at index " + virtualDevice.getIdx());
 
         setLayout(new GridBagLayout());
-        setFocusable(true);
         GBCPanelBuilder base = new GBCPanelBuilder(this)
             .setFill(GridBagConstraints.BOTH)
             .setAnchor(GridBagConstraints.CENTER)
@@ -117,6 +122,9 @@ public class VirtualControllerTab extends TabBase {
         setupHold(rtBtn, () -> { triggerRight = true; updateTriggers(); },
                           () -> { triggerRight = false; updateTriggers(); });
 
+        keyToButton.put(KeyEvent.VK_Q, ltBtn);
+        keyToButton.put(KeyEvent.VK_E, rtBtn);
+
         tBase.clone().setPos(0, 0, 1, 1).build(ltBtn);
         tBase.clone().setPos(1, 0, 1, 1).build(rtBtn);
         tBase.clone().setPos(0, 1, 1, 1).setFill(GridBagConstraints.NONE).build(lblLT);
@@ -146,6 +154,7 @@ public class VirtualControllerTab extends TabBase {
             setupHold(btn,
                 () -> { virtualCtrl.setButton(idx, true); },
                 () -> { virtualCtrl.setButton(idx, false); });
+            keyToButton.put(KeyEvent.VK_1 + i, btn);
             bBase.clone().setPos(i % 4, i / 4, 1, 1).build(btn);
         }
 
@@ -153,32 +162,7 @@ public class VirtualControllerTab extends TabBase {
 
         // --- Keyboard bindings ---
         setupKeyBindings();
-
-        addKeyListener(new KeyListener() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                Runnable action = keyPressActions.get(e.getKeyCode());
-                if (action != null) {
-                    action.run();
-                }
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-                Runnable action = keyReleaseActions.get(e.getKeyCode());
-                if (action != null) {
-                    action.run();
-                }
-            }
-
-            @Override
-            public void keyTyped(KeyEvent e) { }
-        });
-
-        // Focus hint
-        JLabel hint = new JLabel("Click this tab and use keyboard for input", SwingConstants.CENTER);
-        hint.setFont(hint.getFont().deriveFont(Font.ITALIC, 10f));
-        base.clone().setPos(0, 5, 4, 1).setFill(GridBagConstraints.NONE).build(hint);
+        installKeyBindings();
 
         Debug.println("VirtualControllerTab configured");
     }
@@ -237,6 +221,23 @@ public class VirtualControllerTab extends TabBase {
         gb.clone().setPos(0, 3, 1, 1).setFill(GridBagConstraints.NONE).build(xLabel);
         gb.clone().setPos(2, 3, 1, 1).setFill(GridBagConstraints.NONE).build(yLabel);
 
+        // Register arrow buttons for keyboard highlighting
+        if (isLeft) {
+            keyToButton.put(KeyEvent.VK_W, upBtn);
+            keyToButton.put(KeyEvent.VK_UP, upBtn);
+            keyToButton.put(KeyEvent.VK_S, downBtn);
+            keyToButton.put(KeyEvent.VK_DOWN, downBtn);
+            keyToButton.put(KeyEvent.VK_A, leftBtn);
+            keyToButton.put(KeyEvent.VK_LEFT, leftBtn);
+            keyToButton.put(KeyEvent.VK_D, rightBtn);
+            keyToButton.put(KeyEvent.VK_RIGHT, rightBtn);
+        } else {
+            keyToButton.put(KeyEvent.VK_I, upBtn);
+            keyToButton.put(KeyEvent.VK_K, downBtn);
+            keyToButton.put(KeyEvent.VK_J, leftBtn);
+            keyToButton.put(KeyEvent.VK_L, rightBtn);
+        }
+
         return panel;
     }
 
@@ -287,6 +288,57 @@ public class VirtualControllerTab extends TabBase {
     private void bindKey(int keyCode, Runnable onPress, Runnable onRelease) {
         keyPressActions.put(keyCode, onPress);
         keyReleaseActions.put(keyCode, onRelease);
+    }
+
+    /**
+     * Installs all key bindings into the InputMap/ActionMap using
+     * WHEN_IN_FOCUSED_WINDOW so they fire regardless of which child
+     * component currently has focus. Actions are guarded to only
+     * execute when this tab is the visible tab.
+     */
+    private void installKeyBindings() {
+        javax.swing.InputMap inputMap = getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        javax.swing.ActionMap actionMap = getActionMap();
+
+        for (Map.Entry<Integer, Runnable> entry : keyPressActions.entrySet()) {
+            int code = entry.getKey();
+            Runnable action = entry.getValue();
+            String name = "vgp_pressed_" + code;
+            inputMap.put(KeyStroke.getKeyStroke(code, 0, false), name);
+            actionMap.put(name, new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (TabBase.isVisible(VirtualControllerTab.class)) {
+                        action.run();
+                        JButton btn = keyToButton.get(code);
+                        if (btn != null) {
+                            btn.getModel().setArmed(true);
+                            btn.getModel().setPressed(true);
+                        }
+                    }
+                }
+            });
+        }
+
+        for (Map.Entry<Integer, Runnable> entry : keyReleaseActions.entrySet()) {
+            int code = entry.getKey();
+            Runnable action = entry.getValue();
+            String name = "vgp_released_" + code;
+            inputMap.put(KeyStroke.getKeyStroke(code, 0, true), name);
+            actionMap.put(name, new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (TabBase.isVisible(VirtualControllerTab.class)) {
+                        action.run();
+                        JButton btn = keyToButton.get(code);
+                        if (btn != null) {
+                            btn.getModel().setPressed(false);
+                            btn.getModel().setArmed(false);
+                        }
+                    }
+                }
+            });
+        }
     }
 
     private void updateLeftStick() {
