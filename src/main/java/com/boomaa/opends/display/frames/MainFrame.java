@@ -29,6 +29,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -106,7 +107,7 @@ public class MainFrame implements MainJDEC {
     }
 
     private static void listenerInit() {
-        PROTOCOL_YEAR.addActionListener(makeAsyncListener((e) -> {
+        PROTOCOL_YEAR.addItemListener(makeAsyncItemListener((e) -> {
             DisplayEndpoint.doProtocolUpdate();
             unsetAllInterfaces();
             DisplayEndpoint.FILE_LOGGER.restart();
@@ -116,7 +117,7 @@ public class MainFrame implements MainJDEC {
 
         IS_ENABLED.addItemListener((e) -> RSL_INDICATOR.setFlashing(e.getStateChange() == ItemEvent.SELECTED));
 
-        USB_CONNECT.addActionListener(makeAsyncListener((e) -> {
+        USB_CONNECT.addActionListener(makeAsyncActionListener((e) -> {
             unsetAllInterfaces();
             Debug.println("Connecting to robot over USB");
         }));
@@ -245,7 +246,17 @@ public class MainFrame implements MainJDEC {
         DisplayEndpoint.FMS_TCP_CLOCK.restart();
     }
 
-    public static ActionListener makeAsyncListener(Consumer<ActionEvent> func) {
+    public static ActionListener makeAsyncActionListener(Consumer<ActionEvent> func) {
+        return (e) -> new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() {
+                func.accept(e);
+                return null;
+            }
+        }.execute();
+    }
+
+    public static ItemListener makeAsyncItemListener(Consumer<ItemEvent> func) {
         return (e) -> new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() {
