@@ -99,6 +99,7 @@ public class Updater2015 extends ElementUpdater {
 
     @Override
     protected void resetDataFmsUdp() {
+        //TODO FMS absence should not disable robot
         IS_ENABLED.setSelected(false);
         IS_ENABLED.setEnabled(true);
         ALLIANCE_COLOR.setEnabled(true);

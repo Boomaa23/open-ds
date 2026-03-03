@@ -4,6 +4,7 @@ import com.boomaa.opends.data.holders.Protocol;
 import com.boomaa.opends.data.holders.Remote;
 import com.boomaa.opends.data.receive.parser.PacketParser;
 import com.boomaa.opends.data.receive.parser.ParserNull;
+import com.boomaa.opends.data.send.creator.NoTCPCreator;
 import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.display.MainJDEC;
 import com.boomaa.opends.util.Clock;
@@ -96,7 +97,7 @@ public class NetworkClock extends Clock {
                     ? AddressConstants.getFMSPorts()
                     : AddressConstants.getRioPorts();
             iface = protocol == Protocol.TCP
-                    ? new TCPInterface(ip, ports.getTcp())
+                    ? ((DisplayEndpoint.CREATOR instanceof NoTCPCreator) ? null : new TCPInterface(ip, ports.getTcp()))
                     : new UDPInterface(ip, ports.getUdpTx(), ports.getUdpRx());
             DisplayEndpoint.NET_IF_INIT.set(true, remote, protocol);
         } catch (IOException e) {

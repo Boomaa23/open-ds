@@ -42,8 +42,10 @@ public class AddressConstants {
         if (teamText.matches(IPV4_REGEX)) {
             return teamText;
         } else if (teamNum != -1) {
-            return "roboRIO-" + teamNum + "-FRC.local";
-        } else if (teamText.equalsIgnoreCase("localhost")) {
+            // mDNS hostname omits the "-FRC" in years <= 2015
+            String frcSuffix = MainJDEC.getProtocolYear() > 2015 ? "-FRC" : "";
+            return "roboRIO-" + teamNum + frcSuffix + ".local";
+        } else if (teamText.equalsIgnoreCase(LOCALHOST)) {
             return LOCALHOST;
         }
         // Default case that will always fail

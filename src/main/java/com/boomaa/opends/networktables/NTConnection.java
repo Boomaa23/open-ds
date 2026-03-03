@@ -1,5 +1,7 @@
 package com.boomaa.opends.networktables;
 
+import com.boomaa.opends.data.send.creator.NoTCPCreator;
+import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.networking.AddressConstants;
 import com.boomaa.opends.networking.NetworkClock;
 import com.boomaa.opends.networking.TCPInterface;
@@ -31,7 +33,9 @@ public class NTConnection extends Clock {
     public void onCycle() {
         if (connection == null || connection.isClosed()) {
             Debug.println("NetworkTables connection failed", EventSeverity.WARNING, true);
-            reloadConnection();
+            if (!(DisplayEndpoint.CREATOR instanceof NoTCPCreator)) {
+                reloadConnection();
+            }
         } else {
             if (doReconnectSend) {
                 Debug.println("NetworkTables connected to " + connection.toString());
