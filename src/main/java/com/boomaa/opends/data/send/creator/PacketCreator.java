@@ -4,9 +4,10 @@ import com.boomaa.opends.data.holders.Protocol;
 import com.boomaa.opends.data.holders.Remote;
 import com.boomaa.opends.data.send.PacketBuilder;
 import com.boomaa.opends.display.MainJDEC;
+import com.boomaa.opends.display.ProtocolClass;
 import com.boomaa.opends.util.SequenceCounter;
 
-public abstract class PacketCreator implements MainJDEC {
+public abstract class PacketCreator implements MainJDEC, Creator {
     public static final SequenceCounter SEQUENCE_COUNTER_RIO = new SequenceCounter(true);
     public static final SequenceCounter SEQUENCE_COUNTER_FMS = new SequenceCounter(true);
 

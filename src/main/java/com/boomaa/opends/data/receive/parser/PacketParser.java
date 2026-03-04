@@ -16,7 +16,7 @@ import com.boomaa.opends.util.SequenceCounter;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class PacketParser {
+public abstract class PacketParser implements Parser {
     protected final byte[] packet;
     protected final Remote remote;
     protected final Protocol protocol;

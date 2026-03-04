@@ -9,7 +9,7 @@ import com.boomaa.opends.data.receive.parser.ParserNull;
 import com.boomaa.opends.display.Logger;
 import com.boomaa.opends.display.MainJDEC;
 
-public abstract class ElementUpdater implements MainJDEC {
+public abstract class ElementUpdater implements MainJDEC, Updater {
     protected abstract void doUpdateFromRioUdp(PacketParser data, TVMList tagMap);
 
     protected abstract void doUpdateFromRioTcp(PacketParser data, TVMList tagMap);

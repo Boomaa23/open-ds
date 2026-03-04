@@ -3,17 +3,18 @@ package com.boomaa.opends.display;
 import com.boomaa.opends.data.holders.Protocol;
 import com.boomaa.opends.data.holders.Remote;
 import com.boomaa.opends.data.receive.parser.PacketParser;
+import com.boomaa.opends.data.receive.parser.Parser;
+import com.boomaa.opends.data.send.creator.Creator;
 import com.boomaa.opends.data.send.creator.PacketCreator;
 import com.boomaa.opends.display.elements.HyperlinkBox;
 import com.boomaa.opends.display.frames.MainFrame;
-import com.boomaa.opends.display.frames.MessageBox;
 import com.boomaa.opends.display.updater.ElementUpdater;
+import com.boomaa.opends.display.updater.Updater;
 import com.boomaa.opends.headless.HeadlessController;
 import com.boomaa.opends.networking.AddressConstants;
 import com.boomaa.opends.networking.NetworkClock;
 import com.boomaa.opends.networktables.NTConnection;
 import com.boomaa.opends.usb.ControlDevices;
-import com.boomaa.opends.util.ArrayUtils;
 import com.boomaa.opends.util.Clock;
 import com.boomaa.opends.util.DSLog;
 import com.boomaa.opends.util.Debug;
@@ -39,9 +40,9 @@ public class DisplayEndpoint implements MainJDEC {
     public static InitChecker NET_IF_INIT = new InitChecker();
     public static Integer[] VALID_PROTOCOL_YEARS = { 2025, 2024, 2023, 2022, 2021, 2020, 2016, 2015, 2014 };
 
-    private static final ProtocolClass parserClass = new ProtocolClass("com.boomaa.opends.data.receive.parser.Parser");
-    private static final ProtocolClass creatorClass = new ProtocolClass("com.boomaa.opends.data.send.creator.Creator");
-    private static final ProtocolClass updaterClass = new ProtocolClass("com.boomaa.opends.display.updater.Updater");
+    private static final ProtocolClassManager<PacketParser> parserClass = new ProtocolClassManager<>(Parser.class);
+    private static final ProtocolClassManager<PacketCreator> creatorClass = new ProtocolClassManager<>(Creator.class);
+    private static final ProtocolClassManager<ElementUpdater> updaterClass = new ProtocolClassManager<>(Updater.class);
     private static final PPConstructorStore parserConstructors = new PPConstructorStore(parserClass);
 
     public static ElementUpdater UPDATER;
@@ -107,14 +108,8 @@ public class DisplayEndpoint implements MainJDEC {
         creatorClass.update();
         updaterClass.update();
         parserConstructors.update();
-        try {
-            UPDATER = (ElementUpdater) Class.forName(updaterClass.toString()).getConstructor().newInstance();
-            CREATOR = (PacketCreator) Class.forName(creatorClass.toString()).getConstructor().newInstance();
-        } catch (NoSuchMethodException | ClassNotFoundException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            e.printStackTrace();
-            MessageBox.show(ArrayUtils.printStackTrace(e, 10), MessageBox.Type.ERROR);
-            System.exit(1);
-        }
+        UPDATER = updaterClass.construct();
+        CREATOR = creatorClass.construct();
     }
 
     public static PacketParser getPacketParser(Remote remote, Protocol protocol, byte[] data) {

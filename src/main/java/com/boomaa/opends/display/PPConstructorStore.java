@@ -2,6 +2,7 @@ package com.boomaa.opends.display;
 
 import com.boomaa.opends.data.holders.Protocol;
 import com.boomaa.opends.data.holders.Remote;
+import com.boomaa.opends.data.receive.parser.PacketParser;
 
 import java.lang.reflect.Constructor;
 
@@ -12,10 +13,10 @@ public class PPConstructorStore {
             "FmsToDsUdp",
             "FmsToDsTcp"
     };
-    private final ProtocolClass parserClass;
+    private final ProtocolClassManager<PacketParser> parserClass;
     private final Constructor<?>[] subparserCtor = new Constructor[subparserKeys.length];
 
-    public PPConstructorStore(ProtocolClass parserClass) {
+    public PPConstructorStore(ProtocolClassManager<PacketParser> parserClass) {
         this.parserClass = parserClass;
         update();
     }
