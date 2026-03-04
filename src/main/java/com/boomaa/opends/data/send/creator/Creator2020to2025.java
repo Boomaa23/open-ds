@@ -17,7 +17,7 @@ import com.boomaa.opends.util.PacketCounters;
 
 import java.util.Objects;
 
-public class Creator2020 extends PacketCreator {
+public class Creator2020to2025 extends PacketCreator {
     @Override
     public byte[] dsToRioUdp() {
         PacketBuilder builder = getSequenced(Remote.ROBO_RIO);
