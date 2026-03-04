@@ -11,7 +11,7 @@ import com.boomaa.opends.data.receive.ReceiveTag;
 import com.boomaa.opends.data.receive.TVMList;
 import com.boomaa.opends.data.receive.TagValueMap;
 import com.boomaa.opends.data.receive.parser.PacketParser;
-import com.boomaa.opends.data.receive.parser.Parser2020to2025;
+import com.boomaa.opends.data.receive.parser.Parser2020to2026;
 import com.boomaa.opends.data.send.creator.PacketCreator;
 import com.boomaa.opends.display.DisplayEndpoint;
 import com.boomaa.opends.display.RobotMode;
@@ -25,10 +25,10 @@ import com.boomaa.opends.util.StringUtils;
 import java.util.List;
 import java.util.Objects;
 
-public class Updater2020to2025 extends ElementUpdater {
+public class Updater2020to2026 extends ElementUpdater {
     @Override
     protected void doUpdateFromRioUdp(PacketParser data, TVMList tagMap) {
-        Parser2020to2025.RioToDsUdp rioUdp = (Parser2020to2025.RioToDsUdp) data;
+        Parser2020to2026.RioToDsUdp rioUdp = (Parser2020to2026.RioToDsUdp) data;
         ESTOP_STATUS.setDisplay(rioUdp.getStatus().contains(Status.ESTOP));
         if (rioUdp.getTrace().contains(Trace.ROBOTCODE)) {
             ROBOT_CODE_STATUS.changeToDisplay(0, true);
@@ -148,7 +148,7 @@ public class Updater2020to2025 extends ElementUpdater {
 
     @Override
     protected void doUpdateFromFmsUdp(PacketParser data, TVMList tagMap) {
-        Parser2020to2025.FmsToDsUdp fmsUdp = (Parser2020to2025.FmsToDsUdp) data;
+        Parser2020to2026.FmsToDsUdp fmsUdp = (Parser2020to2026.FmsToDsUdp) data;
         AllianceStation station = fmsUdp.getAllianceStation();
         List<Control> ctrlSignals = fmsUdp.getControl();
         for (RobotMode mode : RobotMode.values()) {

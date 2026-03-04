@@ -38,7 +38,7 @@ public class DisplayEndpoint implements MainJDEC {
     public static DSLog FILE_LOGGER = new DSLog();
     public static NTConnection NETWORK_TABLES = new NTConnection();
     public static InitChecker NET_IF_INIT = new InitChecker();
-    public static Integer[] VALID_PROTOCOL_YEARS = { 2025, 2024, 2023, 2022, 2021, 2020, 2016, 2015, 2014 };
+    public static Integer[] VALID_PROTOCOL_YEARS = { 2026, 2025, 2024, 2023, 2022, 2021, 2020, 2016, 2015, 2014 };
 
     private static final ProtocolClassManager<PacketParser> parserClass = new ProtocolClassManager<>(Parser.class);
     private static final ProtocolClassManager<PacketCreator> creatorClass = new ProtocolClassManager<>(Creator.class);

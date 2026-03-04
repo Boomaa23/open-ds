@@ -12,7 +12,7 @@ import com.boomaa.opends.util.NumberUtils;
 
 import java.util.List;
 
-public class Parser2020to2025 {
+public class Parser2020to2026 {
     public static class RioToDsUdp extends PacketParser {
         public RioToDsUdp(byte[] packet) {
             super(packet, Remote.ROBO_RIO, Protocol.UDP, 8);
