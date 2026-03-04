@@ -29,8 +29,6 @@ public class Updater2020 extends ElementUpdater {
     @Override
     protected void doUpdateFromRioUdp(PacketParser data, TVMList tagMap) {
         Parser2020.RioToDsUdp rioUdp = (Parser2020.RioToDsUdp) data;
-        IS_ENABLED.setEnabled(!DisplayEndpoint.NET_IF_INIT.isInit(Remote.FMS)
-            && !TabBase.isVisible(JoystickTab.class) && !ESTOP_STATUS.isDisplayed());
         ESTOP_STATUS.setDisplay(rioUdp.getStatus().contains(Status.ESTOP));
         if (rioUdp.getTrace().contains(Trace.ROBOTCODE)) {
             ROBOT_CODE_STATUS.changeToDisplay(0, true);
@@ -39,6 +37,9 @@ public class Updater2020 extends ElementUpdater {
         } else {
             ROBOT_CODE_STATUS.forceHide();
         }
+        IS_ENABLED.setEnabled(!DisplayEndpoint.NET_IF_INIT.isInit(Remote.FMS)
+            && !TabBase.isVisible(JoystickTab.class)
+            && !ESTOP_STATUS.isDisplayed() && ROBOT_CODE_STATUS.isDisplayed());
 
         boolean robotConn = DisplayEndpoint.NET_IF_INIT.isInit(Remote.ROBO_RIO);
         if (robotConn) {
