@@ -11,6 +11,7 @@ import com.boomaa.opends.display.frames.MainFrame;
 import com.boomaa.opends.display.updater.ElementUpdater;
 import com.boomaa.opends.display.updater.Updater;
 import com.boomaa.opends.headless.HeadlessController;
+import com.boomaa.opends.mcp.McpServer;
 import com.boomaa.opends.networking.AddressConstants;
 import com.boomaa.opends.networking.NetworkClock;
 import com.boomaa.opends.networktables.NTConnection;
@@ -35,8 +36,11 @@ import java.util.logging.Logger;
 public class DisplayEndpoint implements MainJDEC {
     public static final String CURRENT_VERSION_TAG = "v0.3.1";
 
+    public static final int DEFAULT_MCP_PORT = 8765;
+
     public static DSLog FILE_LOGGER = new DSLog();
     public static NTConnection NETWORK_TABLES = new NTConnection();
+    public static McpServer MCP_SERVER;
     public static InitChecker NET_IF_INIT = new InitChecker();
     public static Integer[] VALID_PROTOCOL_YEARS = { 2026, 2025, 2024, 2023, 2022, 2021, 2020, 2016, 2015, 2014 };
 
@@ -93,6 +97,9 @@ public class DisplayEndpoint implements MainJDEC {
         if (!Parameter.DISABLE_NETTABLES.isPresent()) {
             NETWORK_TABLES.start();
         }
+        if (!Parameter.DISABLE_MCP.isPresent()) {
+            startMcpServer();
+        }
         checkForUpdates();
 
         controlUpdater.start();
@@ -141,6 +148,19 @@ public class DisplayEndpoint implements MainJDEC {
             }
         } catch (IOException ignored) {
             System.err.println("WARNING: OpenDS update check failed. Ignore this warning if connected to a robot.");
+        }
+    }
+
+    private static void startMcpServer() {
+        int port = DEFAULT_MCP_PORT;
+        if (Parameter.MCP_PORT.isPresent()) {
+            port = Parameter.MCP_PORT.getIntValue();
+        }
+        try {
+            MCP_SERVER = new McpServer(port);
+            MCP_SERVER.start();
+        } catch (IOException e) {
+            Debug.println("Failed to start MCP server: " + e.getMessage(), EventSeverity.ERROR, false, true);
         }
     }
 }

@@ -185,6 +185,7 @@ public class MainFrame implements MainJDEC {
 
         TAB.addTab("Control", TAB_CONTAINER);
         TAB.addTab("Joysticks", JS_TAB);
+        TAB.addTab("Virtual Gamepad", VCTRL_TAB);
         TAB.addTab("Shuffleboard", NT_TAB);
         TAB.addTab("Statistics", STATS_TAB);
         TAB.addTab("Log", LOG_TAB);
