@@ -5,6 +5,7 @@ import com.boomaa.opends.usb.Component;
 import com.boomaa.opends.usb.ControlDevices;
 import com.boomaa.opends.usb.HIDDevice;
 import com.boomaa.opends.usb.VirtualController;
+import com.boomaa.opends.util.ButtonMapConfig;
 import com.boomaa.opends.util.Debug;
 
 import java.awt.Color;
@@ -68,6 +69,11 @@ public class VirtualControllerTab extends TabBase {
 
     @Override
     public void config() {
+        // Ensure button map config is loaded (static fields init before main() runs)
+        if (!ButtonMapConfig.isLoaded()) {
+            ButtonMapConfig.load();
+        }
+
         keyPressActions = new HashMap<>();
         keyReleaseActions = new HashMap<>();
         keyToButton = new HashMap<>();
@@ -146,7 +152,11 @@ public class VirtualControllerTab extends TabBase {
             null, null, null, null
         };
         for (int i = 0; i < btnLabels.length; i++) {
+            String mapLabel = ButtonMapConfig.getButtonLabel(virtualDevice.getIdx(), i + 1);
             JButton btn = makeHoldButton(btnLabels[i]);
+            if (mapLabel != null) {
+                btn.setToolTipText(mapLabel);
+            }
             if (btnColors[i] != null) {
                 btn.setForeground(btnColors[i]);
             }

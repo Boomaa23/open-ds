@@ -15,6 +15,7 @@ import com.boomaa.opends.networking.NetworkClock;
 import com.boomaa.opends.networktables.NTConnection;
 import com.boomaa.opends.usb.ControlDevices;
 import com.boomaa.opends.util.ArrayUtils;
+import com.boomaa.opends.util.ButtonMapConfig;
 import com.boomaa.opends.util.Clock;
 import com.boomaa.opends.util.DSLog;
 import com.boomaa.opends.util.Debug;
@@ -77,6 +78,7 @@ public class DisplayEndpoint implements MainJDEC {
         Debug.println("Starting OpenDS", EventSeverity.INFO, false, true);
         Parameter.parseArgs(args);
         Libraries.init();
+        ButtonMapConfig.load();
         ControlDevices.init();
         LogManager.getLogManager().reset();
         Logger.getLogger(GlobalScreen.class.getPackage().getName()).setLevel(Level.OFF);

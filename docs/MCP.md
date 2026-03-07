@@ -26,8 +26,69 @@ OpenDS includes a built-in [Model Context Protocol (MCP)](https://modelcontextpr
 | `get_robot_stats` | Disk space, RAM, CPU %, CAN bus metrics, RoboRIO/WPILib versions, disable faults, rail faults |
 | `get_connection_info` | Robot and FMS connection status, simulated vs real, USB mode |
 | `get_match_info` | Alliance color/number, team number, protocol year, match time, game data |
+| `get_button_map` | Returns the button/axis label mapping from `button-map.json` — call this first to learn what each button does |
+| `press_button` | Press or release a button on a virtual joystick (params: `joystick`, `button`, `pressed`) |
+| `set_axis` | Set an axis value on a virtual joystick (params: `joystick`, `axis`, `value`) |
 
-All tools are **read-only** — they report current state but do not control the robot.
+The first five tools are **read-only**. The last three allow **virtual joystick control** — they create a virtual gamepad that sends inputs to the robot just like a real USB controller.
+
+## Button Map Configuration
+
+OpenDS supports a `button-map.json` file in the working directory that labels joystick buttons and axes with human-readable descriptions. These labels appear on the virtual gamepad UI and are returned by the `get_button_map` MCP tool.
+
+### Example `button-map.json`
+
+```json
+{
+  "joysticks": {
+    "0": {
+      "name": "Driver Controller",
+      "buttons": {
+        "1": "Toggle Floor Intake",
+        "2": "Auto Feed (fires ball into shooter)",
+        "8": "Spin Up Shooter (max velocity)"
+      },
+      "axes": {
+        "2": "Limelight Aim Trigger (>0.5 activates)"
+      },
+      "pov": {
+        "up": "Climber Up",
+        "down": "Climber Down"
+      },
+      "notes": "To fire: button 8 to spin up, wait ~2s, button 2 to feed"
+    }
+  }
+}
+```
+
+Button numbers are **1-based** to match WPILib convention. Joystick indices are **0-based** (0–5).
+
+### AI Agent Workflow
+
+1. Call `get_button_map` to learn what each button/axis does on the connected robot.
+2. Use `press_button` and `set_axis` to control the robot through the virtual joystick.
+
+```bash
+# Learn the controls
+curl -s -X POST http://localhost:8765/mcp \
+  -H 'Content-Type: application/json' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"get_button_map","arguments":{}}}'
+
+# Spin up the shooter (button 8)
+curl -s -X POST http://localhost:8765/mcp \
+  -H 'Content-Type: application/json' \
+  -d '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"press_button","arguments":{"joystick":0,"button":8,"pressed":true}}}'
+
+# Feed the game piece (button 2)
+curl -s -X POST http://localhost:8765/mcp \
+  -H 'Content-Type: application/json' \
+  -d '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"press_button","arguments":{"joystick":0,"button":2,"pressed":true}}}'
+
+# Release buttons when done
+curl -s -X POST http://localhost:8765/mcp \
+  -H 'Content-Type: application/json' \
+  -d '{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"press_button","arguments":{"joystick":0,"button":2,"pressed":false}}}'
+```
 
 ## VS Code Setup (GitHub Copilot)
 

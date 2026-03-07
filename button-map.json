@@ -1,0 +1,29 @@
+{
+  "joysticks": {
+    "0": {
+      "name": "Driver Controller",
+      "buttons": {
+        "1": "Toggle Floor Intake",
+        "2": "Auto Feed (feeder + hopper retract — fires ball into shooter)",
+        "3": "Manual Feed",
+        "4": "Climb (retract to midpoint)",
+        "6": "Swerve Brake (hold)",
+        "7": "Shooter Off",
+        "8": "Shooter On (max velocity)"
+      },
+      "axes": {
+        "0": "Strafe X (field-centric)",
+        "1": "Strafe Y (field-centric)",
+        "2": "Limelight Aim+Drive Trigger (>0.5 activates)",
+        "4": "Rotate"
+      },
+      "pov": {
+        "up": "Climber Up",
+        "down": "Climber Down",
+        "left": "Hopper Extend",
+        "right": "Hopper Retract"
+      },
+      "notes": "To fire: press button 8 to spin up shooter, wait ~2s for flywheel, then press button 2 to feed the game piece. Press button 7 to stop."
+    }
+  }
+}
