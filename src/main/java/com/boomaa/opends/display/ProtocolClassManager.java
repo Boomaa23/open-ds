@@ -3,15 +3,21 @@ package com.boomaa.opends.display;
 import com.boomaa.opends.display.frames.MessageBox;
 import com.boomaa.opends.util.ArrayUtils;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.jar.JarFile;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
 
 public class ProtocolClassManager<T extends ProtocolClass> {
     public static final String RANGED_CLAZZ_NAME_SEPARATOR = "to";
@@ -27,25 +33,36 @@ public class ProtocolClassManager<T extends ProtocolClass> {
 
     private Map<String, Class<?>> extractYearStrClassMap(String canonicalPkgName) {
         String pkgPath = canonicalPkgName.replace('.', '/');
-        try (BufferedReader br = readerOf(ClassLoader.getSystemClassLoader().getResourceAsStream(pkgPath))) {
-            return br.lines()
-                    .filter(line -> line.endsWith(".class"))
-                    .filter(line -> line.startsWith(simpleBaseName))
-                    .filter(line -> !line.contains("$"))
-                    .map(line -> line.replace(".class", ""))
-                    .map(clazzSimpleName -> canonicalPkgName + "." + clazzSimpleName)
-                    .map(this::classStrToObj)
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toMap(this::protoClassToYearStr, clazz -> clazz));
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-        return null;
-    }
+        Stream<String> classNameStream = Stream.empty();
+        URL resource = ClassLoader.getSystemClassLoader().getResource(pkgPath);
 
-    private BufferedReader readerOf(InputStream is) {
-        return new BufferedReader(new InputStreamReader(Objects.requireNonNull(is)));
+        try {
+            if (resource != null) {
+                if (resource.getProtocol().equals("jar")) {
+                    String jarPath = resource.getPath().substring("file:".length(), resource.getPath().indexOf("!"));
+                    JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
+                    classNameStream = jar.stream()
+                            .map(ZipEntry::getName)
+                            .filter(n -> n.startsWith(pkgPath))
+                            .filter(n -> n.endsWith(".class"))
+                            .map(n -> n.replace('/', '.'));
+                } else {
+                    classNameStream = Files.list(Paths.get(resource.toURI()))
+                            .map(Path::getFileName)
+                            .map(Path::toString)
+                            .map(f -> canonicalPkgName + "." + f);
+                }
+            }
+        } catch (IOException | URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+
+        return classNameStream
+                .filter(n -> !n.contains("$"))
+                .map(n -> n.replace(".class", ""))
+                .map(this::classStrToObj)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toMap(this::protoClassToYearStr, c -> c));
     }
 
     private Class<?> classStrToObj(String clazzCanonicalName) {
