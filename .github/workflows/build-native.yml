@@ -2,6 +2,8 @@ name: Build Native
 
 on:
   push:
+    tags:
+      - 'never-run-on-tag'
     paths:
       - 'src/main/java/com/boomaa/opends/usb/**'
       - '.github/workflows/build-native.yml'
