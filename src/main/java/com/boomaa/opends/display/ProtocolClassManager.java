@@ -116,6 +116,7 @@ public class ProtocolClassManager<T extends ProtocolClass> {
         return protoYearClassMap.get(this.year);
     }
 
+    @SuppressWarnings("unchecked")
     public T construct() {
         try {
             return (T) getProtoClass().getConstructor().newInstance();
